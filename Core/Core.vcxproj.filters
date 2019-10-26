@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{f478ff09-ecdc-413a-b455-1bf50097d52c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Managers">
+      <UniqueIdentifier>{22fcec37-0b14-4420-9e48-5121fc13935a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{ead59a8e-65e5-4da3-a235-ff786e1c36b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Deposits">
+      <UniqueIdentifier>{d8915971-b8de-435d-bdf5-5ee5b95b0cf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Cards">
+      <UniqueIdentifier>{6e97ec64-999a-47a8-89d4-a871084e3687}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Deposits">
+      <UniqueIdentifier>{994b3c90-fa39-4f76-922d-2648f292ae1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Clients">
+      <UniqueIdentifier>{a1ea9891-8adf-4422-9ff3-14552d3216da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Clients">
+      <UniqueIdentifier>{f9311386-1f63-4d8a-bb73-b07d0cd6a1af}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Interfaces\ICardManager.h">
+      <Filter>Interfaces\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\IDepositManager.h">
+      <Filter>Interfaces\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICard.h">
+      <Filter>Interfaces\Cards</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\IDeposit.h">
+      <Filter>Interfaces\Deposits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\IManager.h">
+      <Filter>Interfaces\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\IClient.h">
+      <Filter>Interfaces\Clients</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonClient.h">
+      <Filter>Header Files\Clients</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\DBOperationManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonDeposit.h">
+      <Filter>Header Files\Deposits</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
