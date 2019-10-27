@@ -6,9 +6,9 @@ public:
 	{
 	};
 
-	enum Status { MODIFIED, DELETED, UNCHANGED };
+	enum ModificationType { MODIFIED, DELETED, UNCHANGED };
 
 	virtual size_t getId() const = 0;
-	virtual Status getStatus() const = 0;
-	virtual void setStatus(Status) = 0;
+	virtual ModificationType getModificationType() const = 0;
+	virtual void setModificationType(ModificationType) = 0;
 };

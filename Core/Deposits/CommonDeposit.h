@@ -9,9 +9,9 @@ private:
 	size_t _originBalance;
 	std::string _startDate;
 	std::string _endDate;
-	Status _status;
+	ModificationType _modificationType = UNCHANGED;
 
-	void setStatus(Status) override;
+	void setModificationType(ModificationType) override;
 public:
 	CommonDeposit(int money, std::string stDate, std::string endDate);
 
@@ -25,7 +25,10 @@ public:
 	void setEndDate(std::string date) override;
 	std::string getEndDate() const override;
 
+	size_t getBalance() const override;
+	size_t getOriginBalance() const override;
+
 	void endDeposit() const override;
 
-	Status getStatus() const override;
+	ModificationType getModificationType() const override;
 };

@@ -2,6 +2,7 @@
 #include "IManager.h"
 #include "IClient.h"
 #include "CommonDeposit.h"
+#include <vector>
 
 class DepositManager : public IManager
 {
@@ -13,9 +14,11 @@ private:
 		CommonDeposit _comD;
 	};
 
-
 	std::vector<Contract> _allContracts;
 	std::vector<Contract> _modifiedContracts;
+
+	const std::vector<Contract>& getContracts() const;
+	void update() override;
 public:
 	DepositManager()
 	{
@@ -36,5 +39,7 @@ public:
 
 	void endDeposit(const CommonDeposit&, const IClient&);
 
-	void update() override;
+	const CommonDeposit& makeSaveDeposit(double, std::string, const IClient&);
+
+	const Contract& getContract(const IClient&);
 };

@@ -11,6 +11,8 @@ private:
 	CardManager _cardManager;
 	DepositManager _depositManager;
 	ClientManager _clientManager;
+
+	void update() override;
 public:
 	DBOperationsManager()
 	{
@@ -27,6 +29,4 @@ public:
 	void setCardManager(const CardManager&);
 	void setDepositManager(const DepositManager&);
 	void setClientManager(const ClientManager&);
-
-	void update() override;
 };

@@ -16,6 +16,9 @@ private:
 
 	std::vector<CardPack> _allCards;
 	std::vector<CardPack> _modifiedCards;
+
+	void update() override;
+	const std::vector<CardPack>& getCardPacks() const;
 public:
 	CardManager()
 	{
@@ -25,20 +28,16 @@ public:
 	{
 	};
 
-	void withdrawMoney(double, const IClient&);
+	void withdrawMoney(const IClient&, std::string, double);
 	double checkMoney(const IClient&, std::string) const;
 
-	void setComission(double);
-	double getComission() const;
-
-	const std::vector<CardPack>& getCardPacks() const;
-	void setCardPacks(const std::vector<CardPack>&);
-
-	const ICard& createCard(const IClient&, std::string);
+	const ICard& createCard(const IClient&, std::string, unsigned short, unsigned short);
 	void deleteCard(const IClient&, std::string);
-	const ICard& getCard(std::string, const IClient&) const;
+	
+	const ICard& getCard(const IClient&, std::string) const;
+	const std::vector<ICard> getCards(const IClient&) const;
 
 	void makeTransaction(const IClient&, std::string, const IClient&, std::string, double);
 
-	void update() override;
+	void createTemplate(std::string, std::string, unsigned int, std::string);
 };

@@ -5,12 +5,15 @@
 class IDeposit : public IEntity
 {
 public:
-	virtual ~IDeposit()= 0;
-	virtual std::string  getStartDate() const = 0;
+	virtual ~IDeposit() = 0;
+	virtual std::string getStartDate() const = 0;
 	virtual void setStartDate(std::string) = 0;
-	
+
 	virtual std::string getEndDate() const = 0;
 	virtual void setEndDate(std::string date) = 0;
-	
+
+	virtual size_t getBalance() const = 0;
+	virtual size_t getOriginBalance() const = 0;
+
 	virtual void endDeposit() const = 0;
 };

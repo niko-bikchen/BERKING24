@@ -43,6 +43,12 @@
     <Filter Include="Header Files\Cards">
       <UniqueIdentifier>{a2324b89-9d53-4dfc-866e-352be3e0d194}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Registration&amp;Authorization">
+      <UniqueIdentifier>{6894f62b-56b2-4348-9eaf-7e44848646fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Terminal">
+      <UniqueIdentifier>{0a556462-cb0a-4042-abdb-c4d12118e254}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Interfaces\Cards\ICard.h">
@@ -80,6 +86,15 @@
     </ClInclude>
     <ClInclude Include="Managers\ClientManager.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration&amp;Authorization\Authorization.h">
+      <Filter>Header Files\Registration&amp;Authorization</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration&amp;Authorization\Registration.h">
+      <Filter>Header Files\Registration&amp;Authorization</Filter>
+    </ClInclude>
+    <ClInclude Include="Terminal\Terminal.h">
+      <Filter>Header Files\Terminal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

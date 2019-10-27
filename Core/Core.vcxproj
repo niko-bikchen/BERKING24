@@ -91,7 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\VisualStudioStockpile\BERKING24\Interfaces\Deposits;D:\VisualStudioStockpile\BERKING24\Interfaces\Clients;D:\VisualStudioStockpile\BERKING24\Interfaces\Cards;D:\VisualStudioStockpile\BERKING24\Interfaces\General;D:\VisualStudioStockpile\BERKING24\Interfaces\Managers;D:\VisualStudioStockpile\BERKING24\Core\Managers;D:\VisualStudioStockpile\BERKING24\Core\Deposits;D:\VisualStudioStockpile\BERKING24\Core\Clients;D:\VisualStudioStockpile\BERKING24\Core\Cards;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VisualStudioStockpile\BERKING24\Core\Terminal;D:\VisualStudioStockpile\BERKING24\Core\Registration&amp;Authorization;D:\VisualStudioStockpile\BERKING24\Interfaces\Deposits;D:\VisualStudioStockpile\BERKING24\Interfaces\Clients;D:\VisualStudioStockpile\BERKING24\Interfaces\Cards;D:\VisualStudioStockpile\BERKING24\Interfaces\General;D:\VisualStudioStockpile\BERKING24\Interfaces\Managers;D:\VisualStudioStockpile\BERKING24\Core\Managers;D:\VisualStudioStockpile\BERKING24\Core\Deposits;D:\VisualStudioStockpile\BERKING24\Core\Clients;D:\VisualStudioStockpile\BERKING24\Core\Cards;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,6 +167,9 @@
     <ClInclude Include="Managers\DBOperationsManager.h" />
     <ClInclude Include="Managers\DepositManager.h" />
     <ClInclude Include="Managers\ClientManager.h" />
+    <ClInclude Include="Registration&amp;Authorization\Authorization.h" />
+    <ClInclude Include="Registration&amp;Authorization\Registration.h" />
+    <ClInclude Include="Terminal\Terminal.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

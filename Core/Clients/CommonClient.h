@@ -10,9 +10,9 @@ private:
 	std::string _name;
 	std::string _password;
 	std::string _email;
-	Status _status;
+	ModificationType _modificationType = UNCHANGED;
 
-	void setStatus(Status) override;
+	void setModificationType(ModificationType) override;
 public:
 	CommonClient(std::string name, std::string email, std::string password)
 	{
@@ -35,5 +35,5 @@ public:
 	std::string getEmail() const override;
 	void setEmail(std::string) override;
 
-	Status getStatus() const override;
+	ModificationType getModificationType() const override;
 };

@@ -11,9 +11,11 @@ private:
 	std::string _name;
 	std::string _endDate;
 	std::string _balance;
-	Status _status;
+	std::vector<Transaction> _transactions;
+	std::vector<Template> _templates;
+	ModificationType _modificationType = UNCHANGED;
 
-	void setStatus(Status) override;
+	void setModificationType(ModificationType) override;
 public:
 	CommonCard(std::string number, unsigned short cvv, unsigned short pin)
 	{
@@ -38,5 +40,14 @@ public:
 	double getBalance() const override;
 	void setBalance(double) override;
 
-	Status getStatus() const override;
+	void addTemplate(Template) override;
+	const std::vector<Template>& getTemplates() const override;
+	const Template getTemplate(std::string) const override;
+
+	void addTransaction(Transaction) override;
+	const std::vector<Transaction>& getTransactions() const override;
+	const Transaction getTransaction(std::string) const override;
+	const std::vector<Transaction>& getTransactions(std::string, std::string) const override;
+
+	ModificationType getModificationType() const override;
 };
