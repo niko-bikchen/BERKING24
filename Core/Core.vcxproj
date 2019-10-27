@@ -91,7 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\VisualStudioStockpile\BERKING24\Interfaces;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VisualStudioStockpile\BERKING24\Interfaces\Deposits;D:\VisualStudioStockpile\BERKING24\Interfaces\Clients;D:\VisualStudioStockpile\BERKING24\Interfaces\Cards;D:\VisualStudioStockpile\BERKING24\Interfaces\General;D:\VisualStudioStockpile\BERKING24\Interfaces\Managers;D:\VisualStudioStockpile\BERKING24\Core\Managers;D:\VisualStudioStockpile\BERKING24\Core\Deposits;D:\VisualStudioStockpile\BERKING24\Core\Clients;D:\VisualStudioStockpile\BERKING24\Core\Cards;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,18 +152,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Core.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Interfaces\ICard.h" />
-    <ClInclude Include="..\Interfaces\ICardManager.h" />
-    <ClInclude Include="..\Interfaces\IDepositManager.h" />
-    <ClInclude Include="..\Interfaces\IManager.h" />
-    <ClInclude Include="..\Interfaces\DBOperationManager.h" />
-    <ClInclude Include="..\Interfaces\IDeposit.h" />
-    <ClInclude Include="..\Interfaces\IClient.h" />
-    <ClInclude Include="CommonDeposit.h" />
-    <ClInclude Include="CommonClient.h" />
+    <ClInclude Include="..\Interfaces\Cards\ICard.h" />
+    <ClInclude Include="..\Interfaces\Clients\IClient.h" />
+    <ClInclude Include="..\Interfaces\Deposits\IDeposit.h" />
+    <ClInclude Include="..\Interfaces\General\IEntity.h" />
+    <ClInclude Include="..\Interfaces\Managers\IManager.h" />
+    <ClInclude Include="Cards\CommonCard.h" />
+    <ClInclude Include="Clients\CommonClient.h" />
+    <ClInclude Include="Deposits\CommonDeposit.h" />
+    <ClInclude Include="Managers\CardManager.h" />
+    <ClInclude Include="Managers\DBOperationsManager.h" />
+    <ClInclude Include="Managers\DepositManager.h" />
+    <ClInclude Include="Managers\ClientManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

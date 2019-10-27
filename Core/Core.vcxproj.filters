@@ -37,39 +37,54 @@
     <Filter Include="Header Files\Clients">
       <UniqueIdentifier>{f9311386-1f63-4d8a-bb73-b07d0cd6a1af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\General">
+      <UniqueIdentifier>{99d83b47-cf5c-447e-82f2-57ee691d20e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Cards">
+      <UniqueIdentifier>{a2324b89-9d53-4dfc-866e-352be3e0d194}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Interfaces\ICardManager.h">
-      <Filter>Interfaces\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interfaces\IDepositManager.h">
-      <Filter>Interfaces\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interfaces\ICard.h">
+    <ClInclude Include="..\Interfaces\Cards\ICard.h">
       <Filter>Interfaces\Cards</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interfaces\IDeposit.h">
-      <Filter>Interfaces\Deposits</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interfaces\IManager.h">
-      <Filter>Interfaces\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interfaces\IClient.h">
+    <ClInclude Include="..\Interfaces\Clients\IClient.h">
       <Filter>Interfaces\Clients</Filter>
     </ClInclude>
-    <ClInclude Include="CommonClient.h">
+    <ClInclude Include="..\Interfaces\Deposits\IDeposit.h">
+      <Filter>Interfaces\Deposits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\General\IEntity.h">
+      <Filter>Interfaces\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\Managers\IManager.h">
+      <Filter>Interfaces\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Cards\CommonCard.h">
+      <Filter>Header Files\Cards</Filter>
+    </ClInclude>
+    <ClInclude Include="Clients\CommonClient.h">
       <Filter>Header Files\Clients</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interfaces\DBOperationManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="CommonDeposit.h">
+    <ClInclude Include="Deposits\CommonDeposit.h">
       <Filter>Header Files\Deposits</Filter>
     </ClInclude>
+    <ClInclude Include="Managers\CardManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\DBOperationsManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\DepositManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\ClientManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
