@@ -1,6 +1,5 @@
 #pragma once
 #include "IClient.h"
-#include "CardManager.h"
 
 class CommonClient : public IClient
 {
@@ -10,7 +9,7 @@ private:
 	std::string _name;
 	std::string _password;
 	std::string _email;
-	ModificationType _modificationType = UNCHANGED;
+	ModificationType _modificationType = IEntity::UNCHANGED;
 
 	void setModificationType(ModificationType) override;
 public:

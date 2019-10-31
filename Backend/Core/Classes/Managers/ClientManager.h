@@ -3,7 +3,6 @@
 #include "IManager.h"
 #include "IClient.h"
 #include "CardManager.h"
-#include "DepositManager.h"
 
 class ClientManager : public IManager
 {

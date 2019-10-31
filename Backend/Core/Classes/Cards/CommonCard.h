@@ -1,5 +1,6 @@
 #pragma once
 #include "ICard.h"
+#include <vector>
 
 class CommonCard : public ICard
 {
