@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{6e25d540-f132-48be-824c-695d203a26dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes">
+      <UniqueIdentifier>{1a0f4295-09a4-49fb-aac5-173bc49b743f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Cards">
+      <UniqueIdentifier>{66b14597-b211-47fd-a8fb-4b5ad02d97b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Clients">
+      <UniqueIdentifier>{58dcfc6d-71a4-4a0e-badf-e5bf2ad2f9fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Deposits">
+      <UniqueIdentifier>{5e454b2d-556f-4e14-bd04-80befb5b69d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\General">
+      <UniqueIdentifier>{e3e250fb-96b8-4ddd-9168-503e2146d0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Managers">
+      <UniqueIdentifier>{96319b01-a320-441e-93a3-0918459916a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Reg&amp;Auth">
+      <UniqueIdentifier>{78f959fe-408d-4d18-b58f-a445c4fe08f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Managers">
+      <UniqueIdentifier>{d0a3ab9a-4f4c-4851-870d-95f3f310295d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Cards">
+      <UniqueIdentifier>{8246e068-6eb4-4a69-ac14-c59fff36ed62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Clients">
+      <UniqueIdentifier>{a832d220-cb9e-487c-91ed-0d55c531358a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Deposits">
+      <UniqueIdentifier>{7ee6b866-ba7d-4600-a35d-3c9eabfbfc5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Terminal">
+      <UniqueIdentifier>{ba282aaa-da13-4656-86ef-65adbe90211c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Interfaces\Cards\ICard.h">
+      <Filter>Interfaces\Cards</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\Clients\IClient.h">
+      <Filter>Interfaces\Clients</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\Deposits\IDeposit.h">
+      <Filter>Interfaces\Deposits</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\General\IEntity.h">
+      <Filter>Interfaces\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\Managers\IManager.h">
+      <Filter>Interfaces\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Registration&amp;Authorization\Authorization.h">
+      <Filter>Classes\Reg&amp;Auth</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Registration&amp;Authorization\Registration.h">
+      <Filter>Classes\Reg&amp;Auth</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Managers\ClientManager.h">
+      <Filter>Classes\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Managers\CardManager.h">
+      <Filter>Classes\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Managers\DBOperationsManager.h">
+      <Filter>Classes\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Managers\DepositManager.h">
+      <Filter>Classes\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Cards\CommonCard.h">
+      <Filter>Classes\Cards</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Clients\CommonClient.h">
+      <Filter>Classes\Clients</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Deposits\CommonDeposit.h">
+      <Filter>Classes\Deposits</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Terminal\Terminal.h">
+      <Filter>Classes\Terminal</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+</Project>
