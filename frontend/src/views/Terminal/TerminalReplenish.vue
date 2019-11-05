@@ -11,6 +11,12 @@
         <v-stepper-step :complete="e1 > 2" step="2">
           Money and description
         </v-stepper-step>
+
+        <v-divider></v-divider>
+
+        <v-stepper-step :complete="e1 > 3" step="3">
+          Payment validation
+        </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -35,10 +41,22 @@
             outlined
             label="Payment description (optional)"
           ></v-textarea>
+          <v-btn color="primary" @click="e1 = 3" class="mr-3">
+            Continue
+          </v-btn>
+          <v-btn color="primary" outlined @click="e1 = 1">Back</v-btn>
+        </v-stepper-content>
+
+        <v-stepper-content step="3">
+          <h2>Receiver</h2>
+          <h3>Money</h3>
+          <p>
+            Other details
+          </p>
           <v-btn color="primary" @click="e1 = 1" class="mr-3">
             Confirm
           </v-btn>
-          <v-btn color="primary" outlined @click="e1 = 1">Back</v-btn>
+          <v-btn color="primary" outlined @click="e1 = 2">Back</v-btn>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
@@ -57,7 +75,7 @@ export default {
 
 <style lang="scss">
 .terminalReplenish-container {
-  padding-left: 20%;
-  padding-right: 20%;
+  padding-left: 15%;
+  padding-right: 15%;
 }
 </style>
