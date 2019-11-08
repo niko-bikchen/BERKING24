@@ -1,7 +1,14 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Hub from '../views/Hub.vue';
+
+import Banking from '../views/Banking/Banking.vue';
 import BankingHome from '../views/Banking/BankingHome.vue';
+import BankingCards from '../views/Banking/Cards/BankingCards.vue';
+import BankingTransactions from '../views/Banking/Transactions/BankingTransactions.vue';
+import BankingTemplates from '../views/Banking/Templates/BankingTemplates.vue';
+import BankingDeposits from '../views/Banking/Deposits/BankingDeposits.vue';
+
 import Terminal from '../views/Terminal/Terminal.vue';
 import TerminalHome from '../views/Terminal/TerminalHome.vue';
 import TerminalReplenish from '../views/Terminal/TerminalReplenish.vue';
@@ -16,7 +23,7 @@ const routes = [
   },
   {
     path: '/terminal',
-    name: 'terminalHome',
+    name: 'terminal',
     component: Terminal,
     children: [
       {
@@ -31,8 +38,30 @@ const routes = [
   },
   {
     path: '/berking',
-    name: 'bankingHome',
-    component: BankingHome,
+    name: 'banking',
+    component: Banking,
+    children: [
+      {
+        path: '',
+        component: BankingHome,
+      },
+      {
+        path: 'cards',
+        component: BankingCards,
+      },
+      {
+        path: 'transactions',
+        component: BankingTransactions,
+      },
+      {
+        path: 'templates',
+        component: BankingTemplates,
+      },
+      {
+        path: 'deposits',
+        component: BankingDeposits,
+      },
+    ],
   },
   // {
   //   path: '/about',
