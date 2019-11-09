@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\backend",
+    "\\backend\\Core",
+    "\\backend\\Core\\Interfaces",
+    "\\backend\\Core\\Interfaces\\Users"
   ],
-  "SelectedNode": "\\Core",
   "PreviewInSolutionExplorer": false
 }
