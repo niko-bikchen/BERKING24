@@ -9,9 +9,20 @@ unsigned long SaveDeposit::SaveDepositProxy::do_getBalance() const
 void SaveDeposit::SaveDepositProxy::do_setBalance(unsigned long c)
 {
 	IOperationManager* op = OperationManager::getInstance();
-	mongocxx::collection coll = op->getDB()["deposits"];
-	coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
-		make_document(kvp("balance", std::to_string(c))))));
+	if (op->depositExist(_deposit.getCardNum()));
+	{
+		DefferedISaveDeposit dep = op->getSaveDeposit(_deposit.getCardNum());
+		if (*dep.operator->() == _deposit)
+		{
+			mongocxx::collection coll = op->getDB()["deposits"];
+			coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
+				make_document(kvp("balance", std::to_string(c))))));
+		}
+		else
+		{
+			std::cout << "You are using an old object" << std::endl;
+		}
+	}
 }
 
 std::ostream & SaveDeposit::SaveDepositProxy::do_print(std::ostream & out) const
@@ -22,9 +33,21 @@ std::ostream & SaveDeposit::SaveDepositProxy::do_print(std::ostream & out) const
 void SaveDeposit::SaveDepositProxy::do_setCard(std::string num)
 {
 	IOperationManager* op = OperationManager::getInstance();
-	mongocxx::collection coll = op->getDB()["deposits"];
-	coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
-		make_document(kvp("card_number", num)))));
+	if (op->depositExist(_deposit.getCardNum()));
+	{
+		DefferedISaveDeposit dep = op->getSaveDeposit(_deposit.getCardNum());
+		if (*dep.operator->() == _deposit)
+		{
+			IOperationManager* op = OperationManager::getInstance();
+			mongocxx::collection coll = op->getDB()["deposits"];
+			coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
+				make_document(kvp("card_number", num)))));
+		}
+		else
+		{
+			std::cout << "You are using an old object" << std::endl;
+		}
+	}
 }
 
 std::string SaveDeposit::SaveDepositProxy::do_getCardNum() const
@@ -40,9 +63,21 @@ std::string SaveDeposit::SaveDepositProxy::do_getStartDate() const
 void SaveDeposit::SaveDepositProxy::do_setStartDate(std::string date)
 {
 	IOperationManager* op = OperationManager::getInstance();
-	mongocxx::collection coll = op->getDB()["deposits"];
-	coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
-		make_document(kvp("start_date", date)))));
+	if (op->depositExist(_deposit.getCardNum()));
+	{
+		DefferedISaveDeposit dep = op->getSaveDeposit(_deposit.getCardNum());
+		if (*dep.operator->() == _deposit)
+		{
+			IOperationManager* op = OperationManager::getInstance();
+			mongocxx::collection coll = op->getDB()["deposits"];
+			coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
+				make_document(kvp("start_date", date)))));
+		}
+		else
+		{
+			std::cout << "You are using an old object" << std::endl;
+		}
+	}
 }
 
 std::string SaveDeposit::SaveDepositProxy::do_getEndDate() const
@@ -53,11 +88,25 @@ std::string SaveDeposit::SaveDepositProxy::do_getEndDate() const
 void SaveDeposit::SaveDepositProxy::do_setEndDate(std::string date)
 {
 	IOperationManager* op = OperationManager::getInstance();
-	mongocxx::collection coll = op->getDB()["deposits"];
-	coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
-		make_document(kvp("end_date", date)))));
+	if (op->depositExist(_deposit.getCardNum()));
+	{
+		DefferedISaveDeposit dep = op->getSaveDeposit(_deposit.getCardNum());
+		if (*dep.operator->() == _deposit)
+		{
+			IOperationManager* op = OperationManager::getInstance();
+			mongocxx::collection coll = op->getDB()["deposits"];
+			coll.update_one(make_document(kvp("card_number", _deposit.getCardNum())), make_document(kvp("$set",
+				make_document(kvp("end_date", date)))));
+		}
+		else
+		{
+			std::cout << "You are using an old object" << std::endl;
+		}
+	}
 }
 
 void SaveDeposit::SaveDepositProxy::do_endDeposit()
 {
 }
+
+

@@ -11,7 +11,8 @@ private:
 	{
 
 	}
-public:
+
+
 	void do_addCard(std::string);
 	void do_deleteCard(std::string);
 	const std::list<std::string>& do_getCards()const;
@@ -26,4 +27,7 @@ public:
 	void do_setEmail(std::string);
 	void do_endDeposit(const ISaveDeposit&);
 	std::ostream& do_print(std::ostream&) const;
+public:
+	
 };
+

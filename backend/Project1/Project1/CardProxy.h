@@ -13,7 +13,6 @@ private:
 
 	}
 	
-public:
 	void do_setDate(std::string);
 	std::string do_getDate()const;
 	void do_setNumber(std::string);
@@ -33,5 +32,9 @@ public:
 	void do_addTemplate(const Transaction&);
 	void do_addTransaction(const Transaction&);
 	std::ostream& do_print(std::ostream&)const;
+
+
+public:
+	
 
 };

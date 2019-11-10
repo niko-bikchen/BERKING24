@@ -3,9 +3,10 @@
 
 void User::do_addCard(std::string tm)
 {
-	_cards.insert(_cards.begin(), 1, tm);
+	
 	UserProxy uP = UserProxy(*this);
 	uP.do_addCard(tm);
+	_cards.insert(_cards.begin(), 1, tm);
 }
 
 void User::do_deleteCard(std::string cardNum)
@@ -31,9 +32,11 @@ void User::do_deleteCard(std::string cardNum)
 
 void User::do_setCards(std::list<std::string>& c)
 {
-	_cards = c;
+	
 	UserProxy uP = UserProxy(*this);
 	uP.do_setCards(c);
+	_cards = c;
+	
 }
 
 std::string User::do_getWebToken() const
@@ -43,9 +46,10 @@ std::string User::do_getWebToken() const
 
 void User::do_setWebToken(std::string wT)
 {
-		_webToken = wT;
+		
 		UserProxy uP = UserProxy(*this);
 		uP.do_setWebToken(wT);
+		_webToken = wT;
 }
 
 std::string User::do_getName() const
@@ -55,9 +59,10 @@ std::string User::do_getName() const
 
 void User::do_setName(std::string name)
 {
-	_name = name;
+	
 	UserProxy uP = UserProxy(*this);
 	uP.do_setName(name);
+	_name = name;
 }
 
 std::string User::do_getPassword() const
@@ -67,9 +72,10 @@ std::string User::do_getPassword() const
 
 void User::do_setPassword(std::string pass)
 {
-	_password = pass;
+	
 	UserProxy uP = UserProxy(*this);
 	uP.do_setPassword(pass);
+	_password = pass;
 }
 
 std::string User::do_getEmail() const
@@ -97,3 +103,11 @@ std::ostream & User::do_print(std::ostream & os) const
 	return os;
 }
 
+bool operator==(const IUser & user1, const IUser & user2)
+{
+	return (user1.getEmail() == user2.getEmail() &&
+		user1.getName() == user2.getName() &&
+		user1.getPassword() == user2.getPassword() &&
+		user1.getWebToken() == user2.getWebToken() &&
+		user1.getCards() == user2.getCards());
+}
