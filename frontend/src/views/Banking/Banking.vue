@@ -1,9 +1,9 @@
 <template>
   <v-app class="app-banking">
-    <v-navigation-drawer v-model="showDrawer" app clipped>
+    <v-navigation-drawer v-model="showDrawer" app clipped v-if="userAuthorized">
       <v-list nav>
         <v-subheader>What do you want to see ?</v-subheader>
-        <v-list-item-group>
+        <v-list-item-group color="primary">
           <v-list-item exact to="/berking">
             <v-list-item-content>
               <v-list-item-title>Home</v-list-item-title>
@@ -36,12 +36,17 @@
       <v-container fluid>
         <v-row no-gutters align="baseline">
           <v-col cols="4">
-            <v-app-bar-nav-icon @click.stop="showDrawer = !showDrawer">
+            <v-app-bar-nav-icon
+              @click.stop="showDrawer = !showDrawer"
+              v-if="userAuthorized"
+            >
             </v-app-bar-nav-icon>
           </v-col>
           <v-col cols="4" class="text-center">
             <v-toolbar-title>
-              Berking
+              <router-link to="/berking/" tag="span" style="cursor: pointer">
+                Berking
+              </router-link>
             </v-toolbar-title>
           </v-col>
           <v-col cols="4" class="text-right">
@@ -252,8 +257,25 @@
       </v-container>
     </v-app-bar>
     <v-content>
-      <v-container fluid>
+      <v-container fluid v-if="userAuthorized">
         <router-view></router-view>
+      </v-container>
+      <v-container v-else>
+        <v-row justify="center">
+          <v-col cols="4">
+            <v-card height="150px" color="warning">
+              <v-card-title class="white--text justify-center">
+                Attention!
+              </v-card-title>
+              <v-card-text class="white--text text-center">
+                To use the service authorize or register first.
+                <br />
+                To do, this press the button in the upper-right corner.
+                <v-icon class="white--text mt-1">mdi-arrow-top-right</v-icon>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-container>
     </v-content>
     <v-footer app></v-footer>
@@ -319,6 +341,11 @@ export default {
       this.showDialog = false;
       this.showDialog2 = false;
       this.$store.dispatch('changePassword', this.newPassword);
+    },
+  },
+  computed: {
+    userAuthorized() {
+      return this.$store.getters.userIsAuthorized;
     },
   },
 };

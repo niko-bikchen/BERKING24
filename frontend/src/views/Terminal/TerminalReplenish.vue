@@ -28,6 +28,7 @@
               :counter="16"
               single-line
               label="Card Number"
+              v-model="transaction_data.receiver_card"
             >
             </v-text-field>
           </v-form>
@@ -49,6 +50,7 @@
               single-line
               label="Amount of money"
               :rules="moneyRules"
+              v-model="transaction_data.sum"
             ></v-text-field>
           </v-form>
           <v-textarea
@@ -56,6 +58,7 @@
             solo
             outlined
             label="Payment description (optional)"
+            v-model="transaction_data.description"
           ></v-textarea>
           <v-btn
             color="primary"
@@ -69,15 +72,44 @@
         </v-stepper-content>
 
         <v-stepper-content step="3">
-          <h2>Receiver</h2>
-          <h3>Money</h3>
-          <p>
-            Other details
-          </p>
-          <v-btn color="primary" @click="stepNum = 1" class="mr-3">
-            Confirm
-          </v-btn>
-          <v-btn color="primary" outlined @click="stepNum = 2">Back</v-btn>
+          <v-card>
+            <v-card-text>
+              <p class="text--primary">
+                <span class="font-weight-medium title">
+                  Receiver card:
+                </span>
+                <span class="subtitle-1">
+                  {{ transaction_data.receiver_card }}
+                </span>
+              </p>
+              <p class="text--primary">
+                <span class="font-weight-medium title">
+                  Sum:
+                </span>
+                <span class="subtitle-1">
+                  {{ transaction_data.sum }}
+                </span>
+              </p>
+              <p
+                class="text--primary"
+                v-if="transaction_data.description != ''"
+              >
+                <span class="font-weight-medium title">
+                  Description:
+                </span>
+                <br />
+                <span class="body-1">
+                  {{ transaction_data.description }}
+                </span>
+              </p>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" @click="makeTransaction">
+                Submit
+              </v-btn>
+              <v-btn text @click="stepNum = 2">Back</v-btn>
+            </v-card-actions>
+          </v-card>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
@@ -91,7 +123,7 @@ export default {
       stepNum: 0,
       cardIsValid: true,
       cardRules: [
-        v => (v && v.match(/^[0-9]+$/)) || 'Card must contain digits only',
+        v => (v && /^[0-9]+$/.test(v)) || 'Card must contain digits only',
         v => (v && v.length === 16) || 'Card must be 16 numbers long',
       ],
       moneyIsValid: true,
@@ -100,7 +132,17 @@ export default {
           v > 0 ||
           'The amount of oney to send cannot be less than 0 or equal to 0',
       ],
+      transaction_data: {
+        receiver_card: '',
+        sum: '',
+        description: '',
+      },
     };
+  },
+  methods: {
+    makeTransaction() {
+      console.log(this.transaction_data);
+    },
   },
 };
 </script>

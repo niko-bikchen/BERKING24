@@ -44,7 +44,7 @@
                                 required
                                 :rules="cardRules"
                                 :counter="16"
-                                v-model="transactionData.receiver_card"
+                                v-model="transaction_data.receiver_card"
                               ></v-text-field>
                             </v-form>
                           </v-col>
@@ -76,7 +76,7 @@
                                 type="number"
                                 required
                                 :rules="moneyRules"
-                                v-model="transactionData.sum"
+                                v-model="transaction_data.sum"
                               ></v-text-field>
                             </v-form>
                           </v-col>
@@ -86,7 +86,7 @@
                               solo
                               outlined
                               label="Description (optional)"
-                              v-model="transactionData.description"
+                              v-model="transaction_data.description"
                             ></v-textarea>
                           </v-col>
                         </v-row>
@@ -113,7 +113,7 @@
                           Receiver card:
                         </span>
                         <span class="subtitle-1">
-                          {{ transactionData.receiver_card }}
+                          {{ transaction_data.receiver_card }}
                         </span>
                       </p>
                       <p class="text--primary">
@@ -121,19 +121,19 @@
                           Sum:
                         </span>
                         <span class="subtitle-1">
-                          {{ transactionData.sum }}
+                          {{ transaction_data.sum }}
                         </span>
                       </p>
                       <p
                         class="text--primary"
-                        v-if="transactionData.description != ''"
+                        v-if="transaction_data.description != ''"
                       >
                         <span class="font-weight-medium title">
                           Description:
                         </span>
                         <br />
                         <span class="body-1">
-                          {{ transactionData.description }}
+                          {{ transaction_data.description }}
                         </span>
                       </p>
                     </v-card-text>
@@ -176,7 +176,7 @@ export default {
           v > 0 ||
           'The amount of oney to send cannot be less than 0 or equal to 0',
       ],
-      transactionData: {
+      transaction_data: {
         receiver_card: '',
         sum: '',
         description: '',
@@ -193,7 +193,7 @@ export default {
   methods: {
     makeTransaction() {
       this.showDialog = false;
-      this.$store.dispatch('performTransaction', this.transactionData);
+      this.$store.dispatch('performTransaction', this.transaction_data);
     },
   },
 };

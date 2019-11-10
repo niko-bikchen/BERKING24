@@ -41,6 +41,7 @@
     </v-col>
   </v-row>
 </template>
+
 <script>
 import Card from './Card.vue';
 

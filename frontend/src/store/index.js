@@ -54,9 +54,17 @@ export default new Vuex.Store({
         sum: 200.0,
       },
     ],
-    user_deposits: [],
+    user_deposits: [
+      {
+        card_number: '1234123412341234',
+        deposit_balance: 1231,
+        deposit_start: '12-02-2020',
+        deposit_expiration: '12-09-2022',
+      },
+    ],
     user_data: [],
     user_authorized: false,
+    performing_request: false,
   },
   mutations: {
     ADD_CARD(state, card) {
@@ -106,9 +114,9 @@ export default new Vuex.Store({
       // TODO: perform POST request to the server
       context.commit('PERFORM_TRANSACTION', payload);
     },
-    createDeposit(context, payload) {
+    createDeposit(context) {
       // TODO: perform POST request to the server
-      context.commit('CREATE_DEPOSIT', payload);
+      context.commit('CREATE_DEPOSIT', 'DUMMY DATA');
     },
     changePassword(context, payload) {
       // TODO: perform POST request to the server
