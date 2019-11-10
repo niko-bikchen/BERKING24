@@ -10,8 +10,8 @@ export default new Vuex.Store({
     user_transactions: [],
     user_templates: [],
     user_deposits: [],
-    user_data: [],
-    user_authorized: true,
+    user_data: {},
+    user_authorized: false,
     performing_request: false,
     credentials_invalid: false,
   },
@@ -75,7 +75,8 @@ export default new Vuex.Store({
           },
         })
         .then(response => {
-          context.commit('ADD_CARD', JSON.parse(response));
+          console.log(response.data);
+          context.commit('ADD_CARD', response.data);
         })
         .catch(error => console.error(error));
     },
@@ -109,7 +110,6 @@ export default new Vuex.Store({
       newUser.user_password = payload.password;
 
       context.commit('ACTIVATE_REQUEST');
-      console.log('Prepost');
       axios
         .post('/api/registrate', JSON.stringify(newUser), {
           headers: {
@@ -117,7 +117,7 @@ export default new Vuex.Store({
           },
         })
         .then(() => {
-          context.commit('SET_USER', payload);
+          context.commit('SET_USER', newUser);
           context.commit('AUTHORIZE');
           context.commit('DISABLE_REQUEST');
         })
@@ -139,6 +139,11 @@ export default new Vuex.Store({
             context.commit('AUTHORIZE');
             context.commit('VALIDATE_CREDENTIALS');
             context.commit('DISABLE_REQUEST');
+
+            const data = {};
+            data.user_email = payload.email;
+
+            context.commit('SET_USER', data);
           } else {
             context.commit('INVALIDATE_CREDENTIALS');
             context.commit('DISABLE_REQUEST');

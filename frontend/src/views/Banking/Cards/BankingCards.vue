@@ -73,7 +73,12 @@ export default {
   },
   methods: {
     createCard() {
+      console.log(this.$store.getters.getUserData);
+
       this.newCardData.user_email = this.$store.getters.getUserData.user_email;
+
+      console.log(this.newCardData);
+
       this.$store.dispatch('addCard', this.newCardData);
       this.showDialog = this.requestInProcess;
     },

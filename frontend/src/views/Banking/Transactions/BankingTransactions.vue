@@ -9,7 +9,7 @@
           <v-btn block color="primary" dark v-on="on" v-if="cards.length > 0"
             >Make Transaction</v-btn
           >
-          <div class="text-center">
+          <div class="text-center" v-if="cards.length == 0">
             You don't have any cards to make a transaction
           </div>
         </template>
@@ -231,7 +231,7 @@ export default {
       stepNum: 0,
       cardIsValid: true,
       cardRules: [
-        v => (v && v.match(/^[0-9]+$/)) || 'Card must contain digits only',
+        v => (v && /^[0-9]+$/.test(v)) || 'Card must contain digits only',
         v => (v && v.length === 16) || 'Card must be 16 numbers long',
       ],
       moneyIsValid: true,
@@ -263,7 +263,9 @@ export default {
   methods: {
     makeTransaction() {
       this.showDialog = false;
-      this.transaction_data.sender_card = this.cards[this.sender_card];
+      this.transaction_data.sender_card = this.cards[
+        this.sender_card
+      ].card_number;
 
       this.$store.dispatch(
         'performTransaction',
