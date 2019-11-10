@@ -23,7 +23,7 @@
                     label="Card name (optional)"
                     type="text"
                     required
-                    v-model="newCardData.cardName"
+                    v-model="newCardData.card_name"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -34,7 +34,13 @@
             <v-btn color="blue darken-1" text @click="showDialog = false"
               >Close</v-btn
             >
-            <v-btn color="blue darken-1" text @click="createCard">Submit</v-btn>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="createCard"
+              :loading="requestInProcess"
+              >Submit</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -53,7 +59,7 @@ export default {
     return {
       showDialog: false,
       newCardData: {
-        cardName: '',
+        card_name: '',
       },
     };
   },
@@ -61,11 +67,15 @@ export default {
     cards() {
       return this.$store.getters.getCards;
     },
+    requestInProcess() {
+      return this.$store.getters.getRequestStatus;
+    },
   },
   methods: {
     createCard() {
-      this.showDialog = false;
+      this.newCardData.user_email = this.$store.getters.getUserData.user_email;
       this.$store.dispatch('addCard', this.newCardData);
+      this.showDialog = this.requestInProcess;
     },
   },
 };

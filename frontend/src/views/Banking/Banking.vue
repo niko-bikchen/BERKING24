@@ -242,6 +242,10 @@
                     </v-row>
                   </v-container>
                   <small>*indicates required field</small>
+                  <p class="red--text" v-if="credentialsInvalid">
+                    You provided invalid credentials. Check your email or
+                    password.
+                  </p>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
@@ -341,10 +345,12 @@ export default {
     authorizeUser() {
       this.$store.dispatch('authorizeUser', Object.assign({}, this.user));
 
-      this.showDialog = this.requestInProcess;
+      this.showDialog = !this.userAuthorized;
 
-      this.user.email = '';
-      this.user.password = '';
+      if (this.showDialog === false) {
+        this.user.email = '';
+        this.user.password = '';
+      }
     },
     registerUser() {
       this.$store.dispatch('registerUser', Object.assign({}, this.newUser));
@@ -352,11 +358,13 @@ export default {
       this.showDialog = this.requestInProcess;
       this.showDialog1 = this.requestInProcess;
 
-      this.newUser.firstName = '';
-      this.newUser.middleName = '';
-      this.newUser.lastName = '';
-      this.newUser.email = '';
-      this.newUser.password = '';
+      if (this.showDialog1 === false && this.showDialog1 === false) {
+        this.newUser.firstName = '';
+        this.newUser.middleName = '';
+        this.newUser.lastName = '';
+        this.newUser.email = '';
+        this.newUser.password = '';
+      }
     },
     changePassword() {
       this.showDialog = false;
@@ -375,6 +383,9 @@ export default {
     },
     requestInProcess() {
       return this.$store.getters.getRequestStatus;
+    },
+    credentialsInvalid() {
+      return this.$store.getters.getCredentialsStatus;
     },
   },
 };

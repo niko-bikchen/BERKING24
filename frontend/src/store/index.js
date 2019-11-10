@@ -11,8 +11,8 @@ export default new Vuex.Store({
     user_templates: [],
     user_deposits: [],
     user_data: [],
-    user_authorized: false,
-    performing_request: true,
+    user_authorized: true,
+    performing_request: false,
     credentials_invalid: false,
   },
   mutations: {
@@ -68,7 +68,16 @@ export default new Vuex.Store({
   },
   actions: {
     addCard(context, payload) {
-      context.commit('ADD_CARD', payload);
+      axios
+        .post('/api/create_card', JSON.stringify(payload), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => {
+          context.commit('ADD_CARD', JSON.parse(response));
+        })
+        .catch(error => console.error(error));
     },
     addTemplate(context, payload) {
       context.commit('ADD_TEMPLATE', payload);
@@ -83,12 +92,24 @@ export default new Vuex.Store({
       context.commit('SET_PASSWORD', payload);
     },
     registerUser(context, payload) {
+      const newUser = {};
+      newUser.user_name = payload.firstName;
+      newUser.user_name += ` ${payload.middleName}`;
+      newUser.user_name += ` ${payload.lastName}`;
+      newUser.user_email = payload.email;
+      newUser.user_password = payload.password;
+
       context.commit('ACTIVATE_REQUEST');
+      console.log('Prepost');
       axios
-        .post('/api/register', JSON.stringify(payload))
-        .then(response => {
-          console.log(response);
+        .post('/api/registrate', JSON.stringify(newUser), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(() => {
           context.commit('SET_USER', payload);
+          context.commit('AUTHORIZE');
           context.commit('DISABLE_REQUEST');
         })
         .catch(error => {
@@ -99,11 +120,20 @@ export default new Vuex.Store({
     authorizeUser(context, payload) {
       context.commit('ACTIVATE_REQUEST');
       axios
-        .post('/api/authorize', JSON.stringify(payload))
+        .post('/api/authorize', JSON.stringify(payload), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
         .then(response => {
-          console.log(response);
-          context.commit('AUTHORIZE');
-          context.commit('DISABLE_REQUEST');
+          if (response.data === true || response.data === 'true') {
+            context.commit('AUTHORIZE');
+            context.commit('VALIDATE_CREDENTIALS');
+            context.commit('DISABLE_REQUEST');
+          } else {
+            context.commit('INVALIDATE_CREDENTIALS');
+            context.commit('DISABLE_REQUEST');
+          }
         })
         .catch(error => {
           console.error(error);
@@ -135,6 +165,9 @@ export default new Vuex.Store({
     },
     getRequestStatus(state) {
       return state.performing_request;
+    },
+    getCredentialsStatus(state) {
+      return state.credentials_invalid;
     },
   },
 });
