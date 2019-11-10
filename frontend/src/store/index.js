@@ -83,7 +83,16 @@ export default new Vuex.Store({
       context.commit('ADD_TEMPLATE', payload);
     },
     performTransaction(context, payload) {
-      context.commit('PERFORM_TRANSACTION', payload);
+      axios
+        .post('/api/make_transaction', JSON.stringify(payload), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(() => {
+          context.commit('PERFORM_TRANSACTION', payload);
+        })
+        .catch(error => console.error(error));
     },
     createDeposit(context, payload) {
       context.commit('CREATE_DEPOSIT', payload);

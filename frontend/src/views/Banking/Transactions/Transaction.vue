@@ -7,14 +7,12 @@
       <p class="text--primary subtitle-1">
         Sender:
         <span class="font-weight-medium">
-          {{ transaction_data.sender }}
           ({{ transaction_data.sender_card | formatCardNumWithMask }})
         </span>
       </p>
       <p class="text--primary subtitle-1">
         Receiver:
         <span class="font-weight-medium">
-          {{ transaction_data.receiver }}
           ({{ transaction_data.receiver_card | formatCardNumWithMask }})
         </span>
       </p>
