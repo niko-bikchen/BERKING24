@@ -16,6 +16,9 @@ public:
 	//TODO firstly implement db and Depositmanager
 	~SaveDeposit() {}
 private:
+	SaveDeposit& operator=(const SaveDeposit&);
+	SaveDeposit(const SaveDeposit&);
+
 	std::string _cardNum;
 	std::string _startDate;
     std::string _endDate;
@@ -36,3 +39,4 @@ private:
 	
 };
 
+bool operator==(const ISaveDeposit&, const ISaveDeposit&);

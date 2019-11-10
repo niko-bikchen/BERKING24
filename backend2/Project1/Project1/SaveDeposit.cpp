@@ -9,9 +9,10 @@ unsigned long SaveDeposit::do_getBalance() const
 
 void SaveDeposit::do_setBalance(unsigned long sum)
 {
-	_sum = sum;
+	
 	SaveDepositProxy c = SaveDepositProxy(*this);
 	c.do_setBalance(sum);
+	_sum = sum;
 }
 
 std::ostream & SaveDeposit::do_print(std::ostream & os) const
@@ -42,9 +43,10 @@ std::string SaveDeposit::do_getStartDate() const
 
 void SaveDeposit::do_setStartDate(std::string sd)
 {
-	_startDate = sd;
+	
 	SaveDepositProxy c = SaveDepositProxy(*this);
 	c.do_setStartDate(sd);
+	_startDate = sd;
 }
 
 std::string SaveDeposit::do_getEndDate() const
@@ -54,13 +56,20 @@ std::string SaveDeposit::do_getEndDate() const
 
 void SaveDeposit::do_setEndDate(std::string date)
 {
-	_endDate = date;
+	
 	SaveDepositProxy c = SaveDepositProxy(*this);
 	c.do_setEndDate(date);
+	_endDate = date;
 }
 //TODO firstly need to implement db and IDepositManager
 void SaveDeposit::do_endDeposit()
 {
 }
 
-
+bool operator==(const ISaveDeposit &deposit1, const ISaveDeposit &deposit2)
+{
+	return (deposit1.getCardNum() == deposit2.getCardNum() &&
+		deposit1.getEndDate() == deposit2.getEndDate() &&
+		deposit1.getStartDate() == deposit2.getStartDate() &&
+		deposit1.getBalance() == deposit2.getBalance());
+}

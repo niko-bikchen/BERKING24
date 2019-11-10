@@ -20,6 +20,8 @@ public:
 
 	
 private:
+	Card& operator=(const Card&);
+	Card(const Card&);
 
 	std::string _number;
 	unsigned int _cvv;
@@ -82,4 +84,6 @@ private:
 
 std::ostream& operator<<(std::ostream&os, const ICard::Transaction&);
 
+bool operator==(const ICard::Transaction&, const ICard::Transaction&);
 
+bool operator==(const ICard&, const ICard&);

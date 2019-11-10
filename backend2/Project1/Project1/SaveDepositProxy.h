@@ -11,7 +11,7 @@ private:
 	{
 
 	}
-public:
+
 	unsigned long do_getBalance()const;
 	void do_setBalance(unsigned long);
 	std::ostream& do_print(std::ostream& out)const;
@@ -22,4 +22,8 @@ public:
 	std::string do_getEndDate() const;
 	void do_setEndDate(std::string date);
 	void do_endDeposit();
+
+	
+public:
+	
 };

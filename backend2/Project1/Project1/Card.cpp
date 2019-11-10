@@ -20,9 +20,10 @@ unsigned int  Card::do_getCVV()const
 }
 void  Card::do_setCVV(unsigned int cvv)
 {
-	_cvv = cvv;
+	
 	CardProxy c = CardProxy(*this);
 	c.do_setCVV(cvv);
+	_cvv = cvv;
 }
 unsigned int  Card::do_getPIN() const
 {
@@ -30,9 +31,10 @@ unsigned int  Card::do_getPIN() const
 }
 void   Card::do_setPIN(unsigned int pin)
 {
-	_pin = pin;
+	
 	CardProxy c = CardProxy(*this);
 	c.do_setPIN(pin);
+	_pin = pin;
 }
 std::string  Card::do_getName()const
 {
@@ -40,9 +42,10 @@ std::string  Card::do_getName()const
 }
 void  Card::do_setName(std::string name)
 {
-	_name = name;
+	
 	CardProxy c = CardProxy(*this);
 	c.do_setName(name);
+	_name = name;
 }
 unsigned long  Card::do_getBalance() const
 {
@@ -50,9 +53,10 @@ unsigned long  Card::do_getBalance() const
 }
 void  Card::do_setBalance(unsigned long bal)
 {
-	_balance = bal;
+	
 	CardProxy c = CardProxy(*this);
 	c.do_setBalance(bal);
+	_balance = bal;
 }
 
 const std::vector< ICard::Transaction>&  Card::do_getTransactions()const
@@ -62,9 +66,10 @@ const std::vector< ICard::Transaction>&  Card::do_getTransactions()const
 
 void  Card::do_setTransactions( std::vector<Card::Transaction>& tr)
 {
-	_transactions = tr;
+	
 	CardProxy c = CardProxy(*this);
 	c.do_setTransactions(tr);
+	_transactions = tr;
 }
 
 const std::vector< Card::Transaction>&  Card::do_getTemplates()const
@@ -74,31 +79,35 @@ const std::vector< Card::Transaction>&  Card::do_getTemplates()const
 
 void  Card::do_setTemplates( std::vector<Card::Transaction>& tm)
 {
-	_templates = tm;
+	
 	CardProxy c = CardProxy(*this);
 	c.do_setTemplates(tm);
+	_templates = tm;
 }
 
 void  Card::do_addTemplate(const Card::Transaction& tm)
 {
-	_templates.insert(_templates.begin(), 1, tm);
+	
 	CardProxy c = CardProxy(*this);
 	c.do_addTemplate(tm);
+	_templates.insert(_templates.begin(), 1, tm);
 }
 
 void  Card::do_addTransaction(const Card::Transaction& tr)
 {
-	_transactions.insert(_transactions.begin(), 1, tr);
+	
 	CardProxy c = CardProxy(*this);
 	c.do_addTransaction(tr);
+	_transactions.insert(_transactions.begin(), 1, tr);
 }
 
 
 void Card::do_setDate(std::string dt)
 {
-	_endDate = dt;
+	
 	CardProxy c = CardProxy(*this);
 	c.do_setDate(dt);
+	_endDate = dt;
 }
 
 std::string Card::do_getDate()const
@@ -127,5 +136,26 @@ std::ostream& operator<<(std::ostream&os, const Card::Transaction& tr)
 		<< "Description :" << tr.getDescription();
 	return os;
 
+}
+
+bool operator==(const ICard::Transaction &tr1, const ICard::Transaction &tr2)
+{
+	return (tr1.getDate()==tr2.getDate() &&
+		tr1.getDescription() == tr2.getDescription() &&
+		tr1.getrecieverCardNum() == tr2.getrecieverCardNum() &&
+		tr1.getSenderCardNum() == tr2.getSenderCardNum() &&
+		tr1.getSum() == tr2.getSum() );
+}
+
+bool operator==(const ICard & c1, const ICard & c2)
+{
+	return (c1.getBalance() == c2.getBalance() &&
+		c1.getCVV() == c2.getCVV() &&
+		c1.getDate() == c2.getDate() &&
+		c1.getName() == c2.getName() &&
+		c1.getNumber() == c2.getNumber() &&
+		c1.getPIN() == c2.getPIN() &&
+		c1.getTemplates() == c2.getTemplates()&&
+		c1.getTransactions()==c2.getTransactions());
 }
 

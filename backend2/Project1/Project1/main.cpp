@@ -22,13 +22,23 @@ int main()
 	mongocxx::database db = client["preRelease"];
 
 	//User
-	IOperationManager* op = OperationManager::getInstance(db);
-	//DefferedIUser user = op->getUser("FINALTEST");
-	//user->addCard("kek");
+	IOperationManager* op = OperationManager::init(db);
+	//DefferedICard card = op->getCard("FINALTEST");
+	//DefferedICard card2= card;
+	DefferedISaveDeposit dp = op->getSaveDeposit("UPDATED");
+	dp->setBalance(100);
+	dp->setCard("DDDD");
+	dp->setEndDate("DDDFFF");
+	dp->setStartDate("EEEEE");
+	//card->setName("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw");
+	//card2->setName("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+	//user->addCard("MISCUSO");
 	//user->setEmail("UPFATED");
-	//user->setName("UPDATED");
-	//user->setPassword("UPDATED");
-	//user->setWebToken("UPDATED");
+	//user->setName("MISCUSO");
+	//->setPassword("MISCUSO");
+	//user->setWebToken("MISCUSO");
+	/*std::list<std::string> l = { "HAAA","HAAA","HAAA" };
+	user->addCard("PRIVET");*/
 	//DefferedIUser u = DefferedIUser("test4", "test4", "test4", "test4");
 	//u->addCard("lol");
 	//u->addCard("kek");
@@ -41,13 +51,20 @@ int main()
 	dep->setEndDate("UPDATED");
 	dep->setStartDate("UPDATED");*/
 	//op->addSaveDeposit(dep);
-	DefferedICard c = op->getCard("FINALTEST");
-	//op->addCard(c);
-	c->setName("UPDATED");
-	Card::Transaction tr = Card::Transaction("tr", "tr", "tr", 1000, "tr");
-	c->addTransaction(tr);
-	c->addTemplate(tr);
-	mongocxx::collection coll = db["cards"];
+	//DefferedICard c = op->getCard("lel");
+	//std::cout << (*c.operator->()) << std::endl;
+	//c->setBalance(5000);
+	//c->setCVV(1000);
+	//c->setDate("ooooooooooo");
+	//c->setName("KEEEEEEEEEEK");
+	//////op->addCard(c);
+	////c->setName("UPDATED");
+	//Card::Transaction tr = Card::Transaction("tr", "tr", "tr", 1000, "tr");
+	//std::vector<Card::Transaction> vtr = { tr };
+	//c->setTransactions(vtr);
+	//c->setTemplates(vtr);
+	////c->addTemplate(tr);
+	mongocxx::collection coll = db["deposits"];
 
 	//Deposit
 	//ISaveDeposit* s = new SaveDeposit("deposit","deposit","deposit",1000);

@@ -12,6 +12,9 @@ public:
 	
 	~User() {}
 private:
+	User& operator=(const User&);
+	User(const User&);
+
 	std::list<std::string> _cards;
 	std::string _webToken;
 	std::string _name;
@@ -36,3 +39,5 @@ private:
 	 std::ostream& do_print(std::ostream&) const;
 	
 };
+
+bool operator==(const IUser&, const IUser&);
