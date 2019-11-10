@@ -5,11 +5,58 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    user_cards: [],
-    user_transactions: [],
-    user_templates: [],
+    user_cards: [
+      {
+        card_name: 'Sample 1',
+        card_number: '1232123112341231',
+        card_balance: 1234.12,
+        card_expiration: '22-12-2019',
+      },
+      {
+        card_number: '1232123457141231',
+        card_balance: 1234.12,
+        card_expiration: '22-03-2021',
+      },
+      {
+        card_name: 'Hello World',
+        card_number: '1232112322341231',
+        card_balance: 1234.12,
+        card_expiration: '22-03-2022',
+      },
+    ],
+    user_transactions: [
+      {
+        sender: 'John Doe',
+        sender_card: '1234123412341234',
+        receiver: 'Jane Doe',
+        receiver_card: '1232112322341231',
+        description: 'Lorem ipsum',
+        sum: 1234.23,
+        date: '12-08-2019',
+        time: '12:12',
+      },
+      {
+        sender: 'John Doe',
+        sender_card: '1234123412341234',
+        receiver: 'Jane Doe',
+        receiver_card: '1232112322341231',
+        description: 'Lorem ipsum',
+        sum: 200.0,
+        date: '12-08-2019',
+        time: '14:12',
+      },
+    ],
+    user_templates: [
+      {
+        receiver: 'Jane Doe',
+        receiver_card: '1232112322341231',
+        description: 'Lorem ipsum',
+        sum: 200.0,
+      },
+    ],
     user_deposits: [],
     user_data: [],
+    user_authorized: false,
   },
   mutations: {
     ADD_CARD(state, card) {
@@ -39,27 +86,40 @@ export default new Vuex.Store({
     SET_USER(state, userData) {
       state.user_data = userData;
     },
+    AUTHORIZE(state, payload) {
+      state.user_authorized = payload;
+    },
+    SET_PASSWORD(state, payload) {
+      state.user_data.password = payload;
+    },
   },
   actions: {
     addCard(context, payload) {
       // TODO: perform POST request to the server
-
       context.commit('ADD_CARD', payload);
     },
     addTemplate(context, payload) {
       // TODO: perform POST request to the server
-
       context.commit('ADD_TEMPLATE', payload);
     },
     performTransaction(context, payload) {
       // TODO: perform POST request to the server
-
       context.commit('PERFORM_TRANSACTION', payload);
     },
     createDeposit(context, payload) {
       // TODO: perform POST request to the server
-
       context.commit('CREATE_DEPOSIT', payload);
+    },
+    changePassword(context, payload) {
+      // TODO: perform POST request to the server
+      context.commit('SET_PASSWORD', payload);
+    },
+    registerUser(context, payload) {
+      // TODO: perform POST request to the server
+      context.commit('SET_USER', payload);
+    },
+    authorizeUser() {
+      // TODO: perform POST request to the server
     },
     fetchUserCards() {
       // TODO: perform GET request to the server
@@ -86,6 +146,9 @@ export default new Vuex.Store({
     },
     getDeposits(state) {
       return state.user_deposits;
+    },
+    userIsAuthorized(state) {
+      return state.user_authorized;
     },
   },
 });

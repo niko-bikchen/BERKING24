@@ -3,47 +3,36 @@
     <v-col cols="6">
       <v-card raised>
         <v-card-title>
-          Transactions
+          Last Transactions
         </v-card-title>
         <v-card-text>
-          <v-card tile>
-            <v-card-title>
-              15.02.2019 | 15:51
-            </v-card-title>
-            <v-card-text>
-              <p class="text--primary subtitle-1">
-                Sender:
-                <span class="font-weight-medium">
-                  Jane Doe (1132-12..)
-                </span>
-              </p>
-              <p class="text--primary subtitle-1">
-                Receiver:
-                <span class="font-weight-medium">
-                  John Doe (1532-14..)
-                </span>
-              </p>
-              <p class="text--primary subtitle-1">
-                Sum:
-                <span class="font-weight-medium">
-                  151.12
-                </span>
-              </p>
-              <v-expansion-panels>
-                <v-expansion-panel>
-                  <v-expansion-panel-header
-                    >Description</v-expansion-panel-header
-                  >
-                  <v-expansion-panel-content>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-              </v-expansion-panels>
-            </v-card-text>
-          </v-card>
+          <v-container>
+            <v-row dense v-if="transactions.length > 0">
+              <v-col
+                cols="12"
+                v-for="(transaction, index) in transactions"
+                :key="index"
+              >
+                <app-transaction
+                  :transaction_data="transaction"
+                ></app-transaction>
+              </v-col>
+            </v-row>
+            <v-row dense v-else>
+              <v-col cols="12">
+                <v-card>
+                  <v-card-text>
+                    You don't have any transactions now. If you want to make
+                    one, go to the
+                    <router-link to="/berking/transactions"
+                      >Transactions</router-link
+                    >
+                    section
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" block to="/berking/transactions">More</v-btn>
@@ -56,23 +45,24 @@
           Cards
         </v-card-title>
         <v-card-text>
-          <v-card tile>
-            <v-card-title>
-              Sample Card
-            </v-card-title>
-            <v-card-text>
-              <p class="text--primary subtitle-1">
-                Card number:
-                <span class="font-weight-medium">
-                  1532-1532-1532-1532
-                </span>
-              </p>
-              <p class="text--primary subtitle-1">
-                Balance:
-                <span class="font-weight-medium">123.123</span>
-              </p>
-            </v-card-text>
-          </v-card>
+          <v-container>
+            <v-row dense v-if="cards.length > 0">
+              <v-col cols="12" v-for="(card, index) in cards" :key="index">
+                <app-card :card_data="card"></app-card>
+              </v-col>
+            </v-row>
+            <v-row dense v-else>
+              <v-col cols="12">
+                <v-card>
+                  <v-card-text>
+                    You don't have any cards now. If you want to create one, go
+                    to the
+                    <router-link to="/berking/cards">Cards</router-link> section
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" block to="/berking/cards">More</v-btn>
@@ -83,5 +73,25 @@
 </template>
 
 <script>
-export default {};
+import Card from './Cards/Card.vue';
+import Transaction from './Transactions/Transaction.vue';
+
+export default {
+  components: {
+    appCard: Card,
+    appTransaction: Transaction,
+  },
+  computed: {
+    cards() {
+      const cards = this.$store.getters.getCards;
+
+      return cards.slice(0, 2);
+    },
+    transactions() {
+      const transactions = this.$store.getters.getTransactions;
+
+      return transactions.slice(0, 2).reverse();
+    },
+  },
+};
 </script>
