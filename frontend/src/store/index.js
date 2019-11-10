@@ -1,70 +1,19 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import axios from 'axios';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    user_cards: [
-      {
-        card_name: 'Sample 1',
-        card_number: '1232123112341231',
-        card_balance: 1234.12,
-        card_expiration: '22-12-2019',
-      },
-      {
-        card_number: '1232123457141231',
-        card_balance: 1234.12,
-        card_expiration: '22-03-2021',
-      },
-      {
-        card_name: 'Hello World',
-        card_number: '1232112322341231',
-        card_balance: 1234.12,
-        card_expiration: '22-03-2022',
-      },
-    ],
-    user_transactions: [
-      {
-        sender: 'John Doe',
-        sender_card: '1234123412341234',
-        receiver: 'Jane Doe',
-        receiver_card: '1232112322341231',
-        description: 'Lorem ipsum',
-        sum: 1234.23,
-        date: '12-08-2019',
-        time: '12:12',
-      },
-      {
-        sender: 'John Doe',
-        sender_card: '1234123412341234',
-        receiver: 'Jane Doe',
-        receiver_card: '1232112322341231',
-        description: 'Lorem ipsum',
-        sum: 200.0,
-        date: '12-08-2019',
-        time: '14:12',
-      },
-    ],
-    user_templates: [
-      {
-        receiver: 'Jane Doe',
-        receiver_card: '1232112322341231',
-        description: 'Lorem ipsum',
-        sum: 200.0,
-      },
-    ],
-    user_deposits: [
-      {
-        card_number: '1234123412341234',
-        deposit_balance: 1231,
-        deposit_start: '12-02-2020',
-        deposit_expiration: '12-09-2022',
-      },
-    ],
+    user_cards: [],
+    user_transactions: [],
+    user_templates: [],
+    user_deposits: [],
     user_data: [],
-    user_authorized: true,
-    performing_request: false,
+    user_authorized: false,
+    performing_request: true,
+    credentials_invalid: false,
   },
   mutations: {
     ADD_CARD(state, card) {
@@ -96,7 +45,6 @@ export default new Vuex.Store({
       state.user_authorized = true;
     },
     AUTHORIZE(state) {
-      // state.user_authorized = payload;
       state.user_authorized = true;
     },
     SET_PASSWORD(state, payload) {
@@ -105,48 +53,62 @@ export default new Vuex.Store({
     LOGOUT(state) {
       state.user_authorized = false;
     },
+    ACTIVATE_REQUEST(state) {
+      state.performing_request = true;
+    },
+    DISABLE_REQUEST(state) {
+      state.performing_request = false;
+    },
+    INVALIDATE_CREDENTIALS(state) {
+      state.credentials_invalid = true;
+    },
+    VALIDATE_CREDENTIALS(state) {
+      state.credentials_invalid = false;
+    },
   },
   actions: {
     addCard(context, payload) {
-      // TODO: perform POST request to the server
       context.commit('ADD_CARD', payload);
     },
     addTemplate(context, payload) {
-      // TODO: perform POST request to the server
       context.commit('ADD_TEMPLATE', payload);
     },
     performTransaction(context, payload) {
-      // TODO: perform POST request to the server
       context.commit('PERFORM_TRANSACTION', payload);
     },
     createDeposit(context, payload) {
-      // TODO: perform POST request to the server
       context.commit('CREATE_DEPOSIT', payload);
     },
     changePassword(context, payload) {
-      // TODO: perform POST request to the server
       context.commit('SET_PASSWORD', payload);
     },
     registerUser(context, payload) {
-      // TODO: perform POST request to the server
-      console.log(payload);
-      context.commit('SET_USER', payload);
+      context.commit('ACTIVATE_REQUEST');
+      axios
+        .post('/api/register', JSON.stringify(payload))
+        .then(response => {
+          console.log(response);
+          context.commit('SET_USER', payload);
+          context.commit('DISABLE_REQUEST');
+        })
+        .catch(error => {
+          console.error(error);
+          context.commit('DISABLE_REQUEST');
+        });
     },
-    authorizeUser(context) {
-      // TODO: perform POST request to the server
-      context.commit('AUTHORIZE');
-    },
-    fetchUserCards() {
-      // TODO: perform GET request to the server
-    },
-    fetchUserTransactions() {
-      // TODO: perform GET request to the server
-    },
-    fetchUserTemplates() {
-      // TODO: perform GET request to the server
-    },
-    fetchUserDeposits() {
-      // TODO: perform GET request to the server
+    authorizeUser(context, payload) {
+      context.commit('ACTIVATE_REQUEST');
+      axios
+        .post('/api/authorize', JSON.stringify(payload))
+        .then(response => {
+          console.log(response);
+          context.commit('AUTHORIZE');
+          context.commit('DISABLE_REQUEST');
+        })
+        .catch(error => {
+          console.error(error);
+          context.commit('DISABLE_REQUEST');
+        });
     },
     logout(context) {
       context.commit('LOGOUT');
@@ -170,6 +132,9 @@ export default new Vuex.Store({
     },
     userIsAuthorized(state) {
       return state.user_authorized;
+    },
+    getRequestStatus(state) {
+      return state.performing_request;
     },
   },
 });

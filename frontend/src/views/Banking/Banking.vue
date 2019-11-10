@@ -172,6 +172,7 @@
                                 color="blue darken-1"
                                 text
                                 @click="registerUser"
+                                :loading="requestInProcess"
                                 :disabled="
                                   !firstnameIsValid &&
                                     !middleNameIsValid &&
@@ -252,6 +253,7 @@
                     text
                     @click="authorizeUser"
                     :disabled="!emailIsValid || !passwordIsValid"
+                    :loading="requestInProcess"
                     >Submit</v-btn
                   >
                 </v-card-actions>
@@ -337,17 +339,18 @@ export default {
   },
   methods: {
     authorizeUser() {
-      this.showDialog = false;
       this.$store.dispatch('authorizeUser', Object.assign({}, this.user));
+
+      this.showDialog = this.requestInProcess;
 
       this.user.email = '';
       this.user.password = '';
     },
     registerUser() {
-      this.showDialog = false;
-      this.showDialog1 = false;
-
       this.$store.dispatch('registerUser', Object.assign({}, this.newUser));
+
+      this.showDialog = this.requestInProcess;
+      this.showDialog1 = this.requestInProcess;
 
       this.newUser.firstName = '';
       this.newUser.middleName = '';
@@ -369,6 +372,9 @@ export default {
   computed: {
     userAuthorized() {
       return this.$store.getters.userIsAuthorized;
+    },
+    requestInProcess() {
+      return this.$store.getters.getRequestStatus;
     },
   },
 };
