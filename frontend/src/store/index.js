@@ -63,7 +63,7 @@ export default new Vuex.Store({
       },
     ],
     user_data: [],
-    user_authorized: false,
+    user_authorized: true,
     performing_request: false,
   },
   mutations: {
@@ -93,12 +93,17 @@ export default new Vuex.Store({
     },
     SET_USER(state, userData) {
       state.user_data = userData;
+      state.user_authorized = true;
     },
-    AUTHORIZE(state, payload) {
-      state.user_authorized = payload;
+    AUTHORIZE(state) {
+      // state.user_authorized = payload;
+      state.user_authorized = true;
     },
     SET_PASSWORD(state, payload) {
       state.user_data.password = payload;
+    },
+    LOGOUT(state) {
+      state.user_authorized = false;
     },
   },
   actions: {
@@ -114,9 +119,9 @@ export default new Vuex.Store({
       // TODO: perform POST request to the server
       context.commit('PERFORM_TRANSACTION', payload);
     },
-    createDeposit(context) {
+    createDeposit(context, payload) {
       // TODO: perform POST request to the server
-      context.commit('CREATE_DEPOSIT', 'DUMMY DATA');
+      context.commit('CREATE_DEPOSIT', payload);
     },
     changePassword(context, payload) {
       // TODO: perform POST request to the server
@@ -124,10 +129,12 @@ export default new Vuex.Store({
     },
     registerUser(context, payload) {
       // TODO: perform POST request to the server
+      console.log(payload);
       context.commit('SET_USER', payload);
     },
-    authorizeUser() {
+    authorizeUser(context) {
       // TODO: perform POST request to the server
+      context.commit('AUTHORIZE');
     },
     fetchUserCards() {
       // TODO: perform GET request to the server
@@ -140,6 +147,9 @@ export default new Vuex.Store({
     },
     fetchUserDeposits() {
       // TODO: perform GET request to the server
+    },
+    logout(context) {
+      context.commit('LOGOUT');
     },
   },
   getters: {
@@ -154,6 +164,9 @@ export default new Vuex.Store({
     },
     getDeposits(state) {
       return state.user_deposits;
+    },
+    getUserData(state) {
+      return state.user_data;
     },
     userIsAuthorized(state) {
       return state.user_authorized;

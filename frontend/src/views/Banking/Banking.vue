@@ -50,7 +50,12 @@
             </v-toolbar-title>
           </v-col>
           <v-col cols="4" class="text-right">
-            <v-dialog v-model="showDialog" persistent max-width="600px">
+            <v-dialog
+              v-model="showDialog"
+              persistent
+              max-width="600px"
+              v-if="!userAuthorized"
+            >
               <template v-slot:activator="{ on }">
                 <v-btn color="primary" dark v-on="on">Sign Up/In</v-btn>
               </template>
@@ -252,6 +257,9 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
+            <v-btn color="primary" v-else @click="logout">
+              Log Out
+            </v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -263,7 +271,7 @@
       <v-container v-else>
         <v-row justify="center">
           <v-col cols="4">
-            <v-card height="150px" color="warning">
+            <v-card color="warning">
               <v-card-title class="white--text justify-center">
                 Attention!
               </v-card-title>
@@ -330,17 +338,32 @@ export default {
   methods: {
     authorizeUser() {
       this.showDialog = false;
-      this.$store.dispatch('authorizeUser', this.user);
+      this.$store.dispatch('authorizeUser', Object.assign({}, this.user));
+
+      this.user.email = '';
+      this.user.password = '';
     },
     registerUser() {
       this.showDialog = false;
       this.showDialog1 = false;
-      this.$store.dispatch('registerUser', this.newUser);
+
+      this.$store.dispatch('registerUser', Object.assign({}, this.newUser));
+
+      this.newUser.firstName = '';
+      this.newUser.middleName = '';
+      this.newUser.lastName = '';
+      this.newUser.email = '';
+      this.newUser.password = '';
     },
     changePassword() {
       this.showDialog = false;
       this.showDialog2 = false;
-      this.$store.dispatch('changePassword', this.newPassword);
+      this.$store.dispatch('changePassword', this.newPassword.slice(0));
+
+      this.newPassword = '';
+    },
+    logout() {
+      this.$store.dispatch('logout');
     },
   },
   computed: {

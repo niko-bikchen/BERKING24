@@ -193,7 +193,14 @@ export default {
   methods: {
     makeTransaction() {
       this.showDialog = false;
-      this.$store.dispatch('performTransaction', this.transaction_data);
+      this.$store.dispatch(
+        'performTransaction',
+        Object.assign({}, this.transaction_data)
+      );
+
+      this.transaction_data.receiver_card = '';
+      this.transaction_data.sum = '';
+      this.transaction_data.description = '';
     },
   },
 };

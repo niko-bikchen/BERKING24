@@ -141,7 +141,14 @@ export default {
   },
   methods: {
     makeTransaction() {
-      console.log(this.transaction_data);
+      this.$store.dispatch(
+        'performTransaction',
+        Object.assign({}, this.transaction_data)
+      );
+
+      this.transaction_data.receiver_card = '';
+      this.transaction_data.sum = '';
+      this.transaction_data.description = '';
     },
   },
 };

@@ -63,8 +63,7 @@ export default {
   methods: {
     createDeposit() {
       this.showDialog = false;
-      console.log(this.cards[this.depositCard]);
-      // this.$store.dispatch('createDeposit');
+      this.$store.dispatch('createDeposit', this.cards[this.depositCard]);
     },
   },
 };

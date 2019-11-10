@@ -44,7 +44,7 @@
                                 required
                                 :rules="cardRules"
                                 :counter="16"
-                                v-model="templateData.receiver_card"
+                                v-model="template_data.receiver_card"
                               ></v-text-field>
                             </v-form>
                           </v-col>
@@ -76,7 +76,7 @@
                                 type="number"
                                 required
                                 :rules="moneyRules"
-                                v-model="templateData.sum"
+                                v-model="template_data.sum"
                               ></v-text-field>
                             </v-form>
                           </v-col>
@@ -86,7 +86,7 @@
                               solo
                               outlined
                               label="Description (optional)"
-                              v-model="templateData.description"
+                              v-model="template_data.description"
                             ></v-textarea>
                           </v-col>
                         </v-row>
@@ -113,7 +113,7 @@
                           Receiver card:
                         </span>
                         <span class="subtitle-1">
-                          {{ templateData.receiver_card }}
+                          {{ template_data.receiver_card }}
                         </span>
                       </p>
                       <p class="text--primary">
@@ -121,19 +121,19 @@
                           Sum:
                         </span>
                         <span class="subtitle-1">
-                          {{ templateData.sum }}
+                          {{ template_data.sum }}
                         </span>
                       </p>
                       <p
                         class="text--primary"
-                        v-if="templateData.description != ''"
+                        v-if="template_data.description != ''"
                       >
                         <span class="font-weight-medium title">
                           Description:
                         </span>
                         <br />
                         <span class="body-1">
-                          {{ templateData.description }}
+                          {{ template_data.description }}
                         </span>
                       </p>
                     </v-card-text>
@@ -181,7 +181,7 @@ export default {
           v > 0 ||
           'The amount of oney to send cannot be less than 0 or equal to 0',
       ],
-      templateData: {
+      template_data: {
         receiver_card: '',
         sum: '',
         description: '',
@@ -191,8 +191,14 @@ export default {
   methods: {
     addTemplate() {
       this.showDialog = false;
-      console.log(this.templateData);
-      this.$store.dispatch('addTemplate', this.templateData);
+      this.$store.dispatch(
+        'addTemplate',
+        Object.assign({}, this.template_data)
+      );
+
+      this.template_data.receiver_card = '';
+      this.template_data.sum = '';
+      this.template_data.description = '';
     },
   },
 };
