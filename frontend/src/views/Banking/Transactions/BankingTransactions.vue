@@ -4,13 +4,19 @@
       <app-transaction :transaction_data="transaction"></app-transaction>
     </v-col>
     <v-col cols="12">
-      <v-dialog v-model="showDialog" persistent max-width="600px">
+      <v-dialog
+        v-model="showMakeTransactionDialog"
+        persistent
+        max-width="600px"
+      >
         <template v-slot:activator="{ on }">
           <v-btn block color="primary" dark v-on="on" v-if="cards.length > 0"
             >Make Transaction</v-btn
           >
           <div class="text-center" v-if="cards.length == 0">
-            You don't have any cards to make a transaction
+            <v-alert type="info">
+              To make a transaction you need at least one card created.
+            </v-alert>
           </div>
         </template>
         <v-card>
@@ -21,18 +27,22 @@
             <v-stepper v-model="stepNum">
               <v-stepper-header>
                 <v-stepper-step :complete="stepNum > 1" step="1"
+                  >Sender card</v-stepper-step
+                >
+
+                <v-stepper-step :complete="stepNum > 2" step="1"
                   >Receiver card</v-stepper-step
                 >
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="stepNum > 2" step="2"
+                <v-stepper-step :complete="stepNum > 3" step="2"
                   >Money and description</v-stepper-step
                 >
 
                 <v-divider></v-divider>
 
-                <v-stepper-step step="3">Confirmation</v-stepper-step>
+                <v-stepper-step step="4">Confirmation</v-stepper-step>
               </v-stepper-header>
 
               <v-stepper-items>
@@ -45,7 +55,7 @@
                           >Pick a card to draw money from</v-subheader
                         >
                         <v-list-item-group
-                          v-model="sender_card"
+                          v-model="sender_card_num"
                           color="primary"
                         >
                           <v-list-item
@@ -69,7 +79,7 @@
                       <v-btn
                         color="primary darken-1"
                         outlined
-                        @click="showDialog = false"
+                        @click="showMakeTransactionDialog = false"
                         >Cancel</v-btn
                       >
                     </v-card-actions>
@@ -82,13 +92,13 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12">
-                            <v-form v-model="moneyIsValid">
+                            <v-form v-model="inputValid.money.isValid">
                               <v-text-field
                                 label="Amount of money"
                                 type="number"
                                 required
-                                :rules="moneyRules"
-                                v-model="transaction_data.sum"
+                                :rules="inputValid.money.rules"
+                                v-model="transaction.data.sum"
                               ></v-text-field>
                             </v-form>
                           </v-col>
@@ -98,15 +108,20 @@
                               solo
                               outlined
                               label="Description (optional)"
-                              v-model="transaction_data.description"
+                              v-model="transaction.data.description"
                             ></v-textarea>
                           </v-col>
-                          <v-col cols="12" v-if="!balanceIsValid">
-                            <div class="red--text">
-                              Your previously entered card doesn't have enough
-                              money for the transaction.
-                            </div>
-                          </v-col>
+                          <v-slide-x-transition>
+                            <v-col
+                              cols="12"
+                              v-if="!inputValid.sender_balance.isValid"
+                            >
+                              <v-alert type="error">
+                                Your previosly selected card doesn't have enough
+                                money for the transaction.
+                              </v-alert>
+                            </v-col>
+                          </v-slide-x-transition>
                         </v-row>
                       </v-container>
                     </v-card-text>
@@ -114,7 +129,7 @@
                       <v-btn
                         color="primary"
                         @click="checkBalance"
-                        :disabled="!moneyIsValid"
+                        :disabled="!inputValid.money.isValid"
                       >
                         Continue
                       </v-btn>
@@ -129,22 +144,27 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12">
-                            <v-form v-model="cardIsValid">
+                            <v-form v-model="inputValid.card.isValid">
                               <v-text-field
                                 label="Receiver card number"
                                 type="text"
                                 required
-                                :rules="cardRules"
+                                :rules="inputValid.card.rules"
                                 :counter="16"
-                                v-model="transaction_data.receiver_card"
+                                v-model="transaction.data.receiver_card"
                               ></v-text-field>
                             </v-form>
                           </v-col>
-                          <v-col cols="12" v-if="!cardsAreUnequal">
-                            <div class="red--text">
-                              Sender and receiver cards cannot be equal.
-                            </div>
-                          </v-col>
+                          <v-slide-x-transition>
+                            <v-col
+                              cols="12"
+                              v-if="!transaction.cards.areUnequal"
+                            >
+                              <v-alert type="error">
+                                Sender and receiver cards cannot be equal.
+                              </v-alert>
+                            </v-col>
+                          </v-slide-x-transition>
                         </v-row>
                       </v-container>
                     </v-card-text>
@@ -152,7 +172,7 @@
                       <v-btn
                         color="primary"
                         @click="checkIfCardsEqual"
-                        :disabled="!cardIsValid"
+                        :disabled="!transaction.cards.areUnequal"
                       >
                         Continue
                       </v-btn>
@@ -169,7 +189,7 @@
                           Sender card:
                         </span>
                         <span class="subtitle-1">
-                          {{ cards[sender_card] }}
+                          {{ cards[sender_card_num] }}
                         </span>
                       </p>
                       <p class="text--primary">
@@ -177,7 +197,7 @@
                           Receiver card:
                         </span>
                         <span class="subtitle-1">
-                          {{ transaction_data.receiver_card }}
+                          {{ transaction.data.receiver_card }}
                         </span>
                       </p>
                       <p class="text--primary">
@@ -185,21 +205,28 @@
                           Sum:
                         </span>
                         <span class="subtitle-1">
-                          {{ transaction_data.sum }}
+                          {{ transaction.data.sum }}
                         </span>
                       </p>
                       <p
                         class="text--primary"
-                        v-if="transaction_data.description != ''"
+                        v-if="transaction.data.description != ''"
                       >
                         <span class="font-weight-medium title">
                           Description:
                         </span>
                         <br />
                         <span class="body-1">
-                          {{ transaction_data.description }}
+                          {{ transaction.data.description }}
                         </span>
                       </p>
+                      <v-scroll-x-transition>
+                        <p v-if="processes.transaction.failed">
+                          <v-alert dense outlined type="error">
+                            {{ processes.transaction.details }}
+                          </v-alert>
+                        </p>
+                      </v-scroll-x-transition>
                     </v-card-text>
                     <v-card-actions>
                       <v-btn color="primary" @click="makeTransaction">
@@ -227,27 +254,50 @@ export default {
   },
   data() {
     return {
-      showDialog: false,
+      showMakeTransactionDialog: false,
       stepNum: 0,
-      cardIsValid: true,
-      cardRules: [
-        v => (v && /^[0-9]+$/.test(v)) || 'Card must contain digits only',
-        v => (v && v.length === 16) || 'Card must be 16 numbers long',
-      ],
-      moneyIsValid: true,
-      moneyRules: [
-        v =>
-          v > 0 ||
-          'The amount of oney to send cannot be less than 0 or equal to 0',
-      ],
-      transaction_data: {
-        receiver_card: '',
-        sum: '',
-        description: '',
+      inputValid: {
+        card: {
+          isValid: true,
+          rules: [
+            v => (v && /^[0-9]+$/.test(v)) || 'Card must contain digits only',
+            v => (v && v.length === 16) || 'Card must be 16 numbers long',
+          ],
+        },
+        money: {
+          isValid: true,
+          rules: [
+            v =>
+              v > 0 ||
+              'The amount of oney to send cannot be less than 0 or equal to 0',
+          ],
+        },
+        sender_balance: {
+          isValid: true,
+        },
       },
-      sender_card: '',
-      balanceIsValid: true,
-      cardsAreUnequal: true,
+      transaction: {
+        data: {
+          receiver_card: '',
+          sender_card: '',
+          sum: '',
+          description: '',
+          target_endpoint: '/api/make_transaction',
+        },
+        cards: {
+          areUnequal: true,
+        },
+      },
+      processes: {
+        transaction: {
+          active: false,
+          bad: false,
+          failed: false,
+          details: '',
+          error: '',
+        },
+      },
+      sender_card_num: 0,
     };
   },
   computed: {
@@ -262,38 +312,57 @@ export default {
   },
   methods: {
     makeTransaction() {
-      this.showDialog = false;
-      this.transaction_data.sender_card = this.cards[
-        this.sender_card
+      this.processes.transaction.active = true;
+
+      this.transaction.data.sender_card = this.cards[
+        this.sender_card_num
       ].card_number;
 
-      this.$store.dispatch(
-        'performTransaction',
-        Object.assign({}, this.transaction_data)
-      );
+      this.$store
+        .dispatch(
+          +'performTransaction',
+          Object.assign({}, this.transaction_data)
+        )
+        .then(
+          () => {
+            this.showMakeTransactionDialog = false;
 
-      this.transaction_data.receiver_card = '';
-      this.transaction_data.sum = '';
-      this.transaction_data.description = '';
+            this.processes.transaction.active = false;
+            this.processes.transaction.bad = false;
+            this.processes.transaction.failed = false;
+
+            this.transaction_data.receiver_card = '';
+            this.transaction_data.sum = '';
+            this.transaction_data.description = '';
+          },
+          requestStatus => {
+            this.processes.transaction.bad = false;
+            this.processes.transaction.active = false;
+            this.processes.transaction.failed = true;
+            this.processes.transaction.details = requestStatus.details;
+            this.processes.transaction.error = requestStatus.error;
+          }
+        );
     },
     checkBalance() {
       if (
-        this.cards[this.sender_card].card_balance >= this.transaction_data.sum
+        this.cards[this.sender_card_num].card_balance >=
+        this.transaction.data.sum
       ) {
-        this.balanceIsValid = true;
+        this.inputValid.sender_balance.isValid = true;
         this.stepNum = 3;
       } else {
-        this.balanceIsValid = false;
+        this.inputValid.sender_balance.isValid = false;
       }
     },
     checkIfCardsEqual() {
       if (
-        this.cards[this.sender_card].card_number ===
-        this.transaction_data.receiver_card
+        this.cards[this.sender_card_num].card_number ===
+        this.transaction.data.receiver_card
       ) {
-        this.cardsAreUnequal = false;
+        this.transaction.cards.areUnequal = false;
       } else {
-        this.cardsAreUnequal = true;
+        this.transaction.cards.areUnequal = true;
         this.stepNum = 4;
       }
     },

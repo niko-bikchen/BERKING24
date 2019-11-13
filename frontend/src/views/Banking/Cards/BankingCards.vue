@@ -7,7 +7,7 @@
       <app-card :card_data="card"></app-card>
     </v-col>
     <v-col cols="12">
-      <v-dialog v-model="showDialog" persistent max-width="600px">
+      <v-dialog v-model="showCreateCardDialog" persistent max-width="600px">
         <template v-slot:activator="{ on }">
           <v-btn block color="primary" dark v-on="on">Add Card</v-btn>
         </template>
@@ -23,22 +23,32 @@
                     label="Card name (optional)"
                     type="text"
                     required
-                    v-model="newCardData.card_name"
+                    v-model="new_card.card_name"
                   ></v-text-field>
                 </v-col>
+                <v-scroll-x-transition>
+                  <v-col cols="12" v-if="processes.create_card.failed">
+                    <v-alert dense outlined type="error">
+                      {{ processes.create_card.details }}
+                    </v-alert>
+                  </v-col>
+                </v-scroll-x-transition>
               </v-row>
             </v-container>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="showDialog = false"
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="showCreateCardDialog = false"
               >Close</v-btn
             >
             <v-btn
               color="blue darken-1"
               text
+              :loading="processes.create_card.active"
               @click="createCard"
-              :loading="requestInProcess"
               >Submit</v-btn
             >
           </v-card-actions>
@@ -57,9 +67,18 @@ export default {
   },
   data() {
     return {
-      showDialog: false,
-      newCardData: {
+      showCreateCardDialog: false,
+      new_card: {
         card_name: '',
+      },
+      processes: {
+        create_card: {
+          active: false,
+          bad: false,
+          failed: false,
+          details: '',
+          error: '',
+        },
       },
     };
   },
@@ -67,20 +86,29 @@ export default {
     cards() {
       return this.$store.getters.getCards;
     },
-    requestInProcess() {
-      return this.$store.getters.getRequestStatus;
-    },
   },
   methods: {
     createCard() {
-      console.log(this.$store.getters.getUserData);
+      this.processes.create_card.active = true;
 
-      this.newCardData.user_email = this.$store.getters.getUserData.user_email;
+      this.$store.dispatch('addCard', this.new_card.card_name.slice(0)).then(
+        () => {
+          this.showCreateCardDialog = false;
 
-      console.log(this.newCardData);
+          this.processes.create_card.active = false;
+          this.processes.create_card.bad = false;
+          this.processes.create_card.failed = false;
 
-      this.$store.dispatch('addCard', this.newCardData);
-      this.showDialog = this.requestInProcess;
+          this.new_card.card_name = '';
+        },
+        requestStatus => {
+          this.processes.create_card.bad = false;
+          this.processes.create_card.active = false;
+          this.processes.create_card.failed = true;
+          this.processes.create_card.details = requestStatus.details;
+          this.processes.create_card.error = requestStatus.error;
+        }
+      );
     },
   },
 };

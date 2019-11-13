@@ -21,14 +21,14 @@
 
       <v-stepper-items>
         <v-stepper-content step="1">
-          <v-form v-model="cardIsValid">
+          <v-form v-model="inputValid.card.isValid">
             <v-text-field
-              :rules="cardRules"
+              :rules="inputValid.card.rules"
               outlined
               :counter="16"
               single-line
               label="Card Number"
-              v-model="transaction_data.receiver_card"
+              v-model="transaction.data.receiver_card"
             >
             </v-text-field>
           </v-form>
@@ -36,7 +36,7 @@
             color="primary"
             @click="stepNum = 2"
             class="mr-3"
-            :disabled="!cardIsValid"
+            :disabled="!inputValid.card.isValid"
           >
             Continue
           </v-btn>
@@ -44,13 +44,13 @@
         </v-stepper-content>
 
         <v-stepper-content step="2">
-          <v-form v-model="moneyIsValid">
+          <v-form v-model="inputValid.money.isValid">
             <v-text-field
               outlined
               single-line
               label="Amount of money"
-              :rules="moneyRules"
-              v-model="transaction_data.sum"
+              :rules="inputValid.money.rules"
+              v-model="transaction.data.sum"
             ></v-text-field>
           </v-form>
           <v-textarea
@@ -58,13 +58,13 @@
             solo
             outlined
             label="Payment description (optional)"
-            v-model="transaction_data.description"
+            v-model="transaction.data.description"
           ></v-textarea>
           <v-btn
             color="primary"
             @click="stepNum = 3"
             class="mr-3"
-            :disabled="!moneyIsValid"
+            :disabled="!inputValid.money.isValid"
           >
             Continue
           </v-btn>
@@ -79,7 +79,7 @@
                   Receiver card:
                 </span>
                 <span class="subtitle-1">
-                  {{ transaction_data.receiver_card }}
+                  {{ transaction.data.receiver_card }}
                 </span>
               </p>
               <p class="text--primary">
@@ -87,21 +87,28 @@
                   Sum:
                 </span>
                 <span class="subtitle-1">
-                  {{ transaction_data.sum }}
+                  {{ transaction.data.sum }}
                 </span>
               </p>
               <p
                 class="text--primary"
-                v-if="transaction_data.description != ''"
+                v-if="transaction.data.description != ''"
               >
                 <span class="font-weight-medium title">
                   Description:
                 </span>
                 <br />
                 <span class="body-1">
-                  {{ transaction_data.description }}
+                  {{ transaction.data.description }}
                 </span>
               </p>
+              <v-scroll-x-transition>
+                <p v-if="processes.transaction.failed">
+                  <v-alert dense outlined type="error">
+                    {{ processes.transaction.details }}
+                  </v-alert>
+                </p>
+              </v-scroll-x-transition>
             </v-card-text>
             <v-card-actions>
               <v-btn color="primary" @click="makeTransaction">
@@ -121,21 +128,30 @@ export default {
   data() {
     return {
       stepNum: 0,
-      cardIsValid: true,
-      cardRules: [
-        v => (v && /^[0-9]+$/.test(v)) || 'Card must contain digits only',
-        v => (v && v.length === 16) || 'Card must be 16 numbers long',
-      ],
-      moneyIsValid: true,
-      moneyRules: [
-        v =>
-          v > 0 ||
-          'The amount of oney to send cannot be less than 0 or equal to 0',
-      ],
-      transaction_data: {
-        receiver_card: '',
-        sum: '',
-        description: '',
+      inputValid: {
+        card: {
+          isValid: true,
+          rules: [
+            v => (v && /^[0-9]+$/.test(v)) || 'Card must contain digits only',
+            v => (v && v.length === 16) || 'Card must be 16 numbers long',
+          ],
+        },
+        money: {
+          isValid: true,
+          rules: [
+            v =>
+              v > 0 ||
+              'The amount of oney to send cannot be less than 0 or equal to 0',
+          ],
+        },
+      },
+      transaction: {
+        data: {
+          receiver_card: '',
+          sum: '',
+          description: '',
+          target_endpoint: '/api/terminal',
+        },
       },
     };
   },
@@ -143,12 +159,12 @@ export default {
     makeTransaction() {
       this.$store.dispatch(
         'performTransaction',
-        Object.assign({}, this.transaction_data)
+        Object.assign({}, this.transaction.data)
       );
 
-      this.transaction_data.receiver_card = '';
-      this.transaction_data.sum = '';
-      this.transaction_data.description = '';
+      this.transaction.data.receiver_card = '';
+      this.transaction.data.sum = '';
+      this.transaction.data.description = '';
     },
   },
 };

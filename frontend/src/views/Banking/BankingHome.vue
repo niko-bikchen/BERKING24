@@ -20,16 +20,14 @@
             </v-row>
             <v-row dense v-else>
               <v-col cols="12">
-                <v-card>
-                  <v-card-text>
-                    You don't have any transactions now. If you want to make
-                    one, go to the
-                    <router-link to="/berking/transactions"
-                      >Transactions</router-link
-                    >
-                    section
-                  </v-card-text>
-                </v-card>
+                <v-alert type="info">
+                  You don't have any transactions now. If you want to make one,
+                  go to the
+                  <router-link to="/berking/transactions" class="white--text"
+                    >Transactions</router-link
+                  >
+                  section
+                </v-alert>
               </v-col>
             </v-row>
           </v-container>
@@ -53,13 +51,14 @@
             </v-row>
             <v-row dense v-else>
               <v-col cols="12">
-                <v-card>
-                  <v-card-text>
-                    You don't have any cards now. If you want to create one, go
-                    to the
-                    <router-link to="/berking/cards">Cards</router-link> section
-                  </v-card-text>
-                </v-card>
+                <v-alert type="info">
+                  You don't have any cards now. If you want to create one, go to
+                  the
+                  <router-link to="/berking/cards" class="white--text"
+                    >Cards</router-link
+                  >
+                  section
+                </v-alert>
               </v-col>
             </v-row>
           </v-container>
