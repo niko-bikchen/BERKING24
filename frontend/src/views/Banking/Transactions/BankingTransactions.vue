@@ -229,7 +229,11 @@
                       </v-scroll-x-transition>
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn color="primary" @click="makeTransaction">
+                      <v-btn
+                        color="primary"
+                        @click="makeTransaction"
+                        :loading="processes.transaction.active"
+                      >
                         Submit
                       </v-btn>
                       <v-btn text @click="stepNum = 3">Back</v-btn>
@@ -320,7 +324,7 @@ export default {
 
       this.$store
         .dispatch(
-          +'performTransaction',
+          'performTransaction',
           Object.assign({}, this.transaction_data)
         )
         .then(

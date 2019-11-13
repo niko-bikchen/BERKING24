@@ -111,7 +111,11 @@
               </v-scroll-x-transition>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" @click="makeTransaction">
+              <v-btn
+                color="primary"
+                @click="makeTransaction"
+                :loading="processes.transaction.active"
+              >
                 Submit
               </v-btn>
               <v-btn text @click="stepNum = 2">Back</v-btn>
@@ -153,18 +157,46 @@ export default {
           target_endpoint: '/api/terminal',
         },
       },
+      processes: {
+        transaction: {
+          active: false,
+          bad: false,
+          failed: false,
+          details: '',
+          error: '',
+        },
+      },
     };
   },
   methods: {
     makeTransaction() {
-      this.$store.dispatch(
-        'performTransaction',
-        Object.assign({}, this.transaction.data)
-      );
+      this.processes.transaction.active = true;
 
-      this.transaction.data.receiver_card = '';
-      this.transaction.data.sum = '';
-      this.transaction.data.description = '';
+      this.$store
+        .dispatch(
+          'performTransaction',
+          Object.assign({}, this.transaction_data)
+        )
+        .then(
+          () => {
+            this.showMakeTransactionDialog = false;
+
+            this.processes.transaction.active = false;
+            this.processes.transaction.bad = false;
+            this.processes.transaction.failed = false;
+
+            this.transaction_data.receiver_card = '';
+            this.transaction_data.sum = '';
+            this.transaction_data.description = '';
+          },
+          requestStatus => {
+            this.processes.transaction.bad = false;
+            this.processes.transaction.active = false;
+            this.processes.transaction.failed = true;
+            this.processes.transaction.details = requestStatus.details;
+            this.processes.transaction.error = requestStatus.error;
+          }
+        );
     },
   },
 };
