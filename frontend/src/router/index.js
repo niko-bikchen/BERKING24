@@ -23,7 +23,6 @@ const routes = [
   },
   {
     path: '/terminal',
-    name: 'terminal',
     component: Terminal,
     children: [
       {
@@ -38,7 +37,6 @@ const routes = [
   },
   {
     path: '/berking',
-    name: 'banking',
     component: Banking,
     children: [
       {

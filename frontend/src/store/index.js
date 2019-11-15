@@ -31,7 +31,7 @@ export default new Vuex.Store({
       templates: [],
       deposits: [],
       info: {},
-      authorized: false,
+      authorized: true,
       webtoken: '',
     },
   },
@@ -206,15 +206,14 @@ export default new Vuex.Store({
             });
 
             const userTransactions = [];
-            Object.keys(response.data.transactions).forEach(keyOuter => {
-              Object.keys(response.data.transactions[keyOuter]).forEach(
-                keyInner => {
-                  userTransactions.push(
-                    response.data.transactions[keyOuter][keyInner]
-                  );
-                }
-              );
-            });
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(keyOuter => {
+                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
+                  userTransactions.push(response.data.data[keyOuter][keyInner]);
+                });
+              });
+            }
 
             context.commit('SET_TRANSACTIONS', userTransactions);
 
@@ -257,9 +256,12 @@ export default new Vuex.Store({
             });
 
             const userCards = [];
-            Object.keys(response.data.cards).forEach(key => {
-              userCards.push(response.data.cards[key]);
-            });
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(key => {
+                userCards.push(response.data.data[key]);
+              });
+            }
 
             context.commit('SET_CARDS', userCards);
 

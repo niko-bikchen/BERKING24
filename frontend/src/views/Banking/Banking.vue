@@ -461,7 +461,9 @@ export default {
             this.user.email = '';
             this.user.password = '';
 
-            this.$router.push({ path: '/' });
+            if (this.$router.path !== '/berking') {
+              this.$router.push({ path: '/berking' });
+            }
           }
           if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
             this.processes.auth.active = false;
@@ -500,7 +502,9 @@ export default {
               this.new_user.email = '';
               this.new_user.password = '';
 
-              this.$router.push({ path: '/' });
+              if (this.$router.path !== '/berking') {
+                this.$router.push({ path: '/berking' });
+              }
             }
             if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
               this.processes.registr.active = false;
