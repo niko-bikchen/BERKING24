@@ -1,7 +1,14 @@
 <template>
-  <v-row>
+  <v-row
+    v-if="
+      !processes.fetchTemplates.active &&
+        !processes.fetchCards.active &&
+        !processes.fetchTemplates.failed &&
+        !processes.fetchCards.failed
+    "
+  >
     <v-col cols="12" v-for="(template, index) in templates" :key="index">
-      <app-template :template_data="template"></app-template>
+      <app-template :template_data="template.data"></app-template>
     </v-col>
     <v-col cols="12">
       <v-dialog v-model="showCreationDialog" persistent max-width="600px">
@@ -213,6 +220,20 @@
                           {{ template.data.description }}
                         </span>
                       </p>
+                      <v-scroll-x-transition>
+                        <p v-if="processes.creating_template.failed">
+                          <v-alert dense outlined type="error">
+                            {{ processes.creating_template.details }}
+                          </v-alert>
+                        </p>
+                      </v-scroll-x-transition>
+                      <v-scroll-x-transition>
+                        <p v-if="processes.creating_template.good">
+                          <v-alert dense outlined type="success">
+                            {{ processes.creating_template.details }}
+                          </v-alert>
+                        </p>
+                      </v-scroll-x-transition>
                     </v-card-text>
                     <v-card-actions>
                       <v-btn color="primary" @click="addTemplate">
@@ -229,6 +250,32 @@
       </v-dialog>
     </v-col>
   </v-row>
+  <v-row
+    dense
+    v-else-if="processes.fetchCards.active || processes.fetchTemplates.active"
+  >
+    <v-col cols="12">
+      <v-alert type="info">
+        Fetching cards and templates from the server. Please wait.
+        <div class="text-right mt-2">
+          <v-progress-circular
+            indeterminate
+            color="white"
+          ></v-progress-circular>
+        </div>
+      </v-alert>
+    </v-col>
+  </v-row>
+  <v-row
+    dense
+    v-else-if="processes.fetchCards.failed || processes.fetchTemplates.failed"
+  >
+    <v-col cols="12">
+      <v-alert type="error">
+        Failed to fetch cards and templates from the server.
+      </v-alert>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -238,16 +285,10 @@ export default {
   components: {
     appTemplate: Template,
   },
-  computed: {
-    templates() {
-      return this.$store.getters.getTemplates;
-    },
-    cards() {
-      return this.$store.getters.getCards;
-    },
-  },
   data() {
     return {
+      templates: [],
+      cards: [],
       showCreationDialog: false,
       formStep: 0,
       inputValid: {
@@ -279,20 +320,62 @@ export default {
           areUnequal: true,
         },
       },
+      processes: {
+        creating_template: {
+          active: false,
+          bad: false,
+          good: false,
+          failed: false,
+          details: '',
+          error: '',
+        },
+        fetchTemplates: {
+          active: false,
+          failed: false,
+          details: '',
+        },
+        fetchCards: {
+          active: false,
+          failed: false,
+          details: '',
+        },
+      },
       sender_card_num: 0,
     };
   },
   methods: {
     addTemplate() {
-      this.showCreationDialog = false;
-      this.$store.dispatch(
-        'addTemplate',
-        Object.assign({}, this.template_data)
-      );
+      this.template.data.sender_card = this.cards[this.sender_card_num];
+      this.processes.creating_template.active = true;
 
-      this.template_data.receiver_card = '';
-      this.template_data.sum = '';
-      this.template_data.description = '';
+      this.$store
+        .dispatch('addTemplate', Object.assign({}, this.template.data))
+        .then(
+          requestStatus => {
+            this.processes.creating_template.active = false;
+            this.processes.creating_template.bad = false;
+            this.processes.creating_template.failed = false;
+            this.processes.creating_template.good = true;
+            this.processes.creating_template.details = requestStatus.details;
+
+            this.template.data.receiver_card = '';
+            this.template.data.sum = '';
+            this.template.data.description = '';
+
+            setTimeout(() => {
+              this.showCreationDialog = false;
+              this.processes.creating_template.good = false;
+            }, 1000);
+          },
+          requestStatus => {
+            this.processes.creating_template.active = false;
+            this.processes.creating_template.bad = false;
+            this.processes.creating_template.failed = true;
+            this.processes.creating_template.good = false;
+            this.processes.creating_template.error = requestStatus.error;
+            this.processes.creating_template.details = requestStatus.details;
+          }
+        );
     },
     checkBalance() {
       if (
@@ -315,6 +398,36 @@ export default {
         this.formStep = 4;
       }
     },
+  },
+  created() {
+    this.processes.fetchCards.active = true;
+    this.processes.fetchTemplates.active = true;
+
+    this.$store.dispatch('fetchCards').then(
+      cards => {
+        this.processes.fetchCards.active = false;
+        this.processes.fetchCards.failed = false;
+        this.cards = [...cards];
+      },
+      requestStatus => {
+        this.processes.fetchCards.failed = true;
+        this.processes.fetchCards.active = false;
+        this.processes.fetchCards.details = requestStatus.details;
+      }
+    );
+
+    this.$store.dispatch('fetchTemplates').then(
+      templates => {
+        this.processes.fetchTemplates.active = false;
+        this.processes.fetchTemplates.failed = false;
+        this.templates = [...templates].slice(0, 2).reverse();
+      },
+      requestStatus => {
+        this.processes.fetchTemplates.active = false;
+        this.processes.fetchTemplates.failed = true;
+        this.processes.fetchTemplates.details = requestStatus.details;
+      }
+    );
   },
 };
 </script>

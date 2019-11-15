@@ -17,6 +17,10 @@
         </span>
       </p>
       <p class="text--primary subtitle-1">
+        Date:
+        <span class="font-weight-medium"> ({{ transaction_data.date }}) </span>
+      </p>
+      <p class="text--primary subtitle-1">
         Sum:
         <span class="font-weight-medium">
           {{ transaction_data.sum }}

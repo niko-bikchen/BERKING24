@@ -1,7 +1,14 @@
 <template>
-  <v-row>
+  <v-row
+    v-if="
+      !processes.fetchTransactions.active &&
+        !processes.fetchCards.active &&
+        !processes.fetchTransactions.failed &&
+        !processes.fetchCards.failed
+    "
+  >
     <v-col cols="12" v-for="(transaction, index) in transactions" :key="index">
-      <app-transaction :transaction_data="transaction"></app-transaction>
+      <app-transaction :transaction_data="transaction.data"></app-transaction>
     </v-col>
     <v-col cols="12">
       <v-dialog
@@ -227,6 +234,13 @@
                           </v-alert>
                         </p>
                       </v-scroll-x-transition>
+                      <v-scroll-x-transition>
+                        <p v-if="processes.transaction.good">
+                          <v-alert dense outlined type="success">
+                            {{ processes.transaction.details }}
+                          </v-alert>
+                        </p>
+                      </v-scroll-x-transition>
                     </v-card-text>
                     <v-card-actions>
                       <v-btn
@@ -247,6 +261,36 @@
       </v-dialog>
     </v-col>
   </v-row>
+  <v-row
+    dense
+    v-else-if="
+      processes.fetchCards.active || processes.fetchTransactions.active
+    "
+  >
+    <v-col cols="12">
+      <v-alert type="info">
+        Fetching cards and transactions from the server. Please wait.
+        <div class="text-right mt-2">
+          <v-progress-circular
+            indeterminate
+            color="white"
+          ></v-progress-circular>
+        </div>
+      </v-alert>
+    </v-col>
+  </v-row>
+  <v-row
+    dense
+    v-else-if="
+      processes.fetchCards.failed || processes.fetchTransactions.failed
+    "
+  >
+    <v-col cols="12">
+      <v-alert type="error">
+        Failed to fetch cards and transactions from the server.
+      </v-alert>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -258,6 +302,8 @@ export default {
   },
   data() {
     return {
+      transactions: [],
+      cards: [],
       showMakeTransactionDialog: false,
       stepNum: 0,
       inputValid: {
@@ -296,23 +342,24 @@ export default {
         transaction: {
           active: false,
           bad: false,
+          good: false,
           failed: false,
           details: '',
           error: '',
         },
+        fetchTransactions: {
+          active: false,
+          failed: false,
+          details: '',
+        },
+        fetchCards: {
+          active: false,
+          failed: false,
+          details: '',
+        },
       },
       sender_card_num: 0,
     };
-  },
-  computed: {
-    transactions() {
-      const transactions = this.$store.getters.getTransactions;
-
-      return transactions.reverse();
-    },
-    cards() {
-      return this.$store.getters.getCards;
-    },
   },
   methods: {
     makeTransaction() {
@@ -325,19 +372,24 @@ export default {
       this.$store
         .dispatch(
           'performTransaction',
-          Object.assign({}, this.transaction_data)
+          Object.assign({}, this.transaction.data)
         )
         .then(
-          () => {
-            this.showMakeTransactionDialog = false;
-
+          requestStatus => {
             this.processes.transaction.active = false;
             this.processes.transaction.bad = false;
             this.processes.transaction.failed = false;
+            this.processes.transaction.good = true;
+            this.processes.transaction.details = requestStatus.details;
 
-            this.transaction_data.receiver_card = '';
-            this.transaction_data.sum = '';
-            this.transaction_data.description = '';
+            this.transaction.data.receiver_card = '';
+            this.transaction.data.sum = '';
+            this.transaction.data.description = '';
+
+            setTimeout(() => {
+              this.showMakeTransactionDialog = false;
+              this.processes.transactions.good = false;
+            }, 1000);
           },
           requestStatus => {
             this.processes.transaction.bad = false;
@@ -370,6 +422,36 @@ export default {
         this.stepNum = 4;
       }
     },
+  },
+  created() {
+    this.processes.fetchCards.active = true;
+    this.processes.fetchTransactions.active = true;
+
+    this.$store.dispatch('fetchCards').then(
+      cards => {
+        this.processes.fetchCards.active = false;
+        this.processes.fetchCards.failed = false;
+        this.cards = [...cards];
+      },
+      requestStatus => {
+        this.processes.fetchCards.failed = true;
+        this.processes.fetchCards.active = false;
+        this.processes.fetchCards.details = requestStatus.details;
+      }
+    );
+
+    this.$store.dispatch('fetchTransactions').then(
+      transactions => {
+        this.processes.fetchTransactions.active = false;
+        this.processes.fetchTransactions.failed = false;
+        this.transactions = [...transactions].slice(0, 2).reverse();
+      },
+      requestStatus => {
+        this.processes.fetchTransactions.active = false;
+        this.processes.fetchTransactions.failed = true;
+        this.processes.fetchTransactions.details = requestStatus.details;
+      }
+    );
   },
 };
 </script>

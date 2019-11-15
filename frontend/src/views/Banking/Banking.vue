@@ -29,6 +29,11 @@
               <v-list-item-title>Deposits</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item exact to="/">
+            <v-list-item-content>
+              <v-list-item-title>Root</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
@@ -44,9 +49,12 @@
           </v-col>
           <v-col cols="4" class="text-center">
             <v-toolbar-title>
-              <router-link to="/berking/" tag="span" style="cursor: pointer">
+              <router-link to="/berking/" tag="span" class="header-title">
                 Berking
               </router-link>
+              <v-chip color="primary" small>
+                beta
+              </v-chip>
             </v-toolbar-title>
           </v-col>
           <v-col cols="4" class="text-right">
@@ -432,6 +440,11 @@ export default {
       },
     };
   },
+  beforeMount() {
+    if (sessionStorage.getItem('authorized') === true) {
+      this.$store.dispatch('restoreAuth', true);
+    }
+  },
   methods: {
     authorizeUser() {
       this.processes.auth.active = true;
@@ -447,6 +460,8 @@ export default {
 
             this.user.email = '';
             this.user.password = '';
+
+            this.$router.push({ path: '/' });
           }
           if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
             this.processes.auth.active = false;
@@ -484,6 +499,8 @@ export default {
               this.new_user.name_last = '';
               this.new_user.email = '';
               this.new_user.password = '';
+
+              this.$router.push({ path: '/' });
             }
             if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
               this.processes.registr.active = false;
@@ -568,10 +585,11 @@ export default {
       border-bottom: 1px solid $accentColor;
     }
 
-    &__title {
+    .header-title {
       font-family: 'Great Vibes', cursive;
       font-size: 2.3rem !important;
       color: $accentColor;
+      cursor: pointer;
     }
   }
 }

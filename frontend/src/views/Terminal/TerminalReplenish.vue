@@ -109,6 +109,13 @@
                   </v-alert>
                 </p>
               </v-scroll-x-transition>
+              <v-scroll-x-transition>
+                <p v-if="processes.transaction.good">
+                  <v-alert dense outlined type="success">
+                    {{ processes.transaction.details }}
+                  </v-alert>
+                </p>
+              </v-scroll-x-transition>
             </v-card-text>
             <v-card-actions>
               <v-btn
@@ -161,6 +168,7 @@ export default {
         transaction: {
           active: false,
           bad: false,
+          good: false,
           failed: false,
           details: '',
           error: '',
@@ -175,19 +183,25 @@ export default {
       this.$store
         .dispatch(
           'performTransaction',
-          Object.assign({}, this.transaction_data)
+          Object.assign({}, this.transaction.data)
         )
         .then(
-          () => {
-            this.showMakeTransactionDialog = false;
-
+          requestStatus => {
             this.processes.transaction.active = false;
             this.processes.transaction.bad = false;
             this.processes.transaction.failed = false;
+            this.processes.transaction.good = true;
+            this.processes.transaction.details = requestStatus.details;
 
-            this.transaction_data.receiver_card = '';
-            this.transaction_data.sum = '';
-            this.transaction_data.description = '';
+            this.transaction.data.receiver_card = '';
+            this.transaction.data.sum = '';
+            this.transaction.data.description = '';
+
+            setTimeout(() => {
+              this.showMakeTransactionDialog = false;
+              this.processes.transaction.good = false;
+              this.$router.push({ path: '/terminal' });
+            }, 1000);
           },
           requestStatus => {
             this.processes.transaction.bad = false;

@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row v-if="!processes.fetchCards.active && !processes.fetchCards.failed">
     <v-col rows="12" class="text-center">
       <h2 class="cards-counter">You have {{ cards.length }} / 10 cards</h2>
     </v-col>
@@ -9,7 +9,18 @@
     <v-col cols="12">
       <v-dialog v-model="showCreateCardDialog" persistent max-width="600px">
         <template v-slot:activator="{ on }">
-          <v-btn block color="primary" dark v-on="on">Add Card</v-btn>
+          <v-btn
+            block
+            color="primary"
+            dark
+            v-on="on"
+            v-if="cards.length !== 10"
+          >
+            Add Card
+          </v-btn>
+          <v-alert type="info" v-else>
+            You can't create more than 10 cards.
+          </v-alert>
         </template>
         <v-card>
           <v-card-title>
@@ -29,6 +40,13 @@
                 <v-scroll-x-transition>
                   <v-col cols="12" v-if="processes.create_card.failed">
                     <v-alert dense outlined type="error">
+                      {{ processes.create_card.details }}
+                    </v-alert>
+                  </v-col>
+                </v-scroll-x-transition>
+                <v-scroll-x-transition>
+                  <v-col cols="12" v-if="processes.create_card.good">
+                    <v-alert dense outlined type="success">
                       {{ processes.create_card.details }}
                     </v-alert>
                   </v-col>
@@ -56,6 +74,26 @@
       </v-dialog>
     </v-col>
   </v-row>
+  <v-row dense v-else-if="processes.fetchCards.active">
+    <v-col cols="12">
+      <v-alert type="info">
+        Fetching cards from the server. Please wait.
+        <div class="text-right mt-2">
+          <v-progress-circular
+            indeterminate
+            color="white"
+          ></v-progress-circular>
+        </div>
+      </v-alert>
+    </v-col>
+  </v-row>
+  <v-row dense v-else-if="processes.fetchCards.failed">
+    <v-col cols="12">
+      <v-alert type="error">
+        {{ processes.fetchCards.details }}
+      </v-alert>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -67,6 +105,7 @@ export default {
   },
   data() {
     return {
+      cards: [],
       showCreateCardDialog: false,
       new_card: {
         card_name: '',
@@ -74,32 +113,38 @@ export default {
       processes: {
         create_card: {
           active: false,
+          good: false,
           bad: false,
           failed: false,
           details: '',
           error: '',
         },
+        fetchCards: {
+          active: false,
+          failed: false,
+          details: '',
+        },
       },
     };
-  },
-  computed: {
-    cards() {
-      return this.$store.getters.getCards;
-    },
   },
   methods: {
     createCard() {
       this.processes.create_card.active = true;
 
       this.$store.dispatch('addCard', this.new_card.card_name.slice(0)).then(
-        () => {
-          this.showCreateCardDialog = false;
-
+        requestStatus => {
           this.processes.create_card.active = false;
           this.processes.create_card.bad = false;
           this.processes.create_card.failed = false;
+          this.processes.create_card.good = true;
+          this.processes.details = requestStatus.details;
 
           this.new_card.card_name = '';
+
+          setTimeout(() => {
+            this.showCreateCardDialog = false;
+            this.processes.create_card.good = false;
+          }, 1000);
         },
         requestStatus => {
           this.processes.create_card.bad = false;
@@ -110,6 +155,22 @@ export default {
         }
       );
     },
+  },
+  created() {
+    this.processes.fetchCards.active = true;
+
+    this.$store.dispatch('fetchCards').then(
+      cards => {
+        this.processes.fetchCards.active = false;
+        this.processes.fetchCards.failed = false;
+        this.cards = [...cards];
+      },
+      requestStatus => {
+        this.processes.fetchCards.failed = true;
+        this.processes.fetchCards.active = false;
+        this.processes.fetchCards.details = requestStatus.details;
+      }
+    );
   },
 };
 </script>

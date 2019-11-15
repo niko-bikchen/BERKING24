@@ -43,19 +43,19 @@ export default new Vuex.Store({
       state.user.templates.push(template);
     },
     SET_CARDS(state, cards) {
-      state.user.cards = cards;
+      state.user.cards = [...cards];
     },
     SET_TEMPLATES(state, templates) {
-      state.user.templates = templates;
+      state.user.templates = [...templates];
     },
     SET_TRANSACTIONS(state, transactions) {
-      state.user.transactions = transactions;
+      state.user.transactions = [...transactions];
     },
     SET_DEPOSITS(state, deposits) {
-      state.user.deposits = deposits;
+      state.user.deposits = [...deposits];
     },
     SET_USER(state, userInfo) {
-      state.user.info = userInfo;
+      state.user.info = Object.assign({}, userInfo);
       state.user.authorized = true;
     },
     PERFORM_TRANSACTION(state, transaction) {
@@ -66,15 +66,219 @@ export default new Vuex.Store({
     },
     LOGIN(state) {
       state.user.authorized = true;
+      sessionStorage.setItem('authorized', true);
     },
     LOGOUT(state) {
       state.user.authorized = false;
+      sessionStorage.setItem('authorized', false);
     },
     SET_REQUEST_STATUS(state, status) {
       state.request = status;
     },
+    SET_IS_AUTHORIZED(state, status) {
+      state.user.authorized = status;
+    },
   },
   actions: {
+    fetchDeposits(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching deposits.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_templates',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Deposits successfuly fetched.',
+            });
+
+            const userDeposits = [];
+            Object.keys(response.data.deposits).forEach(keyOuter => {
+              Object.keys(response.data.deposits[keyOuter]).forEach(
+                keyInner => {
+                  userDeposits.push(response.data.deposits[keyOuter][keyInner]);
+                }
+              );
+            });
+
+            context.commit('SET_DEPOSITS', userDeposits);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch deposits.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    fetchTemplates(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching templates.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_templates',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Templates successfuly fetched.',
+            });
+
+            const userTemplates = [];
+            Object.keys(response.data.templates).forEach(keyOuter => {
+              Object.keys(response.data.templates[keyOuter]).forEach(
+                keyInner => {
+                  userTemplates.push(
+                    response.data.templates[keyOuter][keyInner]
+                  );
+                }
+              );
+            });
+
+            context.commit('SET_TEMPLATES', userTemplates);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch templates.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    fetchTransactions(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching transactions.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_transactions',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Transactions successfuly fetched.',
+            });
+
+            const userTransactions = [];
+            Object.keys(response.data.transactions).forEach(keyOuter => {
+              Object.keys(response.data.transactions[keyOuter]).forEach(
+                keyInner => {
+                  userTransactions.push(
+                    response.data.transactions[keyOuter][keyInner]
+                  );
+                }
+              );
+            });
+
+            context.commit('SET_TRANSACTIONS', userTransactions);
+
+            resolve([...userTransactions]);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch transactions.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    fetchCards(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching cards.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_cards',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Cards successfuly fetched.',
+            });
+
+            const userCards = [];
+            Object.keys(response.data.cards).forEach(key => {
+              userCards.push(response.data.cards[key]);
+            });
+
+            context.commit('SET_CARDS', userCards);
+
+            resolve([...userCards]);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch cards.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    restoreAuth(context, status) {
+      context.commit('SET_IS_AUTHORIZED', status);
+    },
     addCard(context, payload) {
       context.commit('SET_REQUEST_STATUS', {
         status: REQUEST_STATUSES().active,
@@ -116,7 +320,38 @@ export default new Vuex.Store({
       });
     },
     addTemplate(context, payload) {
-      context.commit('ADD_TEMPLATE', payload);
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Creating template.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/api/make_transaction', JSON.stringify(payload), {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(() => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Template created successfuly.',
+            });
+
+            context.commit('ADD_TEMPLATE', payload);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: 'Failed to create a template.',
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
     performTransaction(context, payload) {
       context.commit('SET_REQUEST_STATUS', {
@@ -134,7 +369,7 @@ export default new Vuex.Store({
           .then(() => {
             context.commit('SET_REQUEST_STATUS', {
               status: REQUEST_STATUSES().finished.pos,
-              details: 'Transaction performed.',
+              details: 'Transaction performed successfuly.',
             });
 
             context.commit('PERFORM_TRANSACTION', payload);
@@ -268,19 +503,15 @@ export default new Vuex.Store({
           })
           .then(response => {
             if (response.data.status === 'success') {
-              context.commit('VALIDATE_CREDENTIALS');
               context.commit('SET_REQUEST_STATUS', {
                 status: REQUEST_STATUSES().finished.pos,
                 details: 'User successfuly authorized.',
               });
+
               context.commit('LOGIN');
 
-              const data = {};
-              data.email = payload.email;
-
-              context.commit('SET_USER', data);
+              context.commit('SET_USER', { email: payload.email });
             } else {
-              context.commit('INVALIDATE_CREDENTIALS');
               context.commit('SET_REQUEST_STATUS', {
                 status: REQUEST_STATUSES().finished.neg,
                 details:

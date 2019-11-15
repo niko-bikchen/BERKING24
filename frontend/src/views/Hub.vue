@@ -1,7 +1,10 @@
 <template>
   <v-app class="app-hub">
     <v-app-bar app flat>
-      <v-toolbar-title class="header-title">Berking</v-toolbar-title>
+      <v-toolbar-title class="header-title pr-2">Berking</v-toolbar-title>
+      <v-chip color="primary" small>
+        beta
+      </v-chip>
     </v-app-bar>
     <v-content>
       <v-container fluid class="full-height hub-btns">
@@ -47,7 +50,7 @@ export default {
       border-bottom: 1px solid $accentColor;
     }
 
-    &__title {
+    .header-title {
       font-family: $mainFont;
       font-size: 2.3rem !important;
       color: $accentColor;
