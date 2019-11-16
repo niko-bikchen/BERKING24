@@ -1,3 +1,4 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #ifndef OPERATIONMANAGER_H
 #define OPERATIONMANAGER_H
 #include "IOperationManager.h"
@@ -17,10 +18,19 @@ using bsoncxx::builder::basic::make_array;
 
 class OperationManager :public IOperationManager
 {
+	///
+	///The calss is designed to be a connector between data base and a client
+	///
+	///MongoDB's connection should be made only once and in order to use the same instance 
+	///of a chosen data base throught all program we use singleton design pattern. The class
+	///is composed of methods which retrieve all delete data from data base.
+	///
 public:
+	//to see description of methonds see IOperationManager.h 
   ~OperationManager()
   {
   }
+  ///constructing an instance of OperationManager class by giving data base
   static  IOperationManager*init(mongocxx::database& db)
   {
     if (!_op)
@@ -30,6 +40,7 @@ public:
     return _op;
   }
 
+  //getting OperationManager instance
   static  IOperationManager* getInstance()
   {
     if (!_op)
@@ -42,13 +53,19 @@ public:
 
 
 private:
+
+  //data base
+  mongocxx::database& _db;
+
+  //the pointer on OperationManager instance
+  static OperationManager* _op;
+
+  //in order tosingleton design pattern the next methonds are hidden
   OperationManager(mongocxx::database& db) :_db(db) {}
   OperationManager(const OperationManager&);
   OperationManager& operator=(const OperationManager&);
 
-  mongocxx::database& _db;
-  static OperationManager* _op;
-
+  //all of these are described if IOperationManager.h
   std::vector<DefferedICard> do_getAllUsersCards(std::string);
   void do_deleteDeposit(std::string ,const DepositFunctor&);
   void do_addSaveDeposit(const DefferedISaveDeposit&);
@@ -57,7 +74,6 @@ private:
   DefferedIUser do_getUser(std::string)const;
   DefferedISaveDeposit do_getSaveDeposit(std::string)const;
   DefferedICard do_getCard(std::string)const;
-  void do_update();
   std::vector<DefferedIUser> do_getAllUsers()const;
   bool do_userExist(std::string email)const;
   bool do_cardExist(std::string num)const;

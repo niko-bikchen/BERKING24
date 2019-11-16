@@ -1,3 +1,4 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #include <iostream>
 #include "ICard.h"
 #include "Card.h"
@@ -19,8 +20,8 @@ int main()
 	mongocxx::database db = client["preRelease"];
 
 	//User
-	/*IOperationManager* op = OperationManager::init(db);
-	DefferedIUser u = op->getUser("test4");
+	IOperationManager* op = OperationManager::init(db);
+	/*DefferedIUser u = op->getUser("test4");
 	DefferedICard newCard = op->getCard("1092-1717");
 	DefferedICard cardNum = DefferedICard("7777-1717", 123, 321, "LOL", "NOTNOW", {}, {}, 1000);
 	op->addCard(cardNum);
@@ -32,14 +33,14 @@ int main()
 		std::cout << *((*i).operator->()) << std::endl;
 	}*/
 
-	//DefferedICard card = op->getCard("FINALTEST");
+	DefferedICard card = op->getCard("FINALTEST");
 	//DefferedICard card2= card;
 	//DefferedISaveDeposit dp = op->getSaveDeposit("UPDATED");
 	/*dp->setBalance(100);
 	dp->setCard("DDDD");
 	dp->setEndDate("DDDFFF");
 	dp->setStartDate("EEEEE");*/
-	//card->setName("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw");
+	card->setName("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw");
 	//card2->setName("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
 	//user->addCard("MISCUSO");
 	//user->setEmail("UPFATED");

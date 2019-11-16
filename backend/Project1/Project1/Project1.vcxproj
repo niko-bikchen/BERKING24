@@ -124,7 +124,6 @@
     <ClInclude Include="DepositFunctor.h" />
     <ClInclude Include="ICard.h" />
     <ClInclude Include="IEntity.h" />
-    <ClInclude Include="IManager.h" />
     <ClInclude Include="IOperationManager.h" />
     <ClInclude Include="ISaveDeposit.h" />
     <ClInclude Include="IUser.h" />

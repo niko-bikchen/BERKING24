@@ -1,3 +1,4 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #include "UserProxy.h"
 
 #include "OperationManager.h"
@@ -6,12 +7,17 @@
 
 void User::UserProxy::do_addCard(std::string num)
 {
+	//getting instance of a data base
 	IOperationManager* op = OperationManager::getInstance();
+
+	//checking whether a user with this email exists in a data base
 	if (op->userExist(_user.getEmail()));
 	{
 		DefferedIUser c = op->getUser(_user.getEmail());
+		//checking whether a user in a data base and this instance of a User class are the same
 		if (*c.operator->() == _user)
 		{
+			//setting
 			mongocxx::collection coll = op->getDB()["users"];
 
 			std::list<std::string>::iterator i;
@@ -37,12 +43,17 @@ void User::UserProxy::do_addCard(std::string num)
 
 void User::UserProxy::do_setCards(std::list<std::string>& cards)
 {
+	//getting instance of a data base
 	IOperationManager* op = OperationManager::getInstance();
+
+	//checking whether a user with this email exists in a data base
 	if (op->userExist(_user.getEmail()));
 	{
 		DefferedIUser c = op->getUser(_user.getEmail());
+		//checking whether a user in a data base and this instance of a User class are the same
 		if (*c.operator->() == _user)
 		{
+			//setting
 			mongocxx::collection coll = op->getDB()["users"];
 
 			std::list<std::string>::iterator i;
@@ -67,12 +78,17 @@ void User::UserProxy::do_setCards(std::list<std::string>& cards)
 
 void User::UserProxy::do_setWebToken(std::string web)
 {
+	//getting instance of a data base
 	IOperationManager* op = OperationManager::getInstance();
+
+	//checking whether a user with this email exists in a data base
 	if (op->userExist(_user.getEmail()));
 	{
 		DefferedIUser c = op->getUser(_user.getEmail());
+		//checking whether a user in a data base and this instance of a User class are the same
 		if (*c.operator->() == _user)
 		{
+			//setting
 			mongocxx::collection coll = op->getDB()["users"];
 			coll.update_one(make_document(kvp("email", _user.getEmail())), make_document(kvp("$set",
 				make_document(kvp("webtoken", web)))));
@@ -89,12 +105,17 @@ void User::UserProxy::do_setWebToken(std::string web)
 
 void User::UserProxy::do_setName(std::string name)
 {
+	//getting instance of a data base
 	IOperationManager* op = OperationManager::getInstance();
+
+	//checking whether a user with this email exists in a data base
 	if (op->userExist(_user.getEmail()));
 	{
 		DefferedIUser c = op->getUser(_user.getEmail());
+		//checking whether a user in a data base and this instance of a User class are the same
 		if (*c.operator->() == _user)
 		{
+			//setting
 			IOperationManager* op = OperationManager::getInstance();
 			mongocxx::collection coll = op->getDB()["users"];
 			coll.update_one(make_document(kvp("email", _user.getEmail())), make_document(kvp("$set",
@@ -112,12 +133,17 @@ void User::UserProxy::do_setName(std::string name)
 
 void User::UserProxy::do_setPassword(std::string pass)
 {
+	//getting instance of a data base
 	IOperationManager* op = OperationManager::getInstance();
+
+	//checking whether a user with this email exists in a data base
 	if (op->userExist(_user.getEmail()));
 	{
 		DefferedIUser c = op->getUser(_user.getEmail());
+		//checking whether a user in a data base and this instance of a User class are the same
 		if (*c.operator->() == _user)
 		{
+			//setting
 			IOperationManager* op = OperationManager::getInstance();
 			mongocxx::collection coll = op->getDB()["users"];
 			coll.update_one(make_document(kvp("email", _user.getEmail())), make_document(kvp("$set",
@@ -135,12 +161,17 @@ void User::UserProxy::do_setPassword(std::string pass)
 
 void User::UserProxy::do_setEmail(std::string em)
 {
+	//getting instance of a data base
 	IOperationManager* op = OperationManager::getInstance();
+
+	//checking whether a user with this email exists in a data base
 	if (op->userExist(_user.getEmail()));
 	{
 		DefferedIUser c = op->getUser(_user.getEmail());
+		//checking whether a user in a data base and this instance of a User class are the same
 		if (*c.operator->() == _user)
 		{
+			//setting
 			IOperationManager* op = OperationManager::getInstance();
 			mongocxx::collection coll = op->getDB()["users"];
 			coll.update_one(make_document(kvp("email", _user.getEmail())), make_document(kvp("$set",
