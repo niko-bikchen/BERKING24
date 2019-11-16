@@ -217,7 +217,7 @@ export default new Vuex.Store({
 
             context.commit('SET_TRANSACTIONS', userTransactions);
 
-            resolve([...userTransactions]);
+            resolve(context.getters.getRequestStatus);
           })
           .catch(error => {
             context.commit('SET_REQUEST_STATUS', {
@@ -268,7 +268,7 @@ export default new Vuex.Store({
 
             context.commit('SET_CARDS', userCards);
 
-            resolve([...userCards]);
+            resolve(context.getters.getRequestStatus);
           })
           .catch(error => {
             context.commit('SET_REQUEST_STATUS', {
@@ -548,12 +548,15 @@ export default new Vuex.Store({
   },
   getters: {
     getCards(state) {
+      console.log(state.user.cards);
       return state.user.cards;
     },
     getTemplates(state) {
+      console.log(state.user.templates);
       return state.user.templates;
     },
     getTransactions(state) {
+      console.log(state.user.transactions);
       return state.user.transactions;
     },
     getDeposits(state) {

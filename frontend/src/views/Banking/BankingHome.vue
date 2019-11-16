@@ -120,8 +120,6 @@ import Transaction from './Transactions/Transaction.vue';
 export default {
   data() {
     return {
-      cards: [],
-      transactions: [],
       processes: {
         fetchCards: {
           active: false,
@@ -136,6 +134,17 @@ export default {
       },
     };
   },
+  computed: {
+    cards() {
+      console.log(this.$store.getters.getCards);
+      return this.$store.getters.getCards;
+    },
+    transactions() {
+      console.log(this.$store.getters.getTransactions);
+      const transact = this.$store.getters.getTransactions;
+      return transact.slice(0, 2).reverse();
+    },
+  },
   components: {
     appCard: Card,
     appTransaction: Transaction,
@@ -149,10 +158,10 @@ export default {
         comp.processes.fetchTransactions.active = true;
 
         comp.$store.dispatch('fetchCards').then(
-          cards => {
+          requestStatus => {
             comp.processes.fetchCards.active = false;
             comp.processes.fetchCards.failed = false;
-            comp.cards = [...cards];
+            comp.processes.fetchCards.details = requestStatus.details;
           },
           requestStatus => {
             comp.processes.fetchCards.failed = true;
@@ -162,10 +171,10 @@ export default {
         );
 
         comp.$store.dispatch('fetchTransactions').then(
-          transactions => {
+          requestStatus => {
             comp.processes.fetchTransactions.active = false;
             comp.processes.fetchTransactions.failed = false;
-            comp.transactions = [...transactions].slice(0, 2).reverse();
+            comp.processes.fetchTransactions.details = requestStatus.details;
           },
           requestStatus => {
             comp.processes.fetchTransactions.active = false;

@@ -287,8 +287,6 @@ export default {
   },
   data() {
     return {
-      templates: [],
-      cards: [],
       showCreationDialog: false,
       formStep: 0,
       inputValid: {
@@ -342,6 +340,16 @@ export default {
       },
       sender_card_num: 0,
     };
+  },
+  computed: {
+    cards() {
+      console.log(this.$store.getters.getCards);
+      return this.$store.getters.getCards;
+    },
+    templates() {
+      console.log(this.$store.getters.getTemplates);
+      return this.$store.getters.getTemplates;
+    },
   },
   methods: {
     addTemplate() {
@@ -407,10 +415,10 @@ export default {
       comp.processes.fetchTemplates.active = true;
 
       comp.$store.dispatch('fetchCards').then(
-        cards => {
+        requestStatus => {
           comp.processes.fetchCards.active = false;
           comp.processes.fetchCards.failed = false;
-          comp.cards = [...cards];
+          comp.processes.fetchCards.details = requestStatus.details;
         },
         requestStatus => {
           comp.processes.fetchCards.failed = true;
@@ -420,10 +428,10 @@ export default {
       );
 
       comp.$store.dispatch('fetchTemplates').then(
-        templates => {
+        requestStatus => {
           comp.processes.fetchTemplates.active = false;
           comp.processes.fetchTemplates.failed = false;
-          comp.templates = [...templates].slice(0, 2).reverse();
+          comp.processes.fetchTemplates.details = requestStatus.details;
         },
         requestStatus => {
           comp.processes.fetchTemplates.active = false;

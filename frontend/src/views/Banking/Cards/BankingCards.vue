@@ -137,7 +137,7 @@ export default {
           this.processes.create_card.bad = false;
           this.processes.create_card.failed = false;
           this.processes.create_card.good = true;
-          this.processes.details = requestStatus.details;
+          this.processes.create_card.details = requestStatus.details;
 
           this.new_card.card_name = '';
 
@@ -156,6 +156,12 @@ export default {
       );
     },
   },
+  computed: {
+    cards() {
+      console.log(this.$store.getters.getCards);
+      return this.$store.getters.getCards;
+    },
+  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const comp = vm;
@@ -163,10 +169,10 @@ export default {
       comp.processes.fetchCards.active = true;
 
       comp.$store.dispatch('fetchCards').then(
-        cards => {
+        requestStatus => {
           comp.processes.fetchCards.active = false;
           comp.processes.fetchCards.failed = false;
-          comp.cards = [...cards];
+          comp.processes.fetchCards.details = requestStatus.details;
         },
         requestStatus => {
           comp.processes.fetchCards.failed = true;
