@@ -461,7 +461,7 @@ export default {
             this.user.email = '';
             this.user.password = '';
 
-            if (this.$router.path !== '/berking') {
+            if (this.$route.path !== '/berking') {
               this.$router.push({ path: '/berking' });
             }
           }
@@ -502,7 +502,7 @@ export default {
               this.new_user.email = '';
               this.new_user.password = '';
 
-              if (this.$router.path !== '/berking') {
+              if (this.$route.path !== '/berking') {
                 this.$router.push({ path: '/berking' });
               }
             }

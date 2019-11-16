@@ -55,7 +55,7 @@ export default new Vuex.Store({
       state.user.deposits = [...deposits];
     },
     SET_USER(state, userInfo) {
-      state.user.info = Object.assign({}, userInfo);
+      state.user.info.email = userInfo.email;
       state.user.authorized = true;
     },
     PERFORM_TRANSACTION(state, transaction) {
@@ -235,6 +235,9 @@ export default new Vuex.Store({
         status: REQUEST_STATUSES().active,
         details: 'Fetching cards.',
       });
+
+      console.log(context.getters.getUserData);
+      console.log(context.getters.getUserData.email);
 
       return new Promise((resolve, reject) => {
         axios
@@ -440,9 +443,9 @@ export default new Vuex.Store({
     },
     registerUser(context, payload) {
       const newUser = {};
-      newUser.user_name = payload.firstName;
-      newUser.user_name += ` ${payload.middleName}`;
-      newUser.user_name += ` ${payload.lastName}`;
+      newUser.user_name = payload.name_first;
+      newUser.user_name += ` ${payload.name_middle}`;
+      newUser.user_name += ` ${payload.name_last}`;
       newUser.user_email = payload.email;
       newUser.user_password = payload.password;
 
@@ -460,8 +463,11 @@ export default new Vuex.Store({
           })
           .then(response => {
             if (response.data.status === 'success') {
+              console.log(newUser);
+              console.log(newUser.user_email);
+
               context.commit('SET_USER', {
-                email: newUser.email,
+                email: newUser.user_email,
               });
 
               context.commit('SET_REQUEST_STATUS', {
@@ -511,6 +517,8 @@ export default new Vuex.Store({
               });
 
               context.commit('LOGIN');
+
+              console.log(payload.email);
 
               context.commit('SET_USER', { email: payload.email });
             } else {
