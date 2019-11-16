@@ -23,7 +23,6 @@ const routes = [
   },
   {
     path: '/terminal',
-    name: 'terminal',
     component: Terminal,
     children: [
       {
@@ -38,39 +37,39 @@ const routes = [
   },
   {
     path: '/berking',
-    name: 'banking',
     component: Banking,
     children: [
       {
         path: '',
         component: BankingHome,
+        name: 'bankingHome',
       },
       {
         path: 'cards',
         component: BankingCards,
+        name: 'bankingCards',
       },
       {
         path: 'transactions',
         component: BankingTransactions,
+        name: 'bankingTransactions',
       },
       {
         path: 'templates',
         component: BankingTemplates,
+        name: 'bankingTemplates',
       },
       {
         path: 'deposits',
         component: BankingDeposits,
+        name: 'bankingDeposits',
       },
     ],
   },
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  // },
+  {
+    path: '*',
+    redirect: '/',
+  },
 ];
 
 const router = new VueRouter({

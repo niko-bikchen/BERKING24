@@ -1,6 +1,8 @@
 <template>
   <v-card otlined class="user-card">
-    <v-card-title v-if="card_data.hasOwnProperty('card_name')">
+    <v-card-title
+      v-if="card_data.hasOwnProperty('card_name') && card_data.card_name !== ''"
+    >
       {{ card_data.card_name }}
     </v-card-title>
     <v-card-text>

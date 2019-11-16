@@ -2,6 +2,12 @@
   <v-card outlined class="user-template">
     <v-card-text>
       <p class="text--primary subtitle-1">
+        Sender:
+        <span class="font-weight-medium">
+          {{ template_data.sender_card | formatCardNumWithMask }}
+        </span>
+      </p>
+      <p class="text--primary subtitle-1">
         Receiver:
         <span class="font-weight-medium">
           {{ template_data.receiver_card | formatCardNumWithMask }}
@@ -36,10 +42,18 @@
           <v-card-text>
             <span class="text--primary">
               <span class="font-weight-medium title">
-                Receiver name:
+                Sender card:
               </span>
               <span class="subtitle-1">
-                Sample
+                {{ template_data.sender_card }}
+              </span>
+            </span>
+            <span class="text--primary">
+              <span class="font-weight-medium title">
+                Receiver card:
+              </span>
+              <span class="subtitle-1">
+                {{ template_data.receiver_card }}
               </span>
             </span>
             <br />
@@ -48,7 +62,7 @@
                 Sum:
               </span>
               <span class="subtitle-1">
-                1234
+                {{ template_data.sum }}
               </span>
             </span>
             <br />
@@ -58,12 +72,37 @@
               </span>
               <br />
               <span class="body-1">
-                1234
+                {{ template_data.description }}
               </span>
             </span>
+            <v-scroll-x-transition>
+              <p v-if="processes.transaction.failed">
+                <v-alert dense outlined type="error">
+                  {{ processes.transaction.details }}
+                </v-alert>
+              </p>
+            </v-scroll-x-transition>
+            <v-scroll-x-transition>
+              <p v-if="!balanceIsValid">
+                <v-alert dense outlined type="error">
+                  Not enough money on the card to perform the transaction.
+                </v-alert>
+              </p>
+            </v-scroll-x-transition>
+            <v-scroll-x-transition>
+              <p v-if="processes.transaction.good">
+                <v-alert dense outlined type="success">
+                  {{ processes.transaction.details }}
+                </v-alert>
+              </p>
+            </v-scroll-x-transition>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" @click="makeTransaction">
+            <v-btn
+              color="primary"
+              @click="performTransaction"
+              :loading="processes.transaction.active"
+            >
               Submit
             </v-btn>
             <v-btn text @click="showDialog = false">Cancel</v-btn>
@@ -79,6 +118,17 @@ export default {
   data() {
     return {
       showDialog: false,
+      processes: {
+        transaction: {
+          active: false,
+          bad: false,
+          good: false,
+          failed: false,
+          details: '',
+          error: '',
+        },
+      },
+      balanceIsValid: true,
     };
   },
   props: {
@@ -87,10 +137,50 @@ export default {
       required: true,
     },
   },
+  computed: {
+    cards() {
+      return this.$store.getters.getCards;
+    },
+  },
   methods: {
-    makeTransaction() {
-      this.showDialog = false;
-      console.log(this.template_data);
+    performTransaction() {
+      for (let i = 0; i < this.cards.lengthl; i += 1) {
+        if (this.cards[i].card_number === this.template_data.sender_card) {
+          if (this.cards[i].card_balance < this.template_data.sum) {
+            this.balanceIsValid = false;
+            break;
+          }
+        }
+      }
+
+      if (this.balanceIsValid) {
+        const transactionData = Object.assign({}, this.template_data);
+        transactionData.target_endpoint = '/api/make_transaction';
+
+        this.$store
+          .dispatch('performTransaction', Object.assign({}, transactionData))
+          .then(
+            requestStatus => {
+              this.processes.transaction.active = false;
+              this.processes.transaction.bad = false;
+              this.processes.transaction.failed = false;
+              this.processes.transaction.good = true;
+              this.processes.transaction.details = requestStatus.details;
+
+              setTimeout(() => {
+                this.showDialog = false;
+                this.processes.transactions.good = false;
+              }, 1000);
+            },
+            requestStatus => {
+              this.processes.transaction.bad = false;
+              this.processes.transaction.active = false;
+              this.processes.transaction.failed = true;
+              this.processes.transaction.details = requestStatus.details;
+              this.processes.transaction.error = requestStatus.error;
+            }
+          );
+      }
     },
   },
 };

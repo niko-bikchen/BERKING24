@@ -1,154 +1,575 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import axios from 'axios';
+import createPersistedState from 'vuex-persistedstate';
+import SecureLs from 'secure-ls';
+import REQUEST_STATUSES from '../assets/js/vars';
+
+const ls = new SecureLs({ isCompression: false });
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  plugins: [
+    createPersistedState({
+      storage: {
+        getItem: key => ls.get(key),
+        setItem: (key, value) => ls.set(key, value),
+        removeItem: key => ls.remove(key),
+      },
+    }),
+  ],
   state: {
-    user_cards: [
-      {
-        card_name: 'Sample 1',
-        card_number: '1232123112341231',
-        card_balance: 1234.12,
-        card_expiration: '22-12-2019',
-      },
-      {
-        card_number: '1232123457141231',
-        card_balance: 1234.12,
-        card_expiration: '22-03-2021',
-      },
-      {
-        card_name: 'Hello World',
-        card_number: '1232112322341231',
-        card_balance: 1234.12,
-        card_expiration: '22-03-2022',
-      },
-    ],
-    user_transactions: [
-      {
-        sender: 'John Doe',
-        sender_card: '1234123412341234',
-        receiver: 'Jane Doe',
-        receiver_card: '1232112322341231',
-        description: 'Lorem ipsum',
-        sum: 1234.23,
-        date: '12-08-2019',
-        time: '12:12',
-      },
-      {
-        sender: 'John Doe',
-        sender_card: '1234123412341234',
-        receiver: 'Jane Doe',
-        receiver_card: '1232112322341231',
-        description: 'Lorem ipsum',
-        sum: 200.0,
-        date: '12-08-2019',
-        time: '14:12',
-      },
-    ],
-    user_templates: [
-      {
-        receiver: 'Jane Doe',
-        receiver_card: '1232112322341231',
-        description: 'Lorem ipsum',
-        sum: 200.0,
-      },
-    ],
-    user_deposits: [],
-    user_data: [],
-    user_authorized: false,
+    request: {
+      status: '',
+      details: '',
+      error: '',
+    },
+    user: {
+      cards: [],
+      transactions: [],
+      templates: [],
+      deposits: [],
+      info: {},
+      authorized: true,
+      webtoken: '',
+    },
   },
   mutations: {
     ADD_CARD(state, card) {
-      state.user_cards.push(card);
-    },
-    SET_CARDS(state, cards) {
-      state.user_cards = cards;
+      state.user.cards.push(card);
     },
     ADD_TEMPLATE(state, template) {
-      state.user_templates.push(template);
+      state.user.templates.push(template);
+    },
+    SET_CARDS(state, cards) {
+      state.user.cards = [...cards];
     },
     SET_TEMPLATES(state, templates) {
-      state.user_templates = templates;
-    },
-    PERFORM_TRANSACTION(state, transaction) {
-      state.user_transactions.push(transaction);
+      state.user.templates = [...templates];
     },
     SET_TRANSACTIONS(state, transactions) {
-      state.user_transactions = transactions;
-    },
-    CREATE_DEPOSIT(state, deposit) {
-      state.user_deposits.push(deposit);
+      state.user.transactions = [...transactions];
     },
     SET_DEPOSITS(state, deposits) {
-      state.user_deposits = deposits;
+      state.user.deposits = [...deposits];
     },
-    SET_USER(state, userData) {
-      state.user_data = userData;
+    SET_USER(state, userInfo) {
+      state.user.info.email = userInfo.email;
+      state.user.authorized = true;
     },
-    AUTHORIZE(state, payload) {
-      state.user_authorized = payload;
+    PERFORM_TRANSACTION(state, transaction) {
+      state.user.transactions.push(transaction);
     },
-    SET_PASSWORD(state, payload) {
-      state.user_data.password = payload;
+    CREATE_DEPOSIT(state, deposit) {
+      state.user.deposits.push(deposit);
+    },
+    LOGIN(state) {
+      state.user.authorized = true;
+      sessionStorage.setItem('authorized', true);
+    },
+    LOGOUT(state) {
+      state.user.authorized = false;
+      sessionStorage.setItem('authorized', false);
+    },
+    SET_REQUEST_STATUS(state, status) {
+      state.request = status;
+    },
+    SET_IS_AUTHORIZED(state, status) {
+      state.user.authorized = status;
     },
   },
   actions: {
+    fetchDeposits(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching deposits.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_templates',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Deposits successfuly fetched.',
+            });
+
+            const userDeposits = [];
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(keyOuter => {
+                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
+                  userDeposits.push(response.data.data[keyOuter][keyInner]);
+                });
+              });
+            }
+
+            context.commit('SET_DEPOSITS', userDeposits);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch deposits.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    fetchTemplates(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching templates.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_templates',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Templates successfuly fetched.',
+            });
+
+            const userTemplates = [];
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(keyOuter => {
+                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
+                  userTemplates.push(response.data.data[keyOuter][keyInner]);
+                });
+              });
+            }
+
+            context.commit('SET_TEMPLATES', userTemplates);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch templates.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    fetchTransactions(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching transactions.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_transactions',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Transactions successfuly fetched.',
+            });
+
+            const userTransactions = [];
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(keyOuter => {
+                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
+                  userTransactions.push(response.data.data[keyOuter][keyInner]);
+                });
+              });
+            }
+
+            context.commit('SET_TRANSACTIONS', userTransactions);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch transactions.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    fetchCards(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Fetching cards.',
+      });
+
+      console.log(context.getters.getUserData);
+      console.log(context.getters.getUserData.email);
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/user_cards',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Cards successfuly fetched.',
+            });
+
+            const userCards = [];
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(key => {
+                userCards.push(response.data.data[key]);
+              });
+            }
+
+            context.commit('SET_CARDS', userCards);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to fetch cards.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    restoreAuth(context, status) {
+      context.commit('SET_IS_AUTHORIZED', status);
+    },
     addCard(context, payload) {
-      // TODO: perform POST request to the server
-      context.commit('ADD_CARD', payload);
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Creating card for the user.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/create_card',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+              card_name: payload,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Card successfuly created.',
+            });
+            context.commit('ADD_CARD', response.data.data);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to create new card.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
     addTemplate(context, payload) {
-      // TODO: perform POST request to the server
-      context.commit('ADD_TEMPLATE', payload);
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Creating template.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/api/make_transaction', JSON.stringify(payload), {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(() => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Template created successfuly.',
+            });
+
+            context.commit('ADD_TEMPLATE', payload);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: 'Failed to create a template.',
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
     performTransaction(context, payload) {
-      // TODO: perform POST request to the server
-      context.commit('PERFORM_TRANSACTION', payload);
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Performing transaction.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(payload.target_endpoint, JSON.stringify(payload), {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(() => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Transaction performed successfuly.',
+            });
+
+            context.commit('PERFORM_TRANSACTION', payload);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: 'Failed to perform a transactiom.',
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
     createDeposit(context, payload) {
-      // TODO: perform POST request to the server
       context.commit('CREATE_DEPOSIT', payload);
     },
     changePassword(context, payload) {
-      // TODO: perform POST request to the server
-      context.commit('SET_PASSWORD', payload);
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Changing password.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            '/api/recover_password',
+            JSON.stringify({
+              email: context.getters.getUserData.email,
+              new_password: payload,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(response => {
+            if (response.data.status === 'success') {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.pos,
+                details: 'Password successfuly changed.',
+              });
+            } else {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.neg,
+                details: 'You provided your old password.',
+              });
+            }
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: 'Failed to change password.',
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
     registerUser(context, payload) {
-      // TODO: perform POST request to the server
-      context.commit('SET_USER', payload);
+      const newUser = {};
+      newUser.user_name = payload.name_first;
+      newUser.user_name += ` ${payload.name_middle}`;
+      newUser.user_name += ` ${payload.name_last}`;
+      newUser.user_email = payload.email;
+      newUser.user_password = payload.password;
+
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Registering new user.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/api/registrate', JSON.stringify(newUser), {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(response => {
+            if (response.data.status === 'success') {
+              console.log(newUser);
+              console.log(newUser.user_email);
+
+              context.commit('SET_USER', {
+                email: newUser.user_email,
+              });
+
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.pos,
+                details: 'New user successfuly registered.',
+              });
+
+              context.commit('LOGIN');
+            } else {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.neg,
+                details: 'User with such email already exists.',
+              });
+            }
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to register new user.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
-    authorizeUser() {
-      // TODO: perform POST request to the server
+    authorizeUser(context, payload) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Authorizing user.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/api/authorize', JSON.stringify(payload), {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(response => {
+            if (response.data.status === 'success') {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.pos,
+                details: 'User successfuly authorized.',
+              });
+
+              context.commit('LOGIN');
+
+              console.log(payload.email);
+
+              context.commit('SET_USER', { email: payload.email });
+            } else {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.neg,
+                details:
+                  'You provided invalid credentials. Check your email or password',
+              });
+            }
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to authorize the user.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
-    fetchUserCards() {
-      // TODO: perform GET request to the server
-    },
-    fetchUserTransactions() {
-      // TODO: perform GET request to the server
-    },
-    fetchUserTemplates() {
-      // TODO: perform GET request to the server
-    },
-    fetchUserDeposits() {
-      // TODO: perform GET request to the server
+    logout(context) {
+      context.commit('LOGOUT');
     },
   },
   getters: {
     getCards(state) {
-      return state.user_cards;
+      console.log(state.user.cards);
+      return state.user.cards;
     },
     getTemplates(state) {
-      return state.user_templates;
+      console.log(state.user.templates);
+      return state.user.templates;
     },
     getTransactions(state) {
-      return state.user_transactions;
+      console.log(state.user.transactions);
+      return state.user.transactions;
     },
     getDeposits(state) {
-      return state.user_deposits;
+      return state.user.deposits;
     },
-    userIsAuthorized(state) {
-      return state.user_authorized;
+    getUserData(state) {
+      return state.user.info;
+    },
+    getAuthorizationStatus(state) {
+      return state.user.authorized;
+    },
+    getRequestStatus(state) {
+      return state.request;
     },
   },
 });
