@@ -31,7 +31,7 @@ export default new Vuex.Store({
       templates: [],
       deposits: [],
       info: {},
-      authorized: true,
+      authorized: false,
       webtoken: '',
     },
   },
