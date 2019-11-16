@@ -8,12 +8,16 @@
     "
   >
     <v-col cols="12" v-for="(deposit, index) in deposits" :key="index">
-      <app-deposit :deposit_data="deposit"></app-deposit>
+      <app-deposit :depositData="deposit"></app-deposit>
     </v-col>
     <v-col cols="12">
       <v-dialog v-model="showDialog" persistent>
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" block v-on="on" v-if="cards.length > 0"
+          <v-btn
+            color="primary"
+            block
+            v-on="on"
+            v-if="cards.length > 0 && deposits.length < 1"
             >Create Deposit</v-btn
           >
           <div class="text-center" v-if="cards.length == 0">
@@ -298,8 +302,38 @@ export default {
       }
     },
     createDeposit() {
-      this.showDialog = false;
-      this.$store.dispatch('createDeposit', this.cards[this.deposit_card_num]);
+      const depositData = Object.assign({}, this.deposit.data);
+      depositData.start_date = this.today;
+
+      this.processes.create_deposit.active = true;
+      this.$store
+        .dispatch('createDeposit', Object.assign({}, depositData))
+        .then(
+          requestStatus => {
+            this.processes.create_deposit.active = false;
+            this.processes.create_deposit.bad = false;
+            this.processes.create_deposit.failed = false;
+            this.processes.create_deposit.good = true;
+            this.processes.create_deposit.details = requestStatus.details;
+
+            this.deposit.data.card_num = '';
+            this.deposit.data.init_sum = '';
+            this.deposit.data.end_date = '';
+
+            setTimeout(() => {
+              this.showDialog = false;
+              this.processes.create_deposit.good = false;
+            }, 1000);
+          },
+          requestStatus => {
+            this.processes.create_deposit.active = false;
+            this.processes.create_deposit.bad = false;
+            this.processes.create_deposit.failed = true;
+            this.processes.create_deposit.good = false;
+            this.processes.create_deposit.error = requestStatus.error;
+            this.processes.create_deposit.details = requestStatus.details;
+          }
+        );
     },
   },
   components: {
@@ -307,9 +341,11 @@ export default {
   },
   computed: {
     deposits() {
+      console.log(this.$store.getters.getDeposits);
       return this.$store.getters.getDeposits;
     },
     cards() {
+      console.log(this.$store.getters.getDeposits);
       return this.$store.getters.getCards;
     },
     today() {

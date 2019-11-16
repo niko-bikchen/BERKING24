@@ -137,7 +137,8 @@ export default {
   computed: {
     cards() {
       console.log(this.$store.getters.getCards);
-      return this.$store.getters.getCards;
+      const crds = this.$store.getters.getCards;
+      return crds.slice(0, 2);
     },
     transactions() {
       console.log(this.$store.getters.getTransactions);

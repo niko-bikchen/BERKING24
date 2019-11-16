@@ -43,16 +43,16 @@ export default new Vuex.Store({
       state.user.templates.push(template);
     },
     SET_CARDS(state, cards) {
-      state.user.cards = [...cards];
+      state.user.cards = cards.slice();
     },
     SET_TEMPLATES(state, templates) {
-      state.user.templates = [...templates];
+      state.user.templates = templates.slice();
     },
     SET_TRANSACTIONS(state, transactions) {
-      state.user.transactions = [...transactions];
+      state.user.transactions = transactions.slice();
     },
     SET_DEPOSITS(state, deposits) {
-      state.user.deposits = [...deposits];
+      state.user.deposits = deposits.slice();
     },
     SET_USER(state, userInfo) {
       state.user.info.email = userInfo.email;
@@ -89,7 +89,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios
           .post(
-            '/api/user_templates',
+            '/api/user_deposits',
             JSON.stringify({
               email: context.getters.getUserData.email,
             }),
@@ -167,15 +167,22 @@ export default new Vuex.Store({
                 ) {
                   Object.keys(response.data.data[keyOuter]).forEach(
                     keyInner => {
-                      userTemplates.push(
-                        response.data.data[keyOuter][keyInner]
-                      );
+                      if (
+                        response.data.data[keyOuter][keyInner] !== null &&
+                        response.data.data[keyOuter][keyInner] !== 'null'
+                      ) {
+                        console.log(response.data.data[keyOuter][keyInner]);
+                        userTemplates.push(
+                          response.data.data[keyOuter][keyInner]
+                        );
+                      }
                     }
                   );
                 }
               });
             }
 
+            console.log(userTemplates);
             context.commit('SET_TEMPLATES', userTemplates);
 
             resolve(context.getters.getRequestStatus);
@@ -417,7 +424,36 @@ export default new Vuex.Store({
       });
     },
     createDeposit(context, payload) {
-      context.commit('CREATE_DEPOSIT', payload);
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Creating deposit.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/api/make_deposit', JSON.stringify(payload), {
+            headers: { 'Content-Type': 'application/json' },
+          })
+          .then(() => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().finished.pos,
+              details: 'Deposit successfuly created.',
+            });
+
+            context.commit('CREATE_DEPOSIT', payload);
+
+            resolve(context.getters.getRequestStatus);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: 'Failed to create deposit.',
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
     },
     changePassword(context, payload) {
       context.commit('SET_REQUEST_STATUS', {
