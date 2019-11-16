@@ -35,14 +35,14 @@
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="formStep > 2" step="2"
-                  >Receiver card</v-stepper-step
+                <v-stepper-step :complete="formStep > 3" step="2"
+                  >Money and description</v-stepper-step
                 >
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="formStep > 3" step="3"
-                  >Money and description</v-stepper-step
+                <v-stepper-step :complete="formStep > 2" step="3"
+                  >Receiver card</v-stepper-step
                 >
 
                 <v-divider></v-divider>
