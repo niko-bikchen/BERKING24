@@ -1,7 +1,7 @@
 <template>
   <v-card outlined class="user-transaction">
     <v-card-title>
-      {{ transaction_data.date }} | {{ transaction_data.time }}
+      {{ transaction_data.date }}
     </v-card-title>
     <v-card-text>
       <p class="text--primary subtitle-1">

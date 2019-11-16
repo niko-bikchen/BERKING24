@@ -8,14 +8,10 @@
     "
   >
     <v-col cols="12" v-for="(transaction, index) in transactions" :key="index">
-      <app-transaction :transaction_data="transaction.data"></app-transaction>
+      <app-transaction :transaction_data="transaction"></app-transaction>
     </v-col>
     <v-col cols="12">
-      <v-dialog
-        v-model="showMakeTransactionDialog"
-        persistent
-        max-width="600px"
-      >
+      <v-dialog v-model="showMakeTransactionDialog" persistent>
         <template v-slot:activator="{ on }">
           <v-btn block color="primary" dark v-on="on" v-if="cards.length > 0"
             >Make Transaction</v-btn
@@ -37,14 +33,16 @@
                   >Sender card</v-stepper-step
                 >
 
-                <v-stepper-step :complete="stepNum > 2" step="1"
-                  >Receiver card</v-stepper-step
-                >
-
                 <v-divider></v-divider>
 
                 <v-stepper-step :complete="stepNum > 3" step="2"
                   >Money and description</v-stepper-step
+                >
+
+                <v-divider></v-divider>
+
+                <v-stepper-step :complete="stepNum > 2" step="3"
+                  >Receiver card</v-stepper-step
                 >
 
                 <v-divider></v-divider>
@@ -146,7 +144,7 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                  <v-card height="200px">
+                  <v-card>
                     <v-card-text>
                       <v-container>
                         <v-row>
@@ -367,6 +365,14 @@ export default {
         this.sender_card_num
       ].card_number;
 
+      let today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      today = `${dd}/${mm}/${yyyy}`;
+
+      this.transaction.data.date = today;
+
       this.$store
         .dispatch(
           'performTransaction',
@@ -386,7 +392,7 @@ export default {
 
             setTimeout(() => {
               this.showMakeTransactionDialog = false;
-              this.processes.transactions.good = false;
+              this.processes.transaction.good = false;
             }, 1000);
           },
           requestStatus => {
@@ -399,8 +405,10 @@ export default {
         );
     },
     checkBalance() {
+      console.log('Jopa');
+      console.log(this.cards[this.sender_card_num]);
       if (
-        this.cards[this.sender_card_num].card_balance >=
+        Number(this.cards[this.sender_card_num].card_balance) >=
         this.transaction.data.sum
       ) {
         this.inputValid.sender_balance.isValid = true;

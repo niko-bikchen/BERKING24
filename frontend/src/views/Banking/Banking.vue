@@ -453,6 +453,7 @@ export default {
         requestStatus => {
           if (requestStatus.status === REQUEST_STATUSES().finished.pos) {
             this.showAuthDialog = false;
+            this.showRegistDialog = false;
 
             this.processes.auth.active = false;
             this.processes.auth.bad = false;
@@ -460,6 +461,8 @@ export default {
 
             this.user.email = '';
             this.user.password = '';
+
+            localStorage.removeItem('vuex');
 
             if (this.$route.path !== '/berking') {
               this.$router.push({ path: '/berking' });
@@ -501,6 +504,8 @@ export default {
               this.new_user.name_last = '';
               this.new_user.email = '';
               this.new_user.password = '';
+
+              localStorage.removeItem('vuex');
 
               if (this.$route.path !== '/berking') {
                 this.$router.push({ path: '/berking' });
