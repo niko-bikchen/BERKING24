@@ -7,10 +7,10 @@ void OperationManager::do_addUser(const DefferedIUser& u)
 
 	//constructing document representation of the User
 	bsoncxx::builder::basic::document doc;
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("name", u->getName()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("password", u->getPassword()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("email", u->getEmail()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("webtoken", u->getWebToken()));
+	doc.append(kvp("name", u->getName()));
+	doc.append(kvp("password", u->getPassword()));
+	doc.append(kvp("email", u->getEmail()));
+	doc.append(kvp("webtoken", u->getWebToken()));
 
 	//Adding cards
 	std::list<std::string>cards = u->getCards();
@@ -20,7 +20,7 @@ void OperationManager::do_addUser(const DefferedIUser& u)
 	{
 		array_builder.bsoncxx::builder::basic::sub_array::append(*i);
 	}
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("cards", array_builder));
+	doc.append(bsoncxx::builder::basic::kvp("cards", array_builder));
 
 	//Adding the user
 	mongocxx::collection coll = _db["users"];
@@ -34,7 +34,7 @@ DefferedIUser OperationManager::do_getUser(std::string email)const
 	{
 		//retriving User from bd
 		mongocxx::collection coll = _db["users"];
-		auto cursor = coll.find(bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("email", email)));
+		auto cursor = coll.find(make_document(bsoncxx::builder::basic::kvp("email", email)));
 		bsoncxx::document::view userView;
 		for (auto&& doc : cursor)
 		{
@@ -59,7 +59,7 @@ DefferedIUser OperationManager::do_getUser(std::string email)const
 		return u;
 	}
 	else {
-		return DefferedIUser("dumy","dumy","dumy","dumy");
+		return DefferedIUser("dummy","dummy","dummy","dummy");
 	}
 }
 
@@ -71,7 +71,7 @@ DefferedISaveDeposit OperationManager::do_getSaveDeposit(std::string num)const
 	{
 		//retriving User from bd
 		mongocxx::collection coll = _db["deposits"];
-		auto cursor = coll.find(bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("card_number", num)));
+		auto cursor = coll.find(make_document(kvp("card_number", num)));
 		bsoncxx::document::view depositView;
 		for (auto&& doc : cursor)
 		{
@@ -87,7 +87,7 @@ DefferedISaveDeposit OperationManager::do_getSaveDeposit(std::string num)const
 		return dp;
 	}
 	else {
-		return DefferedISaveDeposit("dumy", "dumy", "dumy", 0);
+		return DefferedISaveDeposit("dummy", "dummy", "dummy", 0);
 	}
 }
 
@@ -146,22 +146,97 @@ std::vector<DefferedICard> OperationManager::do_getAllCards()const
 	mongocxx::collection coll = _db["cards"];
 	auto cursor = coll.find({});
 	std::vector<DefferedICard>* u = new std::vector<DefferedICard>();
-	for (auto&& doc : cursor) {
+	for (auto&& doc : cursor) 
+	{
 		auto ellement = doc["number_card"];
 		u->insert(u->begin(), 1, OperationManager::getInstance()->getCard(ellement.get_utf8().value.to_string()));
 	}
 	return std::vector<DefferedICard>(*u);
 }
+//end Deposit
+void OperationManager::do_deleteCard(std::string num)
+{
+	mongocxx::collection coll = _db["cards"];
 
+	if (cardExist(num))
+	{
+		
+		deleteDeposit(num, DepositFunctor(188,366));
+		DefferedICard c = getCard(num);
+		coll.delete_one(make_document(kvp("number_card", num)));
+		std::vector<DefferedIUser> users = getAllUsers();
+		for (auto&& user : users)
+		{
+			if (user->hasCard(num))
+			{
+				std::list<std::string> list=user->getCards();
+				if (*list.begin() != *(--list.end()))
+				{
+					if (*list.begin() != num)
+					{
+						DefferedICard c2 = getCard(*list.begin());
+						c2->setBalance(c2->getBalance() + c->getBalance());
+					}
+					else
+					{
+						DefferedICard c2 = getCard(*(--list.end()));
+						c2->setBalance(c2->getBalance() + c->getBalance());
+					}
+				}
+				list.remove(num);
+				user->setCards(list);
+			}
+		}
+
+	}
+}
+
+
+
+
+std::vector<DefferedICard> OperationManager::do_getAllUsersCards(std::string email)
+{
+	if (userExist(email))
+	{
+		DefferedIUser u = getUser(email);
+		std::list<std::string> list = u->getCards();
+		std::vector<DefferedICard>* vector = new std::vector<DefferedICard>();
+		std::list<std::string>::iterator i;
+		for (i = list.begin(); i != list.end(); ++i)
+		{
+			vector->insert(vector->begin(), 1, OperationManager::getInstance()->getCard(*i));
+		}
+		return *vector;
+	}
+	else
+	{
+		return std::vector<DefferedICard>();
+	}
+}
+
+void OperationManager::do_deleteDeposit(std::string num, const DepositFunctor& func)
+{
+	if (depositExist(num))
+	{
+		DefferedISaveDeposit d = getSaveDeposit(num);
+		unsigned long sum = func(d->getBalance());
+		_db["deposits"].delete_one(make_document(kvp("card_number", num)));
+		if (cardExist(num))
+		{
+			DefferedICard c = getCard(num);
+			c->setBalance(c->getBalance() + sum);
+		}
+	}
+}
 
 void OperationManager::do_addSaveDeposit(const DefferedISaveDeposit& dp)
 {
 	//constructing document representation of the User
 	bsoncxx::builder::basic::document doc;
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("card_number", dp->getCardNum()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("start_date", dp->getStartDate()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("end_date", dp->getEndDate()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("balance", std::to_string(dp->getBalance())));
+	doc.append(kvp("card_number", dp->getCardNum()));
+	doc.append(kvp("start_date", dp->getStartDate()));
+	doc.append(kvp("end_date", dp->getEndDate()));
+	doc.append(kvp("balance", std::to_string(dp->getBalance())));
 
 	//Adding the deposit
 	mongocxx::collection coll = _db["deposits"];
@@ -173,14 +248,14 @@ void OperationManager::do_addCard(const DefferedICard& c)
 {
 	//constructing document representation of the User
 	bsoncxx::builder::basic::document doc;
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("number_card", c->getNumber()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("cvv", std::to_string(c->getCVV())));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("pin", std::to_string(c->getPIN())));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("name", c->getName()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("date_end", c->getDate()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("card_balance", std::to_string(c->getBalance())));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("transactions", bsoncxx::builder::basic::make_array()));
-	doc.bsoncxx::builder::basic::sub_document::append(bsoncxx::builder::basic::kvp("templates", bsoncxx::builder::basic::make_array()));
+	doc.append(kvp("number_card", c->getNumber()));
+	doc.append(kvp("cvv", std::to_string(c->getCVV())));
+	doc.append(kvp("pin", std::to_string(c->getPIN())));
+	doc.append(kvp("name", c->getName()));
+	doc.append(kvp("date_end", c->getDate()));
+	doc.append(kvp("card_balance", std::to_string(c->getBalance())));
+	doc.append(kvp("transactions", bsoncxx::builder::basic::make_array()));
+	doc.append(kvp("templates", bsoncxx::builder::basic::make_array()));
 
 	//Adding the deposit
 	mongocxx::collection coll = _db["cards"];
@@ -213,16 +288,16 @@ DefferedICard OperationManager::do_getCard(std::string number)const
 	}
 	else
 	{
-		return DefferedICard("dumy",111,111,"dumy","dumy");
+		return DefferedICard("dummy",111,111,"dummy","dummy");
 	}
 }
 bsoncxx::document::value  transactionToDocument(const ICard::Transaction& tr)
 {
-	return bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("trans_date", tr.getDate()),
-		bsoncxx::builder::basic::kvp("senderCN", tr.getSenderCardNum()),
-		bsoncxx::builder::basic::kvp("recieverCN", tr.getrecieverCardNum()),
-		bsoncxx::builder::basic::kvp("sum", std::to_string(tr.getSum())),
-		bsoncxx::builder::basic::kvp("description", tr.getDescription()));
+	return make_document(kvp("trans_date", tr.getDate()),
+		kvp("senderCN", tr.getSenderCardNum()),
+		kvp("recieverCN", tr.getrecieverCardNum()),
+		kvp("sum", std::to_string(tr.getSum())),
+		kvp("description", tr.getDescription()));
 }
 
 

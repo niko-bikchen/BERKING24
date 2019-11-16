@@ -1,17 +1,20 @@
 #pragma once
-#include "IUser.h"
+#include "DefferedIUser.h"
 
 class User :public IUser
 {
 public:
-	User(std::string wT, std::string name, std::string password, std::string email,const std::list<std::string>& cards = {}) :
-		_webToken(wT),_name(name),_password(password),_email(email),_cards(cards)
-	{
-
-	}
+	friend  DefferedIUser::DefferedIUser(std::string, std::string, std::string, std::string, const std::list<std::string>&);
 	
 	~User() {}
 private:
+	User(std::string wT, std::string name, std::string password, std::string email, const std::list<std::string>& cards = {}) :
+		_webToken(wT), _name(name), _password(password), _email(email), _cards(cards)
+	{
+
+	}
+
+
 	User& operator=(const User&);
 	User(const User&);
 
@@ -24,7 +27,7 @@ private:
 	class UserProxy;
 	 
 	 void do_addCard(std::string);
-	 void do_deleteCard(std::string);
+	 bool do_hasCard(std::string);
 	 const std::list<std::string>& do_getCards()const;
 	 void do_setCards(std::list<std::string>&);
 	 std::string do_getWebToken() const;
@@ -35,7 +38,6 @@ private:
 	 void do_setPassword(std::string);
 	 std::string do_getEmail() const;
 	 void do_setEmail(std::string);
-	 void do_endDeposit(const ISaveDeposit&);
 	 std::ostream& do_print(std::ostream&) const;
 	
 };

@@ -27,19 +27,13 @@ void User::UserProxy::do_addCard(std::string num)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-void User::UserProxy::do_deleteCard(std::string)
-{
-}
-
-const std::list<std::string>& User::UserProxy::do_getCards() const
-{
-	return _user._cards;
-}
 
 void User::UserProxy::do_setCards(std::list<std::string>& cards)
 {
@@ -63,15 +57,13 @@ void User::UserProxy::do_setCards(std::list<std::string>& cards)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::string User::UserProxy::do_getWebToken() const
-{
-	return _user._webToken;
-}
 
 void User::UserProxy::do_setWebToken(std::string web)
 {
@@ -87,15 +79,13 @@ void User::UserProxy::do_setWebToken(std::string web)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::string User::UserProxy::do_getName() const
-{
-	return _user._name;
-}
 
 void User::UserProxy::do_setName(std::string name)
 {
@@ -112,15 +102,13 @@ void User::UserProxy::do_setName(std::string name)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::string User::UserProxy::do_getPassword() const
-{
-	return _user._password;
-}
 
 void User::UserProxy::do_setPassword(std::string pass)
 {
@@ -137,15 +125,13 @@ void User::UserProxy::do_setPassword(std::string pass)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::string User::UserProxy::do_getEmail() const
-{
-	return _user._email;
-}
 
 void User::UserProxy::do_setEmail(std::string em)
 {
@@ -162,17 +148,13 @@ void User::UserProxy::do_setEmail(std::string em)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
 
-void User::UserProxy::do_endDeposit(const ISaveDeposit &)
-{
-}
 
-std::ostream & User::UserProxy::do_print(std::ostream & os) const
-{
-	return _user.do_print(os);
-}
+

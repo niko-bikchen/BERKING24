@@ -9,21 +9,20 @@ void User::do_addCard(std::string tm)
 	_cards.insert(_cards.begin(), 1, tm);
 }
 
-void User::do_deleteCard(std::string cardNum)
+bool User::do_hasCard(std::string num)
 {
 	std::list<std::string>::iterator i;
-	for ( i=_cards.begin(); i!=_cards.end(); ++i)
+	for (i = _cards.begin(); i != _cards.end(); i++)
 	{
-		if (*i != cardNum && i ==_cards.end())
+		if (*i == num)
 		{
-			return;
+			return true;
 		}
-		
 	}
-
-	_cards.remove(cardNum);
-
+	return false;
 }
+
+
 
  const std::list<std::string>& User::do_getCards() const
 {
@@ -90,10 +89,7 @@ void User::do_setEmail(std::string em)
 	_email = em;
 }
 
-//TODO BD
-void User::do_endDeposit(const ISaveDeposit &)
-{
-}
+
 
 std::ostream & User::do_print(std::ostream & os) const
 {

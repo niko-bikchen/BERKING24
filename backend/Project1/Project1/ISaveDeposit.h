@@ -31,11 +31,7 @@ public:
 		return do_setEndDate(date);
 	}
 
-	void endDeposit()
-	{
-		return do_endDeposit();
-	}
-
+	
 	void setCard(std::string cardNum)
 	{
 		return do_setCard(cardNum);
@@ -63,6 +59,6 @@ private:
 	virtual void do_setStartDate(std::string) = 0;
 	virtual std::string do_getEndDate() const = 0;
 	virtual void do_setEndDate(std::string date) = 0;
-	virtual void do_endDeposit() = 0;
+
 };
 

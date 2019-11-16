@@ -1,6 +1,7 @@
 #pragma once
+#include "DefferedICard.h"
 #include <string>
-#include "ICard.h"
+
 
 
 
@@ -8,18 +9,21 @@
 class Card :public ICard
 {
 public:
-	Card(std::string num, unsigned int cvv,  unsigned int pin, std::string name, std::string endDate,
-		std::vector<Transaction> transaction , std::vector<Transaction> templates,unsigned long balance = 0) :
-		_number(num),_cvv(cvv),_pin(pin),_name(name),_endDate(endDate),_balance(balance),
-			_transactions(transaction),_templates(templates)
-	{
-	
-	}
+	friend  DefferedICard::DefferedICard(std::string , unsigned int , unsigned int , std::string , std::string ,
+		std::vector<Transaction> , std::vector<Transaction> , unsigned long);
 	
 	~Card() {}
 
 	
 private:
+	Card(std::string num, unsigned int cvv, unsigned int pin, std::string name, std::string endDate,
+		std::vector<Transaction> transaction, std::vector<Transaction> templates, unsigned long balance = 0) :
+		_number(num), _cvv(cvv), _pin(pin), _name(name), _endDate(endDate), _balance(balance),
+		_transactions(transaction), _templates(templates)
+	{
+
+	}
+
 	Card& operator=(const Card&);
 	Card(const Card&);
 
@@ -79,6 +83,8 @@ private:
 	 std::string do_getDate()const;
 
 	 std::ostream& do_print(std::ostream&)const;
+
+	 void do_deleteTemplate(const Card::Transaction&);
 	
 };
 

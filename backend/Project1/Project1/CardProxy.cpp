@@ -23,10 +23,6 @@ void Card::CardProxy::do_setDate(std::string s)
 
 }
 
-std::string Card::CardProxy::do_getDate() const
-{
-	return _card._endDate;
-}
 
 void Card::CardProxy::do_setNumber(std::string num)
 {
@@ -47,15 +43,6 @@ void Card::CardProxy::do_setNumber(std::string num)
 	}
 }
 
-std::string Card::CardProxy::do_getNumber() const
-{
-	return _card._number;
-}
-
-unsigned int Card::CardProxy::do_getCVV() const
-{
-	return _card._cvv;
-}
 
 void Card::CardProxy::do_setCVV(unsigned int num)
 {
@@ -76,10 +63,7 @@ void Card::CardProxy::do_setCVV(unsigned int num)
 	}
 }
 
-unsigned int Card::CardProxy::do_getPIN() const
-{
-	return _card._pin;
-}
+
 
 void Card::CardProxy::do_setPIN(unsigned int num)
 {
@@ -100,10 +84,7 @@ void Card::CardProxy::do_setPIN(unsigned int num)
 	}
 }
 
-std::string Card::CardProxy::do_getName() const
-{
-	return _card._name;
-}
+
 
 void Card::CardProxy::do_setName(std::string name)
 {
@@ -124,10 +105,7 @@ void Card::CardProxy::do_setName(std::string name)
 	}
 }
 
-unsigned long Card::CardProxy::do_getBalance() const
-{
-	return _card._balance;
-}
+
 
 void Card::CardProxy::do_setBalance(unsigned long money)
 {
@@ -148,10 +126,7 @@ void Card::CardProxy::do_setBalance(unsigned long money)
 	}
 }
 
-const std::vector<Card::Transaction>& Card::CardProxy::do_getTransactions() const
-{
-	return _card._transactions;
-}
+
 
 
 void Card::CardProxy::do_setTransactions(std::vector<Transaction>& tr)
@@ -179,10 +154,6 @@ void Card::CardProxy::do_setTransactions(std::vector<Transaction>& tr)
 	}
 }
 
-const std::vector<Card::Transaction>& Card::CardProxy::do_getTemplates() const
-{
-	return _card._templates;
-}
 
 void Card::CardProxy::do_setTemplates(std::vector<Transaction>& tm)
 {
@@ -205,7 +176,9 @@ void Card::CardProxy::do_setTemplates(std::vector<Transaction>& tm)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
@@ -233,7 +206,9 @@ void Card::CardProxy::do_addTemplate(const Transaction & tr)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
@@ -261,12 +236,45 @@ void Card::CardProxy::do_addTransaction(const Transaction &tr)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::ostream & Card::CardProxy::do_print(std::ostream & os) const
+
+
+void Card::CardProxy::do_deleteTemplate(const Card::Transaction & temp)
 {
-	return _card.do_print(os);
+	IOperationManager* op = OperationManager::getInstance();
+	if (op->cardExist(_card.getNumber()))
+	{
+		DefferedICard c = op->getCard(_card.getNumber());
+		if (*c.operator->() == _card)
+		{
+			auto array_builder = bsoncxx::builder::basic::array{};
+			std::vector<Transaction>::iterator i;
+			std::vector<Transaction> ar = _card.do_getTransactions();
+			for (i = ar.begin(); i != ar.end(); ++i)
+			{
+				if (!(*i == temp))
+				{
+					array_builder.append(transactionToDocument(*i));
+				}
+				
+			}
+			
+			mongocxx::collection coll = op->getDB()["cards"];
+			coll.update_one(make_document(kvp("number_card", _card.getNumber())), make_document(kvp("$set",
+				make_document(kvp("transactions", array_builder)))));
+		}
+		else
+		{
+#if DEBUG
+			std::cout << "You are using an old object" << std::endl;
+#endif
+		}
+	}
+
 }

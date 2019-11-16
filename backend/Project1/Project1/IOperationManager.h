@@ -13,7 +13,7 @@
 #include "DefferedICard.h"
 #include "DefferedIDeposit.h"
 #include "DefferedIUser.h"
-
+#include "DepositFunctor.h"
 class IOperationManager :IManager
 {
 public:
@@ -75,7 +75,22 @@ public:
 	{
 		return do_depositExist(num);
 	}
+	void deleteCard(std::string num)
+	{
+		return do_deleteCard(num);
+	}
+	void deleteDeposit(std::string num,const DepositFunctor& func)
+	{
+		return do_deleteDeposit(num,func);
+	}
+	std::vector<DefferedICard> getAllUsersCards(std::string email)
+	{
+		return do_getAllUsersCards(email);
+	}
 private:
+	virtual std::vector<DefferedICard> do_getAllUsersCards(std::string) = 0;
+	virtual void do_deleteDeposit(std::string ,const DepositFunctor&) = 0;
+	virtual void do_deleteCard(std::string) = 0;
 	virtual std::vector<DefferedISaveDeposit> do_getAllDeposits()const = 0;
 	virtual std::vector<DefferedICard> do_getAllCards()const = 0;
 	virtual void do_addSaveDeposit(const DefferedISaveDeposit&) = 0;

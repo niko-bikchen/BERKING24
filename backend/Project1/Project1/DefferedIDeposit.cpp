@@ -5,16 +5,17 @@ struct DefferedISaveDeposit::DepositRep
 {
 	ISaveDeposit* _deposit;
 	size_t _members;
-	DepositRep(std::string cN, std::string sD, std::string eD, unsigned long sum) :
-		_deposit(new SaveDeposit(cN, sD, eD, sum)),_members(1)
+	DepositRep(ISaveDeposit* s) :
+		_deposit(s),_members(1)
 	{
 	}
 };
 
 
 DefferedISaveDeposit::DefferedISaveDeposit(std::string cN, std::string sD, std::string eD, unsigned long sum):
-	_depositRep(new DepositRep(cN,sD,eD,sum))
+	_depositRep(new DepositRep(new SaveDeposit(cN, sD, eD, sum)))
 {
+	
 }
 
 DefferedISaveDeposit::DefferedISaveDeposit(const DefferedISaveDeposit &d):_depositRep(d._depositRep)

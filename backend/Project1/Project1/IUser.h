@@ -11,15 +11,11 @@ public:
 	IUser() {};
 	virtual ~IUser() {};
 
-	void addCard(std::string name)
+	void addCard(std::string cardNUM)
 	{
-		return do_addCard(name);
+		return do_addCard(cardNUM);
 	}
 
-	void deleteCard(std::string cardNum)
-	{
-		return do_deleteCard(cardNum);
-	}
 	
 	const std::list<std::string>& getCards() const
 	{
@@ -64,16 +60,16 @@ public:
 		return do_setEmail(em);
 	}
 
-	void endDeposit(const ISaveDeposit& dp)
+	bool hasCard(std::string num)
 	{
-		return do_endDeposit(dp);
+		return do_hasCard(num);
 	}
 
 	
 
 private:
 	virtual void do_addCard(std::string) = 0;
-	virtual void do_deleteCard(std::string) = 0;
+	virtual bool do_hasCard(std::string) = 0;
 	virtual const std::list<std::string>& do_getCards()const = 0;
 	virtual void do_setCards(std::list<std::string>&) = 0;
 	virtual std::string do_getWebToken() const = 0;
@@ -84,6 +80,6 @@ private:
 	virtual void do_setPassword(std::string) = 0;
 	virtual std::string do_getEmail() const = 0;
 	virtual void do_setEmail(std::string) = 0;
-	virtual void do_endDeposit(const ISaveDeposit&) = 0;
+	
 
 };

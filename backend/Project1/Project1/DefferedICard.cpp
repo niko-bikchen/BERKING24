@@ -5,10 +5,7 @@ struct DefferedICard::CardRep
 {
 	ICard* _card;
 	size_t _members;
-	CardRep(std::string num, unsigned int cvv, unsigned int pin, std::string name,
-		std::string endDate, std::vector<ICard::Transaction> transaction,
-		std::vector<ICard::Transaction> templates, unsigned long balance) :_card(new Card(num,cvv,pin,name,
-			                                             endDate,transaction,templates,balance)),_members(1)
+	CardRep(ICard* card) :_card(card),_members(1)
 	{
 	}
 };
@@ -16,8 +13,8 @@ struct DefferedICard::CardRep
 
 DefferedICard::DefferedICard(std::string num, unsigned int cvv, unsigned int pin, std::string name,
 	std::string endDate, std::vector<ICard::Transaction> transaction,
-	std::vector<ICard::Transaction> templates, unsigned long balance):_cardRep(new CardRep(num,cvv,pin,name,
-		                                                                endDate,transaction,templates,balance))
+	std::vector<ICard::Transaction> templates, unsigned long balance):_cardRep(new CardRep(new Card(num,cvv,pin,name,
+		                                                                endDate,transaction,templates,balance)))
 {
 }
 

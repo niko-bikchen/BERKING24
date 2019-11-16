@@ -1,20 +1,19 @@
-#include "DefferedIUser.h"
+
 #include "User.h"
 
 struct DefferedIUser::UserRep
 {
 	IUser* _user;
 	size_t _members;
-	UserRep(std::string wT, std::string name, std::string password,
-		std::string email, const std::list<std::string>& cards) :
-		_user(new User(wT,name,password,email,cards)),_members(1)
+	UserRep(IUser* u) :
+		_user(u),_members(1)
 	{
 	}
 };
 
 
 DefferedIUser::DefferedIUser(std::string wT, std::string name, std::string password,
-	std::string email, const std::list<std::string>& cards):_userRep(new UserRep(wT,name,password,email,cards))
+	std::string email, const std::list<std::string>& cards):_userRep(new UserRep(new User(wT,name,password,email,cards)))
 {
 }
 

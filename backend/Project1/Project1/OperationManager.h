@@ -49,7 +49,8 @@ private:
   mongocxx::database& _db;
   static OperationManager* _op;
 
-
+  std::vector<DefferedICard> do_getAllUsersCards(std::string);
+  void do_deleteDeposit(std::string ,const DepositFunctor&);
   void do_addSaveDeposit(const DefferedISaveDeposit&);
   void do_addCard(const DefferedICard&);
   void do_addUser(const DefferedIUser&);
@@ -61,9 +62,9 @@ private:
   bool do_userExist(std::string email)const;
   bool do_cardExist(std::string num)const;
   bool do_depositExist(std::string num)const;
-  virtual std::vector<DefferedISaveDeposit> do_getAllDeposits()const;
-  virtual std::vector<DefferedICard> do_getAllCards()const;
-
+  std::vector<DefferedISaveDeposit> do_getAllDeposits()const;
+  std::vector<DefferedICard> do_getAllCards()const;
+  void do_deleteCard(std::string);
 
   const mongocxx::database& do_getDB() const
   {

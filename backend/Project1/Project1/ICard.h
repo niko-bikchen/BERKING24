@@ -98,10 +98,14 @@ public:
 		return do_setDate(st);
 	}
 	
-
+	void deleteTemplate(const ICard::Transaction& t)
+	{
+		return do_deleteTemplate(t);
+	}
 	
 
 private:
+	virtual void do_deleteTemplate(const ICard::Transaction&) = 0;
 	virtual void do_setDate(std::string) = 0;
 	virtual std::string do_getDate()const = 0;
 	virtual void do_setNumber(std::string) = 0;
@@ -120,6 +124,7 @@ private:
 	virtual void do_setTemplates( std::vector<Transaction>&) = 0;
 	virtual void do_addTemplate(const Transaction&) = 0;
 	virtual void do_addTransaction(const Transaction&) = 0;
+
 
 
 };

@@ -1,10 +1,7 @@
 #include "SaveDepositProxy.h"
 #include "OperationManager.h"
 
-unsigned long SaveDeposit::SaveDepositProxy::do_getBalance() const
-{
-	return _deposit._sum;
-}
+
 
 void SaveDeposit::SaveDepositProxy::do_setBalance(unsigned long c)
 {
@@ -20,15 +17,13 @@ void SaveDeposit::SaveDepositProxy::do_setBalance(unsigned long c)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::ostream & SaveDeposit::SaveDepositProxy::do_print(std::ostream & out) const
-{
-	return _deposit.do_print(out);
-}
 
 void SaveDeposit::SaveDepositProxy::do_setCard(std::string num)
 {
@@ -45,20 +40,15 @@ void SaveDeposit::SaveDepositProxy::do_setCard(std::string num)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::string SaveDeposit::SaveDepositProxy::do_getCardNum() const
-{
-	return _deposit._cardNum;
-}
 
-std::string SaveDeposit::SaveDepositProxy::do_getStartDate() const
-{
-	return _deposit._startDate;
-}
+
 
 void SaveDeposit::SaveDepositProxy::do_setStartDate(std::string date)
 {
@@ -75,15 +65,13 @@ void SaveDeposit::SaveDepositProxy::do_setStartDate(std::string date)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-std::string SaveDeposit::SaveDepositProxy::do_getEndDate() const
-{
-	return _deposit._endDate;
-}
 
 void SaveDeposit::SaveDepositProxy::do_setEndDate(std::string date)
 {
@@ -100,13 +88,13 @@ void SaveDeposit::SaveDepositProxy::do_setEndDate(std::string date)
 		}
 		else
 		{
+#if DEBUG
 			std::cout << "You are using an old object" << std::endl;
+#endif
 		}
 	}
 }
 
-void SaveDeposit::SaveDepositProxy::do_endDeposit()
-{
-}
+
 
 

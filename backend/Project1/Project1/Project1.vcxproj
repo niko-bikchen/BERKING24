@@ -121,6 +121,7 @@
     <ClInclude Include="DefferedICard.h" />
     <ClInclude Include="DefferedIDeposit.h" />
     <ClInclude Include="DefferedIUser.h" />
+    <ClInclude Include="DepositFunctor.h" />
     <ClInclude Include="ICard.h" />
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="IManager.h" />

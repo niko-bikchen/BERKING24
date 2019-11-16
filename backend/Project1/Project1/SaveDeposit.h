@@ -1,21 +1,25 @@
 #pragma once
-#include "ISaveDeposit.h"
+
 
 #include <string>"
+#include "DefferedIDeposit.h"
+
 
 class SaveDeposit :public ISaveDeposit
 {
 public:
-	SaveDeposit(std::string cN, std::string sD, std::string eD,unsigned long sum):
-		_cardNum(cN),_startDate(sD),_endDate(eD),_sum(sum)
+	friend  DefferedISaveDeposit::DefferedISaveDeposit(std::string , std::string , std::string , unsigned long );
+	
+
+	~SaveDeposit() {}
+private:
+	SaveDeposit(std::string cN, std::string sD, std::string eD, unsigned long sum) :
+		_cardNum(cN), _startDate(sD), _endDate(eD), _sum(sum)
 
 	{
 
 	}
-	
-	//TODO firstly implement db and Depositmanager
-	~SaveDeposit() {}
-private:
+
 	SaveDeposit& operator=(const SaveDeposit&);
 	SaveDeposit(const SaveDeposit&);
 
@@ -35,7 +39,7 @@ private:
 	 void do_setStartDate(std::string);
 	 std::string do_getEndDate() const;
 	 void do_setEndDate(std::string date);
-	 void do_endDeposit();
+
 	
 };
 

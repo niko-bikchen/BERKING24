@@ -127,6 +127,25 @@ std::ostream & Card::do_print(std::ostream & os) const
 	return os;
 }
 
+void Card::do_deleteTemplate(const Card::Transaction & t)
+{
+	CardProxy c = CardProxy(*this);
+	c.do_deleteTemplate(t);
+	size_t counter = 0;
+	for (Card::Transaction temp : _templates)
+	{
+		if (!(temp == t))
+		{
+			counter++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	_templates.erase(_templates.begin()+counter);
+}
+
 std::ostream& operator<<(std::ostream&os, const Card::Transaction& tr)
 {
 	os << "Date :" << (tr.getDate()) << '\n'

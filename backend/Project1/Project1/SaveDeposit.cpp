@@ -61,10 +61,7 @@ void SaveDeposit::do_setEndDate(std::string date)
 	c.do_setEndDate(date);
 	_endDate = date;
 }
-//TODO firstly need to implement db and IDepositManager
-void SaveDeposit::do_endDeposit()
-{
-}
+
 
 bool operator==(const ISaveDeposit &deposit1, const ISaveDeposit &deposit2)
 {
