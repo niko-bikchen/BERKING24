@@ -1,6 +1,7 @@
-
+//The file was written by Haponenko Vladislav 16.11.2019
 #include "User.h"
 
+//user representation which envolves number of clients who uses a deffered user and an actual users
 struct DefferedIUser::UserRep
 {
 	IUser* _user;

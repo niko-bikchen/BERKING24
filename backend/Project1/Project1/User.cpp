@@ -1,3 +1,4 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #include "UserProxy.h"
 #include "User.h"
 

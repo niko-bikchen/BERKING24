@@ -1,6 +1,9 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #include "DefferedICard.h"
 #include "Card.h"
 
+
+//card representation which envolves number of clients who uses a deffered card and an actual card
 struct DefferedICard::CardRep
 {
 	ICard* _card;

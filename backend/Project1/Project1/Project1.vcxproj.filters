@@ -30,9 +30,6 @@
     <ClInclude Include="ICard.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="IManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="IEntity.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

@@ -1,3 +1,4 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #pragma once
 #include "Card.h"
 #include "CardProxy.h"
@@ -5,9 +6,11 @@
 
 void Card::do_setNumber(std::string num)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setNumber(num);
+
+	//setting for the instance of a Card class
 	_number = num;
 }
 std::string  Card::do_getNumber() const
@@ -20,9 +23,11 @@ unsigned int  Card::do_getCVV()const
 }
 void  Card::do_setCVV(unsigned int cvv)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setCVV(cvv);
+
+	// setting for the instance of a Card class
 	_cvv = cvv;
 }
 unsigned int  Card::do_getPIN() const
@@ -31,9 +36,11 @@ unsigned int  Card::do_getPIN() const
 }
 void   Card::do_setPIN(unsigned int pin)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setPIN(pin);
+
+	// setting for the instance of a Card class
 	_pin = pin;
 }
 std::string  Card::do_getName()const
@@ -42,9 +49,11 @@ std::string  Card::do_getName()const
 }
 void  Card::do_setName(std::string name)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setName(name);
+
+	// setting for the instance of a Card class
 	_name = name;
 }
 unsigned long  Card::do_getBalance() const
@@ -53,9 +62,11 @@ unsigned long  Card::do_getBalance() const
 }
 void  Card::do_setBalance(unsigned long bal)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setBalance(bal);
+
+	// setting for the instance of a Card class
 	_balance = bal;
 }
 
@@ -66,9 +77,11 @@ const std::vector< ICard::Transaction>&  Card::do_getTransactions()const
 
 void  Card::do_setTransactions( std::vector<Card::Transaction>& tr)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setTransactions(tr);
+
+	// setting for the instance of a Card class
 	_transactions = tr;
 }
 
@@ -79,34 +92,42 @@ const std::vector< Card::Transaction>&  Card::do_getTemplates()const
 
 void  Card::do_setTemplates( std::vector<Card::Transaction>& tm)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setTemplates(tm);
+
+	// setting for the instance of a Card class
 	_templates = tm;
 }
 
 void  Card::do_addTemplate(const Card::Transaction& tm)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_addTemplate(tm);
+
+	// setting for the instance of a Card class
 	_templates.insert(_templates.begin(), 1, tm);
 }
 
 void  Card::do_addTransaction(const Card::Transaction& tr)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_addTransaction(tr);
+
+	// setting for the instance of a Card class
 	_transactions.insert(_transactions.begin(), 1, tr);
 }
 
 
 void Card::do_setDate(std::string dt)
 {
-	
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_setDate(dt);
+
+	// setting for the instance of a Card class
 	_endDate = dt;
 }
 
@@ -129,8 +150,11 @@ std::ostream & Card::do_print(std::ostream & os) const
 
 void Card::do_deleteTemplate(const Card::Transaction & t)
 {
+	//changing a corresponding field in a data base
 	CardProxy c = CardProxy(*this);
 	c.do_deleteTemplate(t);
+
+	// setting for the instance of a Card class
 	size_t counter = 0;
 	for (Card::Transaction temp : _templates)
 	{

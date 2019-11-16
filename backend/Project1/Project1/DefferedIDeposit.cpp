@@ -1,6 +1,8 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #include "DefferedIDeposit.h"
 #include "SaveDeposit.h"
 
+//deposit representation which envolves number of clients who uses a deffered deposit and an actual deposit
 struct DefferedISaveDeposit::DepositRep
 {
 	ISaveDeposit* _deposit;

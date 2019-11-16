@@ -1,3 +1,4 @@
+//The file was written by Haponenko Vladislav 16.11.2019
 #include "OperationManager.h"
 
 OperationManager* OperationManager::_op = 0;
@@ -92,14 +93,14 @@ DefferedISaveDeposit OperationManager::do_getSaveDeposit(std::string num)const
 }
 
 
-void OperationManager::do_update()
-{
-}
 
 std::vector<DefferedIUser> OperationManager::do_getAllUsers()const
 {
+	//retriving all users from data base
 	mongocxx::collection coll = _db["users"];
 	auto cursor = coll.find({});
+
+	//inserting instances of a User into a vector
 	std::vector<DefferedIUser>* u = new std::vector<DefferedIUser>();
 	for (auto&& doc : cursor) {
 		auto ellement = doc["email"];
@@ -110,28 +111,46 @@ std::vector<DefferedIUser> OperationManager::do_getAllUsers()const
 
 bool OperationManager::do_userExist(std::string email) const
 {
+	//retriving users
 	mongocxx::collection coll = _db["users"];
+
+	//find a user with a given email
 	auto cursor = coll.find(make_document(kvp("email", email)));
+
+	//checking whether the array of users with a given email have size bigger than 0
 	return std::distance(cursor.begin(), cursor.end()) != 0;
 }
 
 bool OperationManager::do_cardExist(std::string num) const
 {
+	//retriving cards
 	mongocxx::collection coll = _db["cards"];
+
+	//find a card with a given number
 	auto cursor = coll.find(make_document(kvp("number_card", num)));
+
+	//checking whether the array of cards with a given number have size bigger than 0
 	return std::distance(cursor.begin(), cursor.end()) != 0;
 }
 
 bool OperationManager::do_depositExist(std::string num) const
 {
-	mongocxx::collection coll = _db["deposits"];
+	//retriving deposits
+	mongocxx::collection coll = _db["deposits"];\
+
+	//find a deposit linked to a given card number
 	auto cursor = coll.find(make_document(kvp("card_number", num)));
+
+	//checking whether the array of deposits with linked to a given card number have size bigger than 0
 	return std::distance(cursor.begin(), cursor.end()) != 0;
 }
 
 std::vector<DefferedISaveDeposit> OperationManager::do_getAllDeposits() const
 {
+	//retriving all deposits
 	mongocxx::collection coll = _db["deposits"];
+
+	//inserting instances of a SaveDeposit into a vector
 	auto cursor = coll.find({});
 	std::vector<DefferedISaveDeposit>* u = new std::vector<DefferedISaveDeposit>();
 	for (auto&& doc : cursor) {
@@ -143,7 +162,10 @@ std::vector<DefferedISaveDeposit> OperationManager::do_getAllDeposits() const
 
 std::vector<DefferedICard> OperationManager::do_getAllCards()const
 {
+	//retriving all cards
 	mongocxx::collection coll = _db["cards"];
+
+	// inserting instances of a Card into a vector
 	auto cursor = coll.find({});
 	std::vector<DefferedICard>* u = new std::vector<DefferedICard>();
 	for (auto&& doc : cursor) 
@@ -153,25 +175,33 @@ std::vector<DefferedICard> OperationManager::do_getAllCards()const
 	}
 	return std::vector<DefferedICard>(*u);
 }
-//end Deposit
+
 void OperationManager::do_deleteCard(std::string num)
 {
+	//retriving cards from a data base
 	mongocxx::collection coll = _db["cards"];
 
+	//checking whether a card exists
 	if (cardExist(num))
 	{
-		
+		//if so deleting related deposits to this card number
 		deleteDeposit(num, DepositFunctor(188,366));
+
+		//deleting the card
 		DefferedICard c = getCard(num);
 		coll.delete_one(make_document(kvp("number_card", num)));
+
+		//retriving all users from data base
 		std::vector<DefferedIUser> users = getAllUsers();
 		for (auto&& user : users)
 		{
+			//if user have deleted card
 			if (user->hasCard(num))
 			{
 				std::list<std::string> list=user->getCards();
 				if (*list.begin() != *(--list.end()))
 				{
+					//if the user has another card send money from delated card to another
 					if (*list.begin() != num)
 					{
 						DefferedICard c2 = getCard(*list.begin());
@@ -183,6 +213,7 @@ void OperationManager::do_deleteCard(std::string num)
 						c2->setBalance(c2->getBalance() + c->getBalance());
 					}
 				}
+				//removing deleted card from User's array of a card numbers 
 				list.remove(num);
 				user->setCards(list);
 			}
@@ -196,10 +227,16 @@ void OperationManager::do_deleteCard(std::string num)
 
 std::vector<DefferedICard> OperationManager::do_getAllUsersCards(std::string email)
 {
+	//checking whether a user with this email exists
 	if (userExist(email))
 	{
+		//getting user with this email
 		DefferedIUser u = getUser(email);
+
+		//getting his numbers of cards
 		std::list<std::string> list = u->getCards();
+
+		//retriving actual Card objects vy their's numbers
 		std::vector<DefferedICard>* vector = new std::vector<DefferedICard>();
 		std::list<std::string>::iterator i;
 		for (i = list.begin(); i != list.end(); ++i)
@@ -216,11 +253,19 @@ std::vector<DefferedICard> OperationManager::do_getAllUsersCards(std::string ema
 
 void OperationManager::do_deleteDeposit(std::string num, const DepositFunctor& func)
 {
+	//checking whether the deposit related to this card exists
 	if (depositExist(num))
 	{
+		//retriving the deposit
 		DefferedISaveDeposit d = getSaveDeposit(num);
+
+		//computing an amount of money to give a User
 		unsigned long sum = func(d->getBalance());
+
+		//deleting a deposit
 		_db["deposits"].delete_one(make_document(kvp("card_number", num)));
+
+		//if card to which the deposit was related exists we throw money from deposit back to user
 		if (cardExist(num))
 		{
 			DefferedICard c = getCard(num);
