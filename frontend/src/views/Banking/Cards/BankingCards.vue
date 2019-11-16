@@ -105,7 +105,6 @@ export default {
   },
   data() {
     return {
-      cards: [],
       showCreateCardDialog: false,
       new_card: {
         card_name: '',
