@@ -423,35 +423,39 @@ export default {
       }
     },
   },
-  created() {
-    this.processes.fetchCards.active = true;
-    this.processes.fetchTransactions.active = true;
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      const comp = vm;
 
-    this.$store.dispatch('fetchCards').then(
-      cards => {
-        this.processes.fetchCards.active = false;
-        this.processes.fetchCards.failed = false;
-        this.cards = [...cards];
-      },
-      requestStatus => {
-        this.processes.fetchCards.failed = true;
-        this.processes.fetchCards.active = false;
-        this.processes.fetchCards.details = requestStatus.details;
-      }
-    );
+      comp.processes.fetchCards.active = true;
+      comp.processes.fetchTransactions.active = true;
 
-    this.$store.dispatch('fetchTransactions').then(
-      transactions => {
-        this.processes.fetchTransactions.active = false;
-        this.processes.fetchTransactions.failed = false;
-        this.transactions = [...transactions].slice(0, 2).reverse();
-      },
-      requestStatus => {
-        this.processes.fetchTransactions.active = false;
-        this.processes.fetchTransactions.failed = true;
-        this.processes.fetchTransactions.details = requestStatus.details;
-      }
-    );
+      comp.$store.dispatch('fetchCards').then(
+        cards => {
+          comp.processes.fetchCards.active = false;
+          comp.processes.fetchCards.failed = false;
+          comp.cards = [...cards];
+        },
+        requestStatus => {
+          comp.processes.fetchCards.failed = true;
+          comp.processes.fetchCards.active = false;
+          comp.processes.fetchCards.details = requestStatus.details;
+        }
+      );
+
+      comp.$store.dispatch('fetchTransactions').then(
+        transactions => {
+          comp.processes.fetchTransactions.active = false;
+          comp.processes.fetchTransactions.failed = false;
+          comp.transactions = [...transactions].slice(0, 2).reverse();
+        },
+        requestStatus => {
+          comp.processes.fetchTransactions.active = false;
+          comp.processes.fetchTransactions.failed = true;
+          comp.processes.fetchTransactions.details = requestStatus.details;
+        }
+      );
+    });
   },
 };
 </script>

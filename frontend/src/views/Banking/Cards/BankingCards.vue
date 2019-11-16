@@ -156,21 +156,25 @@ export default {
       );
     },
   },
-  created() {
-    this.processes.fetchCards.active = true;
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      const comp = vm;
 
-    this.$store.dispatch('fetchCards').then(
-      cards => {
-        this.processes.fetchCards.active = false;
-        this.processes.fetchCards.failed = false;
-        this.cards = [...cards];
-      },
-      requestStatus => {
-        this.processes.fetchCards.failed = true;
-        this.processes.fetchCards.active = false;
-        this.processes.fetchCards.details = requestStatus.details;
-      }
-    );
+      comp.processes.fetchCards.active = true;
+
+      comp.$store.dispatch('fetchCards').then(
+        cards => {
+          comp.processes.fetchCards.active = false;
+          comp.processes.fetchCards.failed = false;
+          comp.cards = [...cards];
+        },
+        requestStatus => {
+          comp.processes.fetchCards.failed = true;
+          comp.processes.fetchCards.active = false;
+          comp.processes.fetchCards.details = requestStatus.details;
+        }
+      );
+    });
   },
 };
 </script>

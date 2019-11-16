@@ -106,13 +106,14 @@ export default new Vuex.Store({
             });
 
             const userDeposits = [];
-            Object.keys(response.data.deposits).forEach(keyOuter => {
-              Object.keys(response.data.deposits[keyOuter]).forEach(
-                keyInner => {
-                  userDeposits.push(response.data.deposits[keyOuter][keyInner]);
-                }
-              );
-            });
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(keyOuter => {
+                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
+                  userDeposits.push(response.data.data[keyOuter][keyInner]);
+                });
+              });
+            }
 
             context.commit('SET_DEPOSITS', userDeposits);
 
@@ -155,15 +156,14 @@ export default new Vuex.Store({
             });
 
             const userTemplates = [];
-            Object.keys(response.data.templates).forEach(keyOuter => {
-              Object.keys(response.data.templates[keyOuter]).forEach(
-                keyInner => {
-                  userTemplates.push(
-                    response.data.templates[keyOuter][keyInner]
-                  );
-                }
-              );
-            });
+
+            if (response.data.data !== 'null') {
+              Object.keys(response.data.data).forEach(keyOuter => {
+                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
+                  userTemplates.push(response.data.data[keyOuter][keyInner]);
+                });
+              });
+            }
 
             context.commit('SET_TEMPLATES', userTemplates);
 
