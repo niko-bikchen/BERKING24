@@ -302,8 +302,6 @@ export default {
   },
   data() {
     return {
-      transactions: [],
-      cards: [],
       showMakeTransactionDialog: false,
       stepNum: 0,
       inputValid: {
@@ -423,6 +421,17 @@ export default {
       }
     },
   },
+  computed: {
+    cards() {
+      console.log(this.$store.getters.getCards);
+      return this.$store.getters.getCards;
+    },
+    transactions() {
+      console.log(this.$store.getters.getTransactions);
+      const transact = this.$store.getters.getTransactions;
+      return transact.reverse();
+    },
+  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const comp = vm;
@@ -431,10 +440,10 @@ export default {
       comp.processes.fetchTransactions.active = true;
 
       comp.$store.dispatch('fetchCards').then(
-        cards => {
+        requestStatus => {
           comp.processes.fetchCards.active = false;
           comp.processes.fetchCards.failed = false;
-          comp.cards = [...cards];
+          comp.processes.fetchCards.details = requestStatus.details;
         },
         requestStatus => {
           comp.processes.fetchCards.failed = true;
@@ -444,10 +453,10 @@ export default {
       );
 
       comp.$store.dispatch('fetchTransactions').then(
-        transactions => {
+        requestStatus => {
           comp.processes.fetchTransactions.active = false;
           comp.processes.fetchTransactions.failed = false;
-          comp.transactions = [...transactions].slice(0, 2).reverse();
+          comp.processes.fetchTransactions.details = requestStatus.details;
         },
         requestStatus => {
           comp.processes.fetchTransactions.active = false;
