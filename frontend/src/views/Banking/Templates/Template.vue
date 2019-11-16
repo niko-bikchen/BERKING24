@@ -169,7 +169,7 @@ export default {
 
               setTimeout(() => {
                 this.showDialog = false;
-                this.processes.transactions.good = false;
+                this.processes.transaction.good = false;
               }, 1000);
             },
             requestStatus => {

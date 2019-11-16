@@ -8,10 +8,10 @@
     "
   >
     <v-col cols="12" v-for="(template, index) in templates" :key="index">
-      <app-template :template_data="template.data"></app-template>
+      <app-template :template_data="template"></app-template>
     </v-col>
     <v-col cols="12">
-      <v-dialog v-model="showCreationDialog" persistent max-width="600px">
+      <v-dialog v-model="showCreationDialog" persistent>
         <template v-slot:activator="{ on }">
           <v-btn block color="primary" dark v-on="on" v-if="cards.length > 0"
             >Create Template</v-btn
@@ -33,13 +33,15 @@
                   >Sender card</v-stepper-step
                 >
 
-                <v-stepper-step :complete="formStep > 2" step="1"
+                <v-divider></v-divider>
+
+                <v-stepper-step :complete="formStep > 2" step="2"
                   >Receiver card</v-stepper-step
                 >
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="formStep > 3" step="2"
+                <v-stepper-step :complete="formStep > 3" step="3"
                   >Money and description</v-stepper-step
                 >
 
@@ -142,7 +144,7 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                  <v-card height="200px">
+                  <v-card>
                     <v-card-text>
                       <v-container>
                         <v-row>
@@ -189,7 +191,7 @@
                           Sender card:
                         </span>
                         <span class="subtitle-1">
-                          {{ template.data.sender_card }}
+                          {{ cards[sender_card_num].card_number }}
                         </span>
                       </p>
                       <p class="text--primary">
@@ -305,7 +307,9 @@ export default {
               'The amount of oney to send cannot be less than 0 or equal to 0',
           ],
         },
-        sender_balance: '',
+        sender_balance: {
+          isValid: true,
+        },
       },
       template: {
         data: {
@@ -353,7 +357,11 @@ export default {
   },
   methods: {
     addTemplate() {
-      this.template.data.sender_card = this.cards[this.sender_card_num];
+      console.log('Adding template');
+
+      this.template.data.sender_card = this.cards[
+        this.sender_card_num
+      ].card_number;
       this.processes.creating_template.active = true;
 
       this.$store
@@ -387,7 +395,8 @@ export default {
     },
     checkBalance() {
       if (
-        this.cards[this.sender_card_num].card_balance >= this.template.data.sum
+        Number(this.cards[this.sender_card_num].card_balance) >=
+        this.template.data.sum
       ) {
         this.inputValid.sender_balance.isValid = true;
         this.formStep = 3;

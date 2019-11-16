@@ -157,11 +157,22 @@ export default new Vuex.Store({
 
             const userTemplates = [];
 
-            if (response.data.data !== 'null') {
+            if (response.data.data !== 'null' && response.data.data !== null) {
+              console.log(response.data.data);
               Object.keys(response.data.data).forEach(keyOuter => {
-                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
-                  userTemplates.push(response.data.data[keyOuter][keyInner]);
-                });
+                console.log(response.data.data[keyOuter]);
+                if (
+                  response.data.data[keyOuter] !== 'null' &&
+                  response.data.data[keyOuter] !== null
+                ) {
+                  Object.keys(response.data.data[keyOuter]).forEach(
+                    keyInner => {
+                      userTemplates.push(
+                        response.data.data[keyOuter][keyInner]
+                      );
+                    }
+                  );
+                }
               });
             }
 
@@ -207,11 +218,22 @@ export default new Vuex.Store({
 
             const userTransactions = [];
 
-            if (response.data.data !== 'null') {
+            if (response.data.data !== 'null' && response.data.data !== null) {
+              console.log(response.data.data);
               Object.keys(response.data.data).forEach(keyOuter => {
-                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
-                  userTransactions.push(response.data.data[keyOuter][keyInner]);
-                });
+                console.log(response.data.data[keyOuter]);
+                if (
+                  response.data.data[keyOuter] !== 'null' &&
+                  response.data.data[keyOuter] !== null
+                ) {
+                  Object.keys(response.data.data[keyOuter]).forEach(
+                    keyInner => {
+                      userTransactions.push(
+                        response.data.data[keyOuter][keyInner]
+                      );
+                    }
+                  );
+                }
               });
             }
 
@@ -260,7 +282,7 @@ export default new Vuex.Store({
 
             const userCards = [];
 
-            if (response.data.data !== 'null') {
+            if (response.data.data !== 'null' && response.data.data !== null) {
               Object.keys(response.data.data).forEach(key => {
                 userCards.push(response.data.data[key]);
               });
@@ -325,6 +347,8 @@ export default new Vuex.Store({
       });
     },
     addTemplate(context, payload) {
+      console.log('Hello');
+
       context.commit('SET_REQUEST_STATUS', {
         status: REQUEST_STATUSES().active,
         details: 'Creating template.',
@@ -332,7 +356,7 @@ export default new Vuex.Store({
 
       return new Promise((resolve, reject) => {
         axios
-          .post('/api/make_transaction', JSON.stringify(payload), {
+          .post('/api/make_template', JSON.stringify(payload), {
             headers: {
               'Content-Type': 'application/json',
             },
