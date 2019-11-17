@@ -9,6 +9,14 @@ Vue.config.productionTip = false;
 
 axios.defaults.baseURL = 'http://localhost:34568/';
 
+Vue.directive('test', {
+  bind(el, binding) {
+    Object.keys(binding.value).forEach(value => {
+      el.setAttribute(`data-test-${value}`, binding.value[value]);
+    });
+  },
+});
+
 Vue.filter('formatCardNum', cardNum => {
   let num = cardNum;
 

@@ -65,7 +65,10 @@
               v-if="!userAuthorized"
             >
               <template v-slot:activator="{ on }">
-                <v-btn color="primary" dark v-on="on">Sign Up/In</v-btn>
+                <span class="kek"> </span>
+                <v-btn color="primary" dark v-on="on" v-test="{ id: 'sgn-btn' }"
+                  >Sign Up/In</v-btn
+                >
               </template>
               <v-card>
                 <v-card-title>Sign In</v-card-title>
