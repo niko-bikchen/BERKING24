@@ -1,11 +1,6 @@
 <template>
   <v-row
-    v-if="
-      !processes.fetchTemplates.active &&
-        !processes.fetchCards.active &&
-        !processes.fetchTemplates.failed &&
-        !processes.fetchCards.failed
-    "
+    v-if="!processes.fetchTemplates.active && !processes.fetchTemplates.failed"
   >
     <v-col cols="12" v-for="(template, index) in templates" :key="index">
       <app-template :template_data="template"></app-template>
@@ -116,24 +111,12 @@
                               v-model="template.data.description"
                             ></v-textarea>
                           </v-col>
-                          <v-slide-x-transition>
-                            <v-col
-                              cols="12"
-                              v-if="!inputValid.sender_balance.isValid"
-                            >
-                              <v-alert type="error">
-                                Your previosly selected card doesn't have enough
-                                money for the template.
-                              </v-alert>
-                            </v-col>
-                          </v-slide-x-transition>
                         </v-row>
                       </v-container>
                     </v-card-text>
                     <v-card-actions>
                       <v-btn
                         color="primary"
-                        @click="checkBalance"
                         :disabled="!inputValid.money.isValid"
                       >
                         Continue
@@ -190,10 +173,14 @@
                         <span class="font-weight-medium title">
                           Sender card:
                         </span>
-                        <span class="subtitle-1">
+                        <span
+                          class="subtitle-1"
+                          v-if="!processes.creating_template.good"
+                        >
                           {{ cards[sender_card_num].card_number }}
                         </span>
                       </p>
+                      <br />
                       <p class="text--primary">
                         <span class="font-weight-medium title">
                           Receiver card:
@@ -238,10 +225,19 @@
                       </v-scroll-x-transition>
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn color="primary" @click="addTemplate">
+                      <v-btn
+                        color="primary"
+                        @click="addTemplate"
+                        :disabled="processes.creating_template.good"
+                      >
                         Submit
                       </v-btn>
-                      <v-btn text @click="formStep = 3">Back</v-btn>
+                      <v-btn
+                        text
+                        @click="formStep = 3"
+                        :disabled="processes.creating_template.good"
+                        >Back</v-btn
+                      >
                     </v-card-actions>
                   </v-card>
                 </v-stepper-content>
@@ -252,13 +248,10 @@
       </v-dialog>
     </v-col>
   </v-row>
-  <v-row
-    dense
-    v-else-if="processes.fetchCards.active || processes.fetchTemplates.active"
-  >
+  <v-row dense v-else-if="processes.fetchTemplates.active">
     <v-col cols="12">
       <v-alert type="info">
-        Fetching cards and templates from the server. Please wait.
+        Fetching templates from the server. Please wait.
         <div class="text-right mt-2">
           <v-progress-circular
             indeterminate
@@ -268,13 +261,10 @@
       </v-alert>
     </v-col>
   </v-row>
-  <v-row
-    dense
-    v-else-if="processes.fetchCards.failed || processes.fetchTemplates.failed"
-  >
+  <v-row dense v-else-if="processes.fetchTemplates.failed">
     <v-col cols="12">
       <v-alert type="error">
-        Failed to fetch cards and templates from the server.
+        Failed to fetch templates from the server.
       </v-alert>
     </v-col>
   </v-row>
@@ -357,8 +347,6 @@ export default {
   },
   methods: {
     addTemplate() {
-      console.log('Adding template');
-
       this.template.data.sender_card = this.cards[
         this.sender_card_num
       ].card_number;
@@ -395,11 +383,10 @@ export default {
     },
     checkBalance() {
       if (
-        Number(this.cards[this.sender_card_num].card_balance) >=
+        parseFloat(this.cards[this.sender_card_num].card_balance) >=
         this.template.data.sum
       ) {
         this.inputValid.sender_balance.isValid = true;
-        this.formStep = 3;
       } else {
         this.inputValid.sender_balance.isValid = false;
       }
@@ -420,21 +407,7 @@ export default {
     next(vm => {
       const comp = vm;
 
-      comp.processes.fetchCards.active = true;
       comp.processes.fetchTemplates.active = true;
-
-      comp.$store.dispatch('fetchCards').then(
-        requestStatus => {
-          comp.processes.fetchCards.active = false;
-          comp.processes.fetchCards.failed = false;
-          comp.processes.fetchCards.details = requestStatus.details;
-        },
-        requestStatus => {
-          comp.processes.fetchCards.failed = true;
-          comp.processes.fetchCards.active = false;
-          comp.processes.fetchCards.details = requestStatus.details;
-        }
-      );
 
       comp.$store.dispatch('fetchTemplates').then(
         requestStatus => {

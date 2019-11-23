@@ -1,10 +1,7 @@
 <template>
   <v-row
     v-if="
-      !processes.fetchTransactions.active &&
-        !processes.fetchCards.active &&
-        !processes.fetchTransactions.failed &&
-        !processes.fetchCards.failed
+      !processes.fetchTransactions.active && !processes.fetchTransactions.failed
     "
   >
     <v-col cols="12" v-for="(transaction, index) in transactions" :key="index">
@@ -193,8 +190,15 @@
                         <span class="font-weight-medium title">
                           Sender card:
                         </span>
-                        <span class="subtitle-1">
-                          {{ cards[sender_card_num] }}
+                        <span
+                          class="subtitle-1"
+                          v-if="!processes.transaction.good"
+                        >
+                          {{
+                            cards[sender_card_num]
+                              ? cards[sender_card_num].card_number
+                              : 'Cannot get card number'
+                          }}
                         </span>
                       </p>
                       <p class="text--primary">
@@ -245,10 +249,16 @@
                         color="primary"
                         @click="makeTransaction"
                         :loading="processes.transaction.active"
+                        :disabled="processes.transaction.good"
                       >
                         Submit
                       </v-btn>
-                      <v-btn text @click="stepNum = 3">Back</v-btn>
+                      <v-btn
+                        text
+                        @click="stepNum = 3"
+                        :disabled="processes.transaction.good"
+                        >Back</v-btn
+                      >
                     </v-card-actions>
                   </v-card>
                 </v-stepper-content>
@@ -259,15 +269,10 @@
       </v-dialog>
     </v-col>
   </v-row>
-  <v-row
-    dense
-    v-else-if="
-      processes.fetchCards.active || processes.fetchTransactions.active
-    "
-  >
+  <v-row dense v-else-if="processes.fetchTransactions.active">
     <v-col cols="12">
       <v-alert type="info">
-        Fetching cards and transactions from the server. Please wait.
+        Fetching transactions from the server. Please wait.
         <div class="text-right mt-2">
           <v-progress-circular
             indeterminate
@@ -277,15 +282,10 @@
       </v-alert>
     </v-col>
   </v-row>
-  <v-row
-    dense
-    v-else-if="
-      processes.fetchCards.failed || processes.fetchTransactions.failed
-    "
-  >
+  <v-row dense v-else-if="processes.fetchTransactions.failed">
     <v-col cols="12">
       <v-alert type="error">
-        Failed to fetch cards and transactions from the server.
+        Failed to fetch transactions from the server.
       </v-alert>
     </v-col>
   </v-row>
@@ -369,7 +369,13 @@ export default {
       const dd = String(today.getDate()).padStart(2, '0');
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const yyyy = today.getFullYear();
-      today = `${dd}/${mm}/${yyyy}`;
+      const H = today.getHours();
+      const M = today.getMinutes();
+      const S = today.getSeconds();
+      const day = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'][
+        today.getDay()
+      ];
+      today = `${day} ${dd}.${mm}.${yyyy} ${H}:${M}:${S}`;
 
       this.transaction.data.date = today;
 
@@ -398,6 +404,7 @@ export default {
           requestStatus => {
             this.processes.transaction.bad = false;
             this.processes.transaction.active = false;
+            this.processes.transaction.good = false;
             this.processes.transaction.failed = true;
             this.processes.transaction.details = requestStatus.details;
             this.processes.transaction.error = requestStatus.error;
@@ -405,10 +412,9 @@ export default {
         );
     },
     checkBalance() {
-      console.log('Jopa');
       console.log(this.cards[this.sender_card_num]);
       if (
-        Number(this.cards[this.sender_card_num].card_balance) >=
+        parseFloat(this.cards[this.sender_card_num].card_balance) >=
         this.transaction.data.sum
       ) {
         this.inputValid.sender_balance.isValid = true;
@@ -444,21 +450,7 @@ export default {
     next(vm => {
       const comp = vm;
 
-      comp.processes.fetchCards.active = true;
       comp.processes.fetchTransactions.active = true;
-
-      comp.$store.dispatch('fetchCards').then(
-        requestStatus => {
-          comp.processes.fetchCards.active = false;
-          comp.processes.fetchCards.failed = false;
-          comp.processes.fetchCards.details = requestStatus.details;
-        },
-        requestStatus => {
-          comp.processes.fetchCards.failed = true;
-          comp.processes.fetchCards.active = false;
-          comp.processes.fetchCards.details = requestStatus.details;
-        }
-      );
 
       comp.$store.dispatch('fetchTransactions').then(
         requestStatus => {

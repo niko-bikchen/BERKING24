@@ -82,6 +82,23 @@ describe('authorization', () => {
       });
   });
 
+  it('can authorize user with the new password', () => {
+    return store
+      .dispatch('authorizeUser', {
+        email: 'jane.doe@gmail.com',
+        password: '56789',
+      })
+      .then(() => {
+        expect(store.getters.getRequestStatus.status).toEqual(
+          REQUEST_STATUSES().finished.pos
+        );
+
+        expect(store.getters.getRequestStatus.details).toEqual(
+          'User successfuly authorized.'
+        );
+      });
+  });
+
   it('cannot change password of an unauthorized user', () => {
     store.state.user.authorized = false;
 
@@ -200,7 +217,7 @@ describe('card creation', () => {
     return store
       .dispatch('addCard', {
         email: 'jane.doe@gmail.com',
-        card_name: 'HelloWorld',
+        card_name: 'Test Card',
       })
       .then(() => {
         expect(store.getters.getRequestStatus.status).toEqual(
@@ -227,9 +244,16 @@ describe('card creation', () => {
           'Cards successfuly fetched.'
         );
 
-        expect(store.getters.getUserData.cards[0].card_name).toEqual(
-          'HelloWorld'
-        );
+        const newCard = {};
+        const { cards } = store.getters.getUserData;
+
+        for (let i = 0; i < cards.length; i += 1) {
+          if (cards[i].card_name === 'Test Card') {
+            Object.assign(newCard, cards[i]);
+          }
+        }
+
+        expect(newCard.card_name).toEqual('Test Card');
       });
   });
 });

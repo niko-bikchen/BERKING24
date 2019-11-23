@@ -150,6 +150,16 @@ export default {
     appCard: Card,
     appTransaction: Transaction,
   },
+  created() {
+    if (
+      sessionStorage.getItem('authorized') === true ||
+      sessionStorage.getItem('authorized') === 'true'
+    ) {
+      console.log('Hello');
+
+      this.$store.dispatch('restoreAuth', true);
+    }
+  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const comp = vm;

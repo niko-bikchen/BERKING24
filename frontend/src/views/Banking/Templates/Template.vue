@@ -48,6 +48,7 @@
                 {{ template_data.sender_card }}
               </span>
             </span>
+            <br />
             <span class="text--primary">
               <span class="font-weight-medium title">
                 Receiver card:

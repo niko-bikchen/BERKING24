@@ -198,10 +198,19 @@
                   </v-scroll-x-transition>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn color="primary" @click="createDeposit">
+                  <v-btn
+                    color="primary"
+                    @click="createDeposit"
+                    :disabled="processes.create_deposit.good"
+                  >
                     Submit
                   </v-btn>
-                  <v-btn text @click="formStep = 3">Back</v-btn>
+                  <v-btn
+                    text
+                    @click="formStep = 3"
+                    :disabled="processes.create_deposit.good"
+                    >Back</v-btn
+                  >
                 </v-card-actions>
               </v-card>
             </v-stepper-content>
@@ -216,7 +225,7 @@
   >
     <v-col cols="12">
       <v-alert type="info">
-        Fetching cards and deposits from the server. Please wait.
+        Fetching deposits from the server. Please wait.
         <div class="text-right mt-2">
           <v-progress-circular
             indeterminate
@@ -232,7 +241,7 @@
   >
     <v-col cols="12">
       <v-alert type="error">
-        Failed to fetch cards and deposits from the server.
+        Failed to fetch deposits from the server.
       </v-alert>
     </v-col>
   </v-row>
@@ -292,7 +301,7 @@ export default {
   methods: {
     checkBalance() {
       if (
-        Number(this.cards[this.deposit_card_num].card_balance) >=
+        parseFloat(this.cards[this.deposit_card_num].card_balance) >=
         this.deposit.data.sum
       ) {
         this.inputValid.deposit_card_balance.isValid = true;

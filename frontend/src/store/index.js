@@ -49,7 +49,33 @@ export default new Vuex.Store({
       state.user.templates = templates.slice();
     },
     SET_TRANSACTIONS(state, transactions) {
-      state.user.transactions = transactions.slice();
+      const transact = transactions;
+
+      transact.sort((a, b) => {
+        const left = Number(
+          a.date
+            .match(/\d+\.\d+\.\d+/)[0]
+            .split('.')
+            .join('')
+        );
+        const right = Number(
+          b.date
+            .match(/\d+\.\d+\.\d+/)[0]
+            .split('.')
+            .join('')
+        );
+
+        if (left > right) {
+          return 1;
+        }
+        if (left < right) {
+          return -1;
+        }
+
+        return 0;
+      });
+
+      state.user.transactions = transact.slice();
     },
     SET_DEPOSITS(state, deposits) {
       state.user.deposits = deposits.slice();
@@ -67,16 +93,19 @@ export default new Vuex.Store({
     LOGIN(state) {
       state.user.authorized = true;
       sessionStorage.setItem('authorized', true);
+      localStorage.removeItem('vuex');
     },
     LOGOUT(state) {
       state.user.authorized = false;
       sessionStorage.setItem('authorized', false);
+      localStorage.removeItem('vuex');
     },
     SET_REQUEST_STATUS(state, status) {
       state.request = status;
     },
     SET_IS_AUTHORIZED(state, status) {
       state.user.authorized = status;
+      localStorage.removeItem('vuex');
     },
   },
   actions: {

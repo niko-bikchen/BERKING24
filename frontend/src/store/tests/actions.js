@@ -328,9 +328,9 @@ export const actions = {
       });
   },
   fetchTransactions({ commit }, payload) {
-    axios
+    return axios
       .post(
-        '/api/user_transactions',
+        'http://localhost:34568/api/user_transactions',
         JSON.stringify({
           email: payload.email,
         }),

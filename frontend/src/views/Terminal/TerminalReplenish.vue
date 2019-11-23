@@ -122,10 +122,16 @@
                 color="primary"
                 @click="makeTransaction"
                 :loading="processes.transaction.active"
+                :disabled="processes.transaction.good"
               >
                 Submit
               </v-btn>
-              <v-btn text @click="stepNum = 2">Back</v-btn>
+              <v-btn
+                text
+                @click="stepNum = 2"
+                :disabled="processes.transaction.good"
+                >Back</v-btn
+              >
             </v-card-actions>
           </v-card>
         </v-stepper-content>

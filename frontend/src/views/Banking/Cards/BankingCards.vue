@@ -60,12 +60,14 @@
               color="blue darken-1"
               text
               @click="showCreateCardDialog = false"
+              :disabled="processes.create_card.good"
               >Close</v-btn
             >
             <v-btn
               color="blue darken-1"
               text
               :loading="processes.create_card.active"
+              :disabled="processes.create_card.good"
               @click="createCard"
               >Submit</v-btn
             >

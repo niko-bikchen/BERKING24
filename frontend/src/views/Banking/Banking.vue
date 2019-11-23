@@ -240,6 +240,34 @@
                               <v-container>
                                 <v-row>
                                   <v-col cols="12">
+                                    <v-form v-model="credValid.email.isValid">
+                                      <v-text-field
+                                        type="password"
+                                        required
+                                        counter
+                                        label="Email"
+                                        :rules="credValid.email.rules"
+                                        v-model="user.email"
+                                      ></v-text-field>
+                                    </v-form>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <v-form
+                                      v-model="credValid.password.isValid"
+                                    >
+                                      <v-text-field
+                                        type="password"
+                                        required
+                                        counter
+                                        label="Old password"
+                                        :rules="
+                                          credValid.password.ifExistsRules
+                                        "
+                                        v-model="user.password"
+                                      ></v-text-field>
+                                    </v-form>
+                                  </v-col>
+                                  <v-col cols="12">
                                     <v-form
                                       v-model="credValid.password.isValid"
                                     >
@@ -273,18 +301,33 @@
                                       </v-alert>
                                     </v-col>
                                   </v-scroll-x-transition>
+                                  <v-scroll-x-transition>
+                                    <v-col
+                                      cols="12"
+                                      v-if="processes.change_password.good"
+                                    >
+                                      <v-alert dense outlined type="success">
+                                        {{ processes.change_password.details }}
+                                      </v-alert>
+                                    </v-col>
+                                  </v-scroll-x-transition>
                                 </v-row>
                               </v-container>
                             </v-card-text>
                             <v-card-actions>
                               <v-spacer></v-spacer>
-                              <v-btn color="blue darken-1" text>Close</v-btn>
+                              <v-btn
+                                color="blue darken-1"
+                                :disabled="processes.change_password.good"
+                                text
+                                >Close</v-btn
+                              >
                               <v-btn
                                 color="blue darken-1"
                                 text
                                 :loading="processes.change_password.active"
                                 @click="changePassword"
-                                :disabled="false"
+                                :disabled="processes.change_password.good"
                                 >Submit</v-btn
                               >
                             </v-card-actions>
@@ -436,17 +479,13 @@ export default {
         change_password: {
           active: false,
           bad: false,
+          good: false,
           failed: false,
           details: '',
           error: '',
         },
       },
     };
-  },
-  beforeMount() {
-    if (sessionStorage.getItem('authorized') === true) {
-      this.$store.dispatch('restoreAuth', true);
-    }
   },
   methods: {
     authorizeUser() {
@@ -464,8 +503,6 @@ export default {
 
             this.user.email = '';
             this.user.password = '';
-
-            localStorage.removeItem('vuex');
 
             if (this.$route.path !== '/berking') {
               this.$router.push({ path: '/berking' });
@@ -508,8 +545,6 @@ export default {
               this.new_user.email = '';
               this.new_user.password = '';
 
-              localStorage.removeItem('vuex');
-
               if (this.$route.path !== '/berking') {
                 this.$router.push({ path: '/berking' });
               }
@@ -532,34 +567,38 @@ export default {
     },
     changePassword() {
       this.processes.change_password.active = true;
-      this.$store
-        .dispatch('changePassword', this.user.password_new.slice(0))
-        .then(
-          requestStatus => {
-            if (requestStatus.status === REQUEST_STATUSES().finished.pos) {
-              this.dialogs.showPassRenovDialog = false;
-
-              this.processes.change_password.active = false;
-              this.processes.change_password.bad = false;
-              this.processes.change_password.failed = false;
-
-              this.user.password_new = '';
-            }
-            if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
-              this.processes.change_password.active = false;
-              this.processes.change_password.failed = false;
-              this.processes.change_password.bad = true;
-              this.processes.change_password.details = requestStatus.details;
-            }
-          },
-          requestStatus => {
-            this.processes.change_password.bad = false;
+      this.$store.dispatch('changePassword', Object.assign({}, this.user)).then(
+        requestStatus => {
+          if (requestStatus.status === REQUEST_STATUSES().finished.pos) {
             this.processes.change_password.active = false;
-            this.processes.change_password.failed = true;
-            this.processes.change_password.details = requestStatus.details;
-            this.processes.change_password.error = requestStatus.error;
+            this.processes.change_password.bad = false;
+            this.processes.change_password.failed = false;
+            this.processes.change_password.good = true;
+
+            this.user.password_new = '';
+            this.user.password = '';
+            this.user.email = '';
+
+            setTimeout(() => {
+              this.dialogs.showPassRenovDialog = false;
+              this.processes.change_password.good = false;
+            }, 1000);
           }
-        );
+          if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
+            this.processes.change_password.active = false;
+            this.processes.change_password.failed = false;
+            this.processes.change_password.bad = true;
+            this.processes.change_password.details = requestStatus.details;
+          }
+        },
+        requestStatus => {
+          this.processes.change_password.bad = false;
+          this.processes.change_password.active = false;
+          this.processes.change_password.failed = true;
+          this.processes.change_password.details = requestStatus.details;
+          this.processes.change_password.error = requestStatus.error;
+        }
+      );
     },
     logout() {
       this.$store.dispatch('logout');
