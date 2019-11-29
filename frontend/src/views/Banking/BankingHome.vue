@@ -136,12 +136,10 @@ export default {
   },
   computed: {
     cards() {
-      console.log(this.$store.getters.getCards);
       const crds = this.$store.getters.getCards;
       return crds.slice(0, 2);
     },
     transactions() {
-      console.log(this.$store.getters.getTransactions);
       const transact = this.$store.getters.getTransactions;
       return transact.slice(0, 2).reverse();
     },
@@ -155,8 +153,6 @@ export default {
       sessionStorage.getItem('authorized') === true ||
       sessionStorage.getItem('authorized') === 'true'
     ) {
-      console.log('Hello');
-
       this.$store.dispatch('restoreAuth', true);
     }
   },

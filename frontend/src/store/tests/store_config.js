@@ -141,9 +141,7 @@ export default {
             const userTemplates = [];
 
             if (response.data.data !== 'null' && response.data.data !== null) {
-              console.log(response.data.data);
               Object.keys(response.data.data).forEach(keyOuter => {
-                console.log(response.data.data[keyOuter]);
                 if (
                   response.data.data[keyOuter] !== 'null' &&
                   response.data.data[keyOuter] !== null
@@ -202,9 +200,7 @@ export default {
             const userTransactions = [];
 
             if (response.data.data !== 'null' && response.data.data !== null) {
-              console.log(response.data.data);
               Object.keys(response.data.data).forEach(keyOuter => {
-                console.log(response.data.data[keyOuter]);
                 if (
                   response.data.data[keyOuter] !== 'null' &&
                   response.data.data[keyOuter] !== null
@@ -240,9 +236,6 @@ export default {
         status: REQUEST_STATUSES().active,
         details: 'Fetching cards.',
       });
-
-      console.log(context.getters.getUserData);
-      console.log(context.getters.getUserData.email);
 
       return new Promise((resolve, reject) => {
         axios
@@ -468,9 +461,6 @@ export default {
           })
           .then(response => {
             if (response.data.status === 'success') {
-              console.log(newUser);
-              console.log(newUser.user_email);
-
               context.commit('SET_USER', {
                 email: newUser.user_email,
               });
@@ -523,8 +513,6 @@ export default {
 
               context.commit('LOGIN');
 
-              console.log(payload.email);
-
               context.commit('SET_USER', { email: payload.email });
             } else {
               context.commit('SET_REQUEST_STATUS', {
@@ -553,15 +541,12 @@ export default {
   },
   getters: {
     getCards(state) {
-      console.log(state.user.cards);
       return state.user.cards;
     },
     getTemplates(state) {
-      console.log(state.user.templates);
       return state.user.templates;
     },
     getTransactions(state) {
-      console.log(state.user.transactions);
       return state.user.transactions;
     },
     getDeposits(state) {

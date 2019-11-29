@@ -159,7 +159,6 @@ export default {
   },
   computed: {
     cards() {
-      console.log(this.$store.getters.getCards);
       return this.$store.getters.getCards;
     },
   },

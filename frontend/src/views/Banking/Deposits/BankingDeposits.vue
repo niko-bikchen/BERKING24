@@ -8,10 +8,10 @@
     "
   >
     <v-col cols="12" v-for="(deposit, index) in deposits" :key="index">
-      <app-deposit :depositData="deposit"></app-deposit>
+      <app-deposit :deposit_data="deposit"></app-deposit>
     </v-col>
     <v-col cols="12">
-      <v-dialog v-model="showDialog" persistent>
+      <v-dialog v-model="showDialog" persistent max-width="800px">
         <template v-slot:activator="{ on }">
           <v-btn
             color="primary"
@@ -34,13 +34,13 @@
 
             <v-divider></v-divider>
 
-            <v-stepper-step :complete="formStep > 3" step="2"
+            <v-stepper-step :complete="formStep > 2" step="2"
               >Initial sum</v-stepper-step
             >
 
             <v-divider></v-divider>
 
-            <v-stepper-step :complete="formStep > 2" step="3"
+            <v-stepper-step :complete="formStep > 3" step="3"
               >End date</v-stepper-step
             >
 
@@ -72,13 +72,13 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="primary darken-1" @click="formStep = 3"
+                  <v-btn color="primary darken-1" @click="formStep = 2"
                     >Confirm</v-btn
                   >
                   <v-btn
                     color="primary darken-1"
                     outlined
-                    @click="showCreationDialog = false"
+                    @click="showDialog = false"
                     >Cancel</v-btn
                   >
                 </v-card-actions>
@@ -97,7 +97,7 @@
                             type="number"
                             required
                             :rules="inputValid.money.rules"
-                            v-model="deposit.data.sum"
+                            v-model="deposit.data.init_sum"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -302,7 +302,7 @@ export default {
     checkBalance() {
       if (
         parseFloat(this.cards[this.deposit_card_num].card_balance) >=
-        this.deposit.data.sum
+        this.deposit.data.init_sum
       ) {
         this.inputValid.deposit_card_balance.isValid = true;
         this.formStep = 3;
@@ -313,6 +313,7 @@ export default {
     createDeposit() {
       const depositData = Object.assign({}, this.deposit.data);
       depositData.start_date = this.today;
+      depositData.card_num = this.cards[this.deposit_card_num].card_number;
 
       this.processes.create_deposit.active = true;
       this.$store
@@ -350,11 +351,9 @@ export default {
   },
   computed: {
     deposits() {
-      console.log(this.$store.getters.getDeposits);
       return this.$store.getters.getDeposits;
     },
     cards() {
-      console.log(this.$store.getters.getDeposits);
       return this.$store.getters.getCards;
     },
     today() {

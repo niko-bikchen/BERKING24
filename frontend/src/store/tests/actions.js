@@ -273,9 +273,7 @@ export const actions = {
         const userTemplates = [];
 
         if (response.data.data !== 'null' && response.data.data !== null) {
-          console.log(response.data.data);
           Object.keys(response.data.data).forEach(keyOuter => {
-            console.log(response.data.data[keyOuter]);
             if (
               response.data.data[keyOuter] !== 'null' &&
               response.data.data[keyOuter] !== null
@@ -349,9 +347,7 @@ export const actions = {
         const userTransactions = [];
 
         if (response.data.data !== 'null' && response.data.data !== null) {
-          console.log(response.data.data);
           Object.keys(response.data.data).forEach(keyOuter => {
-            console.log(response.data.data[keyOuter]);
             if (
               response.data.data[keyOuter] !== 'null' &&
               response.data.data[keyOuter] !== null

@@ -8,7 +8,11 @@
       <app-transaction :transaction_data="transaction"></app-transaction>
     </v-col>
     <v-col cols="12">
-      <v-dialog v-model="showMakeTransactionDialog" persistent>
+      <v-dialog
+        v-model="showMakeTransactionDialog"
+        persistent
+        max-width="800px"
+      >
         <template v-slot:activator="{ on }">
           <v-btn block color="primary" dark v-on="on" v-if="cards.length > 0"
             >Make Transaction</v-btn
@@ -412,7 +416,6 @@ export default {
         );
     },
     checkBalance() {
-      console.log(this.cards[this.sender_card_num]);
       if (
         parseFloat(this.cards[this.sender_card_num].card_balance) >=
         this.transaction.data.sum
@@ -437,11 +440,9 @@ export default {
   },
   computed: {
     cards() {
-      console.log(this.$store.getters.getCards);
       return this.$store.getters.getCards;
     },
     transactions() {
-      console.log(this.$store.getters.getTransactions);
       const transact = this.$store.getters.getTransactions;
       return transact.reverse();
     },

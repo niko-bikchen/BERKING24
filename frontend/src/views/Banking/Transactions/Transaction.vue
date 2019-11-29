@@ -27,9 +27,11 @@
         </span>
       </p>
       <v-expansion-panels v-if="transaction_data.description != ''">
-        <v-expansion-panel>
-          <v-expansion-panel-header>Description</v-expansion-panel-header>
-          <v-expansion-panel-content>
+        <v-expansion-panel class="description">
+          <v-expansion-panel-header class="description-title"
+            >Description</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="subtitle-1">
             {{ transaction_data.description }}
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -55,5 +57,14 @@ export default {
 
 .user-transaction {
   border: 1px solid $accentColor !important;
+}
+
+.description {
+  border: 1px solid $accentColor !important;
+}
+
+.description-title {
+  color: $accentColor;
+  font-weight: bold;
 }
 </style>

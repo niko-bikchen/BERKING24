@@ -20,11 +20,11 @@
         </span>
       </p>
       <v-expansion-panels v-if="template_data.description != ''">
-        <v-expansion-panel>
-          <v-expansion-panel-header class="font-weight-medium"
+        <v-expansion-panel class="description">
+          <v-expansion-panel-header class="font-weight-medium description-title"
             >Description</v-expansion-panel-header
           >
-          <v-expansion-panel-content>
+          <v-expansion-panel-content class="subtitle-1">
             {{ template_data.description }}
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -33,81 +33,102 @@
     <v-card-actions>
       <v-dialog v-model="showDialog" persistent max-width="600px">
         <template v-slot:activator="{ on }">
+          <v-spacer></v-spacer>
           <v-btn color="primary" dark v-on="on">Make Transaction</v-btn>
         </template>
-        <v-card>
-          <v-card-title class="headline">
-            Transaction summary
-          </v-card-title>
+        <v-card class="cofirmation-dialog">
           <v-card-text>
-            <span class="text--primary">
-              <span class="font-weight-medium title">
-                Sender card:
-              </span>
-              <span class="subtitle-1">
-                {{ template_data.sender_card }}
-              </span>
-            </span>
-            <br />
-            <span class="text--primary">
-              <span class="font-weight-medium title">
-                Receiver card:
-              </span>
-              <span class="subtitle-1">
-                {{ template_data.receiver_card }}
-              </span>
-            </span>
-            <br />
-            <span class="text--primary">
-              <span class="font-weight-medium title">
-                Sum:
-              </span>
-              <span class="subtitle-1">
-                {{ template_data.sum }}
-              </span>
-            </span>
-            <br />
-            <span class="text--primary">
-              <span class="font-weight-medium title">
-                Description:
-              </span>
-              <br />
-              <span class="body-1">
-                {{ template_data.description }}
-              </span>
-            </span>
-            <v-scroll-x-transition>
-              <p v-if="processes.transaction.failed">
-                <v-alert dense outlined type="error">
-                  {{ processes.transaction.details }}
-                </v-alert>
-              </p>
-            </v-scroll-x-transition>
-            <v-scroll-x-transition>
-              <p v-if="!balanceIsValid">
-                <v-alert dense outlined type="error">
-                  Not enough money on the card to perform the transaction.
-                </v-alert>
-              </p>
-            </v-scroll-x-transition>
-            <v-scroll-x-transition>
-              <p v-if="processes.transaction.good">
-                <v-alert dense outlined type="success">
-                  {{ processes.transaction.details }}
-                </v-alert>
-              </p>
-            </v-scroll-x-transition>
+            <v-container fluid>
+              <v-row>
+                <v-col
+                  cols="12"
+                  class="headline light-blue--text text--darken-3"
+                >
+                  Transaction summary
+                </v-col>
+                <v-col cols="12">
+                  <span class="text--primary">
+                    <span class="font-weight-medium title">
+                      Sender card:
+                    </span>
+                    <span class="subtitle-1">
+                      {{ template_data.sender_card }}
+                    </span>
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span class="text--primary">
+                    <span class="font-weight-medium title">
+                      Receiver card:
+                    </span>
+                    <span class="subtitle-1">
+                      {{ template_data.receiver_card }}
+                    </span>
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span class="text--primary">
+                    <span class="font-weight-medium title">
+                      Sum:
+                    </span>
+                    <span class="subtitle-1">
+                      {{ template_data.sum }}
+                    </span>
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span class="text--primary">
+                    <span class="font-weight-medium title">
+                      Description:
+                    </span>
+                    <br />
+                    <span class="body-1">
+                      {{ template_data.description }}
+                    </span>
+                  </span>
+                </v-col>
+                <v-scroll-x-transition>
+                  <v-col cols="12" v-if="processes.transaction.failed">
+                    <v-alert dense outlined type="error">
+                      {{ processes.transaction.details }}
+                    </v-alert>
+                  </v-col>
+                </v-scroll-x-transition>
+                <v-scroll-x-transition>
+                  <v-col cols="12" v-if="!balanceIsValid">
+                    <v-alert dense outlined type="error">
+                      Not enough money on the card to perform the transaction.
+                    </v-alert>
+                  </v-col>
+                </v-scroll-x-transition>
+                <v-scroll-x-transition>
+                  <v-col cols="12" v-if="processes.transaction.good">
+                    <v-alert dense outlined type="success">
+                      {{ processes.transaction.details }}
+                    </v-alert>
+                  </v-col>
+                </v-scroll-x-transition>
+                <v-col cols="12">
+                  <v-btn
+                    color="primary"
+                    @click="performTransaction"
+                    :loading="processes.transaction.active"
+                    :disabled="processes.transaction.good"
+                  >
+                    Submit
+                  </v-btn>
+                  <v-btn
+                    outlined
+                    color="primary"
+                    class="ml-3"
+                    :disabled="processes.transaction.good"
+                    @click="showDialog = false"
+                    >Cancel
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
           </v-card-text>
-          <v-card-actions>
-            <v-btn
-              color="primary"
-              @click="performTransaction"
-              :loading="processes.transaction.active"
-            >
-              Submit
-            </v-btn>
-            <v-btn text @click="showDialog = false">Cancel</v-btn>
-          </v-card-actions>
         </v-card>
       </v-dialog>
     </v-card-actions>
@@ -193,5 +214,18 @@ export default {
 
 .user-template {
   border: 1px solid $accentColor !important;
+}
+
+.cofirmation-dialog {
+  border: 1px solid $accentColor !important;
+}
+
+.description {
+  border: 1px solid $accentColor !important;
+}
+
+.description-title {
+  color: $accentColor;
+  font-weight: bold;
 }
 </style>

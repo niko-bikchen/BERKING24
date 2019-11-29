@@ -7,7 +7,8 @@ import vuetify from './plugins/vuetify';
 
 Vue.config.productionTip = false;
 
-axios.defaults.baseURL = 'http://localhost:34568/';
+axios.defaults.baseURL =
+  'https://69a1d4bb-4dce-43ca-9887-04c63f4440e7.mock.pstmn.io/';
 
 Vue.directive('test', {
   bind(el, binding) {

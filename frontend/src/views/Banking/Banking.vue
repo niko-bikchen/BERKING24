@@ -5,31 +5,51 @@
         <v-subheader>What do you want to see ?</v-subheader>
         <v-list-item-group color="primary">
           <v-list-item exact to="/berking">
+            <v-list-item-icon><v-icon>mdi-home</v-icon></v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item exact to="/berking/cards">
+            <v-list-item-icon
+              ><v-icon
+                >mdi-credit-card-multiple-outline</v-icon
+              ></v-list-item-icon
+            >
             <v-list-item-content>
               <v-list-item-title>Cards</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item exact to="/berking/transactions">
+            <v-list-item-icon
+              ><v-icon
+                >mdi-format-list-bulleted-square</v-icon
+              ></v-list-item-icon
+            >
             <v-list-item-content>
               <v-list-item-title>Transactions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item exact to="/berking/templates">
+            <v-list-item-icon
+              ><v-icon>mdi-file-document-edit-outline</v-icon></v-list-item-icon
+            >
             <v-list-item-content>
               <v-list-item-title>Templates</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item exact to="/berking/deposits">
+            <v-list-item-icon
+              ><v-icon>mdi-cash-multiple</v-icon></v-list-item-icon
+            >
             <v-list-item-content>
-              <v-list-item-title>Deposits</v-list-item-title>
+              <v-list-item-title>Deposit</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item exact to="/">
+            <v-list-item-icon
+              ><v-icon>mdi-source-commit-start</v-icon></v-list-item-icon
+            >
             <v-list-item-content>
               <v-list-item-title>Root</v-list-item-title>
             </v-list-item-content>
@@ -78,8 +98,9 @@
                       <v-col cols="12">
                         <v-form v-model="credValid.email.isValid">
                           <v-text-field
-                            label="Email*"
+                            label="Email"
                             type="email"
+                            outlined
                             required
                             :rules="credValid.email.rules"
                             v-model="user.email"
@@ -89,8 +110,9 @@
                       <v-col cols="12">
                         <v-form v-model="credValid.password.isValid">
                           <v-text-field
-                            label="Password*"
+                            label="Password"
                             type="password"
+                            outlined
                             required
                             :rules="credValid.password.ifExistsRules"
                             v-model="user.password"
@@ -119,8 +141,12 @@
                                       v-model="credValid.user_name.firstIsValid"
                                     >
                                       <v-text-field
-                                        label="Legal first name*"
+                                        label="Legal first name"
                                         required
+                                        outlined
+                                        :success="
+                                          credValid.user_name.firstIsValid
+                                        "
                                         :rules="credValid.user_name.rules"
                                         v-model="new_user.name_first"
                                       ></v-text-field>
@@ -133,8 +159,12 @@
                                       "
                                     >
                                       <v-text-field
-                                        label="Legal middle name*"
+                                        label="Legal middle name"
                                         required
+                                        outlined
+                                        :success="
+                                          credValid.user_name.middleIsValid
+                                        "
                                         :rules="credValid.user_name.rules"
                                         v-model="new_user.name_middle"
                                       ></v-text-field>
@@ -145,8 +175,12 @@
                                       v-model="credValid.user_name.lastIsValid"
                                     >
                                       <v-text-field
-                                        label="Legal last name*"
+                                        label="Legal last name"
                                         required
+                                        outlined
+                                        :success="
+                                          credValid.user_name.lastIsValid
+                                        "
                                         :rules="credValid.user_name.rules"
                                         v-model="new_user.name_last"
                                       ></v-text-field>
@@ -155,9 +189,11 @@
                                   <v-col cols="12">
                                     <v-form v-model="credValid.email.isValid">
                                       <v-text-field
-                                        label="Email*"
+                                        label="Email"
                                         type="email"
                                         required
+                                        outlined
+                                        :success="credValid.email.isValid"
                                         :rules="credValid.email.rules"
                                         v-model="new_user.email"
                                       ></v-text-field>
@@ -168,14 +204,38 @@
                                       v-model="credValid.password.isValid"
                                     >
                                       <v-text-field
-                                        label="Password*"
+                                        label="Password"
                                         type="password"
                                         required
-                                        counter
-                                        :rules="credValid.password.ifNewRules"
+                                        outlined
+                                        :error="!passwordIsValid"
+                                        :success="passwordIsValid"
                                         v-model="new_user.password"
                                       ></v-text-field>
                                     </v-form>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <v-checkbox
+                                      v-model="passwordLength"
+                                      :success="passwordLength"
+                                      :error="!passwordLength"
+                                      label="Password must be at least 10 characters long"
+                                      readonly
+                                    ></v-checkbox>
+                                    <v-checkbox
+                                      v-model="passwordNumbers"
+                                      :success="passwordNumbers"
+                                      :error="!passwordNumbers"
+                                      label="Password must contain at least 3 numbers"
+                                      readonly
+                                    ></v-checkbox>
+                                    <v-checkbox
+                                      v-model="passwordLetters"
+                                      :success="passwordLetters"
+                                      :error="!passwordLetters"
+                                      label="Password must be at least 3 capital letters"
+                                      readonly
+                                    ></v-checkbox>
                                   </v-col>
                                   <v-scroll-x-transition>
                                     <v-col
@@ -203,14 +263,13 @@
                             <v-card-actions>
                               <v-spacer></v-spacer>
                               <v-btn
-                                color="blue darken-1"
-                                text
+                                color="primary"
+                                outlined
                                 @click="dialogs.showRegistDialog = false"
                                 >Close</v-btn
                               >
                               <v-btn
-                                color="blue darken-1"
-                                text
+                                color="primary"
                                 @click="registerUser"
                                 :loading="processes.registr.active"
                                 :disabled="newUserDataValid"
@@ -242,12 +301,12 @@
                                   <v-col cols="12">
                                     <v-form v-model="credValid.email.isValid">
                                       <v-text-field
-                                        type="password"
+                                        type="email"
                                         required
-                                        counter
+                                        outlined
                                         label="Email"
                                         :rules="credValid.email.rules"
-                                        v-model="user.email"
+                                        v-model="new_password.email"
                                       ></v-text-field>
                                     </v-form>
                                   </v-col>
@@ -258,12 +317,12 @@
                                       <v-text-field
                                         type="password"
                                         required
-                                        counter
+                                        outlined
                                         label="Old password"
                                         :rules="
                                           credValid.password.ifExistsRules
                                         "
-                                        v-model="user.password"
+                                        v-model="new_password.password"
                                       ></v-text-field>
                                     </v-form>
                                   </v-col>
@@ -274,10 +333,10 @@
                                       <v-text-field
                                         type="password"
                                         required
-                                        counter
+                                        outlined
                                         label="New password"
                                         :rules="credValid.password.ifNewRules"
-                                        v-model="user.password_new"
+                                        v-model="new_password.password_new"
                                       ></v-text-field>
                                     </v-form>
                                   </v-col>
@@ -317,14 +376,14 @@
                             <v-card-actions>
                               <v-spacer></v-spacer>
                               <v-btn
-                                color="blue darken-1"
+                                color="primary"
+                                @click="dialogs.showPassRenovDialog = false"
                                 :disabled="processes.change_password.good"
-                                text
+                                outlined
                                 >Close</v-btn
                               >
                               <v-btn
-                                color="blue darken-1"
-                                text
+                                color="primary"
                                 :loading="processes.change_password.active"
                                 @click="changePassword"
                                 :disabled="processes.change_password.good"
@@ -354,14 +413,13 @@
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn
-                    color="blue darken-1"
-                    text
+                    color="primary"
+                    outlined
                     @click="dialogs.showAuthDialog = false"
                     >Close</v-btn
                   >
                   <v-btn
-                    color="blue darken-1"
-                    text
+                    color="primary"
                     @click="authorizeUser"
                     :disabled="
                       !credValid.email.isValid || !credValid.password.isValid
@@ -381,7 +439,9 @@
     </v-app-bar>
     <v-content>
       <v-container fluid v-if="userAuthorized">
-        <router-view></router-view>
+        <v-fade-transition mode="out-in">
+          <router-view></router-view>
+        </v-fade-transition>
       </v-container>
       <v-container v-else>
         <v-row justify="center">
@@ -452,7 +512,6 @@ export default {
       user: {
         email: '',
         password: '',
-        password_new: '',
       },
       new_user: {
         name_first: '',
@@ -460,6 +519,11 @@ export default {
         name_last: '',
         email: '',
         password: '',
+      },
+      new_password: {
+        email: '',
+        password: '',
+        new_password: '',
       },
       processes: {
         auth: {
@@ -567,38 +631,40 @@ export default {
     },
     changePassword() {
       this.processes.change_password.active = true;
-      this.$store.dispatch('changePassword', Object.assign({}, this.user)).then(
-        requestStatus => {
-          if (requestStatus.status === REQUEST_STATUSES().finished.pos) {
-            this.processes.change_password.active = false;
+      this.$store
+        .dispatch('changePassword', Object.assign({}, this.new_password))
+        .then(
+          requestStatus => {
+            if (requestStatus.status === REQUEST_STATUSES().finished.pos) {
+              this.processes.change_password.active = false;
+              this.processes.change_password.bad = false;
+              this.processes.change_password.failed = false;
+              this.processes.change_password.good = true;
+
+              this.user.password_new = '';
+              this.user.password = '';
+              this.user.email = '';
+
+              setTimeout(() => {
+                this.dialogs.showPassRenovDialog = false;
+                this.processes.change_password.good = false;
+              }, 1000);
+            }
+            if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
+              this.processes.change_password.active = false;
+              this.processes.change_password.failed = false;
+              this.processes.change_password.bad = true;
+              this.processes.change_password.details = requestStatus.details;
+            }
+          },
+          requestStatus => {
             this.processes.change_password.bad = false;
-            this.processes.change_password.failed = false;
-            this.processes.change_password.good = true;
-
-            this.user.password_new = '';
-            this.user.password = '';
-            this.user.email = '';
-
-            setTimeout(() => {
-              this.dialogs.showPassRenovDialog = false;
-              this.processes.change_password.good = false;
-            }, 1000);
-          }
-          if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
             this.processes.change_password.active = false;
-            this.processes.change_password.failed = false;
-            this.processes.change_password.bad = true;
+            this.processes.change_password.failed = true;
             this.processes.change_password.details = requestStatus.details;
+            this.processes.change_password.error = requestStatus.error;
           }
-        },
-        requestStatus => {
-          this.processes.change_password.bad = false;
-          this.processes.change_password.active = false;
-          this.processes.change_password.failed = true;
-          this.processes.change_password.details = requestStatus.details;
-          this.processes.change_password.error = requestStatus.error;
-        }
-      );
+        );
     },
     logout() {
       this.$store.dispatch('logout');
@@ -614,10 +680,30 @@ export default {
     newUserDataValid() {
       return (
         !this.credValid.email.isValid ||
-        !this.credValid.password.isValid ||
+        !this.passwordIsValid ||
         !this.credValid.user_name.firstIsValid ||
         !this.credValid.user_name.middleIsValid ||
         !this.credValid.user_name.lastIsValid
+      );
+    },
+    passwordLength() {
+      return (
+        this.credValid.password.ifNewRules[0](this.new_user.password) === true
+      );
+    },
+    passwordNumbers() {
+      return (
+        this.credValid.password.ifNewRules[1](this.new_user.password) === true
+      );
+    },
+    passwordLetters() {
+      return (
+        this.credValid.password.ifNewRules[2](this.new_user.password) === true
+      );
+    },
+    passwordIsValid() {
+      return (
+        this.passwordLength && this.passwordNumbers && this.passwordLetters
       );
     },
   },

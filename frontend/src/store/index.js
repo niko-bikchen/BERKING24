@@ -136,7 +136,7 @@ export default new Vuex.Store({
 
             const userDeposits = [];
 
-            if (response.data.data !== 'null') {
+            if (response.data.data !== 'null' && response.data.data !== null) {
               Object.keys(response.data.data).forEach(keyOuter => {
                 Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
                   userDeposits.push(response.data.data[keyOuter][keyInner]);
@@ -187,9 +187,7 @@ export default new Vuex.Store({
             const userTemplates = [];
 
             if (response.data.data !== 'null' && response.data.data !== null) {
-              console.log(response.data.data);
               Object.keys(response.data.data).forEach(keyOuter => {
-                console.log(response.data.data[keyOuter]);
                 if (
                   response.data.data[keyOuter] !== 'null' &&
                   response.data.data[keyOuter] !== null
@@ -200,7 +198,6 @@ export default new Vuex.Store({
                         response.data.data[keyOuter][keyInner] !== null &&
                         response.data.data[keyOuter][keyInner] !== 'null'
                       ) {
-                        console.log(response.data.data[keyOuter][keyInner]);
                         userTemplates.push(
                           response.data.data[keyOuter][keyInner]
                         );
@@ -211,7 +208,6 @@ export default new Vuex.Store({
               });
             }
 
-            console.log(userTemplates);
             context.commit('SET_TEMPLATES', userTemplates);
 
             resolve(context.getters.getRequestStatus);
@@ -255,9 +251,7 @@ export default new Vuex.Store({
             const userTransactions = [];
 
             if (response.data.data !== 'null' && response.data.data !== null) {
-              console.log(response.data.data);
               Object.keys(response.data.data).forEach(keyOuter => {
-                console.log(response.data.data[keyOuter]);
                 if (
                   response.data.data[keyOuter] !== 'null' &&
                   response.data.data[keyOuter] !== null
@@ -293,9 +287,6 @@ export default new Vuex.Store({
         status: REQUEST_STATUSES().active,
         details: 'Fetching cards.',
       });
-
-      console.log(context.getters.getUserData);
-      console.log(context.getters.getUserData.email);
 
       return new Promise((resolve, reject) => {
         axios
@@ -383,8 +374,6 @@ export default new Vuex.Store({
       });
     },
     addTemplate(context, payload) {
-      console.log('Hello');
-
       context.commit('SET_REQUEST_STATUS', {
         status: REQUEST_STATUSES().active,
         details: 'Creating template.',
@@ -495,8 +484,9 @@ export default new Vuex.Store({
           .post(
             '/api/recover_password',
             JSON.stringify({
-              email: context.getters.getUserData.email,
-              new_password: payload,
+              email: payload.email,
+              new_password: payload.password_new,
+              password: payload.password,
             }),
             {
               headers: {
@@ -513,7 +503,8 @@ export default new Vuex.Store({
             } else {
               context.commit('SET_REQUEST_STATUS', {
                 status: REQUEST_STATUSES().finished.neg,
-                details: 'You provided your old password.',
+                details:
+                  'Your old password is incorrect or you provided your old password as the new one.',
               });
             }
 
@@ -552,9 +543,6 @@ export default new Vuex.Store({
           })
           .then(response => {
             if (response.data.status === 'success') {
-              console.log(newUser);
-              console.log(newUser.user_email);
-
               context.commit('SET_USER', {
                 email: newUser.user_email,
               });
@@ -607,8 +595,6 @@ export default new Vuex.Store({
 
               context.commit('LOGIN');
 
-              console.log(payload.email);
-
               context.commit('SET_USER', { email: payload.email });
             } else {
               context.commit('SET_REQUEST_STATUS', {
@@ -637,15 +623,12 @@ export default new Vuex.Store({
   },
   getters: {
     getCards(state) {
-      console.log(state.user.cards);
       return state.user.cards;
     },
     getTemplates(state) {
-      console.log(state.user.templates);
       return state.user.templates;
     },
     getTransactions(state) {
-      console.log(state.user.transactions);
       return state.user.transactions;
     },
     getDeposits(state) {

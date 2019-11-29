@@ -6,7 +6,7 @@
       <app-template :template_data="template"></app-template>
     </v-col>
     <v-col cols="12">
-      <v-dialog v-model="showCreationDialog" persistent>
+      <v-dialog v-model="showCreationDialog" persistent max-width="800px">
         <template v-slot:activator="{ on }">
           <v-btn block color="primary" dark v-on="on" v-if="cards.length > 0"
             >Create Template</v-btn
@@ -118,6 +118,7 @@
                       <v-btn
                         color="primary"
                         :disabled="!inputValid.money.isValid"
+                        @click="formStep = 3"
                       >
                         Continue
                       </v-btn>
@@ -337,11 +338,9 @@ export default {
   },
   computed: {
     cards() {
-      console.log(this.$store.getters.getCards);
       return this.$store.getters.getCards;
     },
     templates() {
-      console.log(this.$store.getters.getTemplates);
       return this.$store.getters.getTemplates;
     },
   },
