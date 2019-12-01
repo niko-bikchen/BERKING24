@@ -148,48 +148,38 @@ export default {
     appCard: Card,
     appTransaction: Transaction,
   },
-  created() {
-    if (
-      sessionStorage.getItem('authorized') === true ||
-      sessionStorage.getItem('authorized') === 'true'
-    ) {
-      this.$store.dispatch('restoreAuth', true);
-    }
-  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const comp = vm;
 
-      if (sessionStorage.getItem('authorized') === true) {
-        comp.processes.fetchCards.active = true;
-        comp.processes.fetchTransactions.active = true;
+      comp.processes.fetchCards.active = true;
+      comp.processes.fetchTransactions.active = true;
 
-        comp.$store.dispatch('fetchCards').then(
-          requestStatus => {
-            comp.processes.fetchCards.active = false;
-            comp.processes.fetchCards.failed = false;
-            comp.processes.fetchCards.details = requestStatus.details;
-          },
-          requestStatus => {
-            comp.processes.fetchCards.failed = true;
-            comp.processes.fetchCards.active = false;
-            comp.processes.fetchCards.details = requestStatus.details;
-          }
-        );
+      comp.$store.dispatch('fetchCards').then(
+        requestStatus => {
+          comp.processes.fetchCards.active = false;
+          comp.processes.fetchCards.failed = false;
+          comp.processes.fetchCards.details = requestStatus.details;
+        },
+        requestStatus => {
+          comp.processes.fetchCards.failed = true;
+          comp.processes.fetchCards.active = false;
+          comp.processes.fetchCards.details = requestStatus.details;
+        }
+      );
 
-        comp.$store.dispatch('fetchTransactions').then(
-          requestStatus => {
-            comp.processes.fetchTransactions.active = false;
-            comp.processes.fetchTransactions.failed = false;
-            comp.processes.fetchTransactions.details = requestStatus.details;
-          },
-          requestStatus => {
-            comp.processes.fetchTransactions.active = false;
-            comp.processes.fetchTransactions.failed = true;
-            comp.processes.fetchTransactions.details = requestStatus.details;
-          }
-        );
-      }
+      comp.$store.dispatch('fetchTransactions').then(
+        requestStatus => {
+          comp.processes.fetchTransactions.active = false;
+          comp.processes.fetchTransactions.failed = false;
+          comp.processes.fetchTransactions.details = requestStatus.details;
+        },
+        requestStatus => {
+          comp.processes.fetchTransactions.active = false;
+          comp.processes.fetchTransactions.failed = true;
+          comp.processes.fetchTransactions.details = requestStatus.details;
+        }
+      );
     });
   },
 };

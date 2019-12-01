@@ -121,7 +121,9 @@
                     outlined
                     color="primary"
                     class="ml-3"
-                    :disabled="processes.transaction.good"
+                    :disabled="
+                      processes.transaction.good || processes.transaction.active
+                    "
                     @click="showDialog = false"
                     >Cancel
                   </v-btn>
@@ -178,6 +180,8 @@ export default {
       if (this.balanceIsValid) {
         const transactionData = Object.assign({}, this.template_data);
         transactionData.target_endpoint = '/api/make_transaction';
+
+        this.processes.transaction.active = true;
 
         this.$store
           .dispatch('performTransaction', Object.assign({}, transactionData))

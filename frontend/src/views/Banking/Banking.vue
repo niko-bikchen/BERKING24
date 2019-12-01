@@ -96,7 +96,10 @@
                   <v-container>
                     <v-row>
                       <v-col cols="12">
-                        <v-form v-model="credValid.email.isValid">
+                        <v-form
+                          v-model="credValid.email.isValid"
+                          v-on:submit.prevent
+                        >
                           <v-text-field
                             label="Email"
                             type="email"
@@ -108,12 +111,16 @@
                         </v-form>
                       </v-col>
                       <v-col cols="12">
-                        <v-form v-model="credValid.password.isValid">
+                        <v-form
+                          v-model="credValid.password.isValid"
+                          v-on:submit.prevent
+                        >
                           <v-text-field
                             label="Password"
                             type="password"
                             outlined
                             required
+                            v-on:submit.prevent
                             :rules="credValid.password.ifExistsRules"
                             v-model="user.password"
                           ></v-text-field>
@@ -139,6 +146,7 @@
                                   <v-col cols="12" sm="6" md="4">
                                     <v-form
                                       v-model="credValid.user_name.firstIsValid"
+                                      v-on:submit.prevent
                                     >
                                       <v-text-field
                                         label="Legal first name"
@@ -157,6 +165,7 @@
                                       v-model="
                                         credValid.user_name.middleIsValid
                                       "
+                                      v-on:submit.prevent
                                     >
                                       <v-text-field
                                         label="Legal middle name"
@@ -173,6 +182,7 @@
                                   <v-col cols="12" sm="6" md="4">
                                     <v-form
                                       v-model="credValid.user_name.lastIsValid"
+                                      v-on:submit.prevent
                                     >
                                       <v-text-field
                                         label="Legal last name"
@@ -187,7 +197,10 @@
                                     </v-form>
                                   </v-col>
                                   <v-col cols="12">
-                                    <v-form v-model="credValid.email.isValid">
+                                    <v-form
+                                      v-model="credValid.email.isValid"
+                                      v-on:submit.prevent
+                                    >
                                       <v-text-field
                                         label="Email"
                                         type="email"
@@ -202,6 +215,7 @@
                                   <v-col cols="12">
                                     <v-form
                                       v-model="credValid.password.isValid"
+                                      v-on:submit.prevent
                                     >
                                       <v-text-field
                                         label="Password"
@@ -299,7 +313,10 @@
                               <v-container>
                                 <v-row>
                                   <v-col cols="12">
-                                    <v-form v-model="credValid.email.isValid">
+                                    <v-form
+                                      v-model="credValid.email.isValid"
+                                      v-on:submit.prevent
+                                    >
                                       <v-text-field
                                         type="email"
                                         required
@@ -313,6 +330,7 @@
                                   <v-col cols="12">
                                     <v-form
                                       v-model="credValid.password.isValid"
+                                      v-on:submit.prevent
                                     >
                                       <v-text-field
                                         type="password"
@@ -329,16 +347,41 @@
                                   <v-col cols="12">
                                     <v-form
                                       v-model="credValid.password.isValid"
+                                      v-on:submit.prevent
                                     >
                                       <v-text-field
+                                        label="New password"
                                         type="password"
                                         required
                                         outlined
-                                        label="New password"
-                                        :rules="credValid.password.ifNewRules"
+                                        :error="!newPasswordIsValid"
+                                        :success="newPasswordIsValid"
                                         v-model="new_password.password_new"
                                       ></v-text-field>
                                     </v-form>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <v-checkbox
+                                      v-model="newPassworddLength"
+                                      :success="newPassworddLength"
+                                      :error="!newPassworddLength"
+                                      label="Password must be at least 10 characters long"
+                                      readonly
+                                    ></v-checkbox>
+                                    <v-checkbox
+                                      v-model="newPasswordNumbers"
+                                      :success="newPasswordNumbers"
+                                      :error="!newPasswordNumbers"
+                                      label="Password must contain at least 3 numbers"
+                                      readonly
+                                    ></v-checkbox>
+                                    <v-checkbox
+                                      v-model="newPasswordLetters"
+                                      :success="newPasswordLetters"
+                                      :error="!newPasswordLetters"
+                                      label="Password must be at least 3 capital letters"
+                                      readonly
+                                    ></v-checkbox>
                                   </v-col>
                                   <v-scroll-x-transition>
                                     <v-col
@@ -386,7 +429,7 @@
                                 color="primary"
                                 :loading="processes.change_password.active"
                                 @click="changePassword"
-                                :disabled="processes.change_password.good"
+                                :disabled="newPasswordDataValid"
                                 >Submit</v-btn
                               >
                             </v-card-actions>
@@ -523,7 +566,7 @@ export default {
       new_password: {
         email: '',
         password: '',
-        new_password: '',
+        password_new: '',
       },
       processes: {
         auth: {
@@ -571,6 +614,8 @@ export default {
             if (this.$route.path !== '/berking') {
               this.$router.push({ path: '/berking' });
             }
+
+            this.refreshToken();
           }
           if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
             this.processes.auth.active = false;
@@ -612,6 +657,8 @@ export default {
               if (this.$route.path !== '/berking') {
                 this.$router.push({ path: '/berking' });
               }
+
+              this.refreshToken();
             }
             if (requestStatus.status === REQUEST_STATUSES().finished.neg) {
               this.processes.registr.active = false;
@@ -640,6 +687,7 @@ export default {
               this.processes.change_password.bad = false;
               this.processes.change_password.failed = false;
               this.processes.change_password.good = true;
+              this.processes.change_password.details = requestStatus.details;
 
               this.user.password_new = '';
               this.user.password = '';
@@ -669,6 +717,15 @@ export default {
     logout() {
       this.$store.dispatch('logout');
     },
+    refreshToken() {
+      if (this.userAuthorized) {
+        setTimeout(() => {
+          this.$store.dispatch('refreshWebtoken').then(() => {
+            this.refreshToken();
+          });
+        }, 80000);
+      }
+    },
   },
   computed: {
     userAuthorized() {
@@ -686,9 +743,23 @@ export default {
         !this.credValid.user_name.lastIsValid
       );
     },
+    newPasswordDataValid() {
+      return (
+        !this.credValid.email.isValid ||
+        !this.newPasswordIsValid ||
+        !this.credValid.password.isValid
+      );
+    },
     passwordLength() {
       return (
         this.credValid.password.ifNewRules[0](this.new_user.password) === true
+      );
+    },
+    newPassworddLength() {
+      return (
+        this.credValid.password.ifNewRules[0](
+          this.new_password.password_new
+        ) === true
       );
     },
     passwordNumbers() {
@@ -696,14 +767,35 @@ export default {
         this.credValid.password.ifNewRules[1](this.new_user.password) === true
       );
     },
+    newPasswordNumbers() {
+      return (
+        this.credValid.password.ifNewRules[1](
+          this.new_password.password_new
+        ) === true
+      );
+    },
     passwordLetters() {
       return (
         this.credValid.password.ifNewRules[2](this.new_user.password) === true
       );
     },
+    newPasswordLetters() {
+      return (
+        this.credValid.password.ifNewRules[2](
+          this.new_password.password_new
+        ) === true
+      );
+    },
     passwordIsValid() {
       return (
         this.passwordLength && this.passwordNumbers && this.passwordLetters
+      );
+    },
+    newPasswordIsValid() {
+      return (
+        this.newPassworddLength &&
+        this.newPasswordNumbers &&
+        this.newPasswordLetters
       );
     },
   },

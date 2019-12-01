@@ -139,6 +139,11 @@
                         landscape
                         color="primary"
                       ></v-date-picker>
+                      <v-col cols="12" v-if="processes.getIncome.failed">
+                        <v-alert type="error"
+                          >Failed to calculate income</v-alert
+                        >
+                      </v-col>
                     </v-row>
                   </v-container>
                 </v-card-text>
@@ -146,11 +151,17 @@
                   <v-btn
                     color="primary"
                     :disabled="!deposit.data.end_date === ''"
-                    @click="formStep = 4"
+                    :loading="processes.getIncome.active"
+                    @click="calculateIncome"
                   >
                     Continue
                   </v-btn>
-                  <v-btn text @click="formStep = 2">Back</v-btn>
+                  <v-btn
+                    text
+                    @click="formStep = 2"
+                    :disabled="processes.getIncome.active"
+                    >Back</v-btn
+                  >
                 </v-card-actions>
               </v-card>
             </v-stepper-content>
@@ -163,7 +174,7 @@
                       Card to bind deposit to:
                     </span>
                     <span class="subtitle-1">
-                      {{ cards[deposit_card_num].card_number }}
+                      {{ cards[deposit_card_num].card_number | formatCardNum }}
                     </span>
                   </p>
                   <p class="text--primary">
@@ -179,7 +190,20 @@
                       End date:
                     </span>
                     <span class="body-1">
-                      {{ deposit.data.end_date }}
+                      {{
+                        deposit.data.end_date
+                          .split('-')
+                          .reverse()
+                          .join('.')
+                      }}
+                    </span>
+                  </p>
+                  <p class="text--primary">
+                    <span class="font-weight-medium title">
+                      Expected income:
+                    </span>
+                    <span class="body-1">
+                      {{ this.income }}
                     </span>
                   </p>
                   <v-scroll-x-transition>
@@ -201,6 +225,7 @@
                   <v-btn
                     color="primary"
                     @click="createDeposit"
+                    :loading="processes.create_deposit.active"
                     :disabled="processes.create_deposit.good"
                   >
                     Submit
@@ -208,7 +233,10 @@
                   <v-btn
                     text
                     @click="formStep = 3"
-                    :disabled="processes.create_deposit.good"
+                    :disabled="
+                      processes.create_deposit.good ||
+                        processes.create_deposit.active
+                    "
                     >Back</v-btn
                   >
                 </v-card-actions>
@@ -256,6 +284,7 @@ export default {
       formStep: 0,
       showDialog: false,
       deposit_card_num: 0,
+      income: 0,
       processes: {
         create_deposit: {
           active: false,
@@ -271,6 +300,11 @@ export default {
           details: '',
         },
         fetchCards: {
+          active: false,
+          failed: false,
+          details: '',
+        },
+        getIncome: {
           active: false,
           failed: false,
           details: '',
@@ -310,10 +344,42 @@ export default {
         this.inputValid.deposit_card_balance.isValid = false;
       }
     },
+    calculateIncome() {
+      const exprirationDate = this.deposit.data.end_date
+        .split('-')
+        .reverse()
+        .join('.');
+      this.processes.getIncome.active = true;
+
+      this.$store
+        .dispatch('calculateIncome', {
+          sum: this.deposit.data.init_sum,
+          exp_date: exprirationDate,
+        })
+        .then(
+          income => {
+            this.processes.getIncome.active = false;
+            this.income = income;
+            this.formStep = 4;
+          },
+          requestStatus => {
+            this.processes.getIncome.active = false;
+            this.processes.getIncome.failed = true;
+            this.processes.getIncome.details = requestStatus.details;
+          }
+        );
+    },
     createDeposit() {
       const depositData = Object.assign({}, this.deposit.data);
-      depositData.start_date = this.today;
+      depositData.start_date = this.today
+        .split('-')
+        .reverse()
+        .join('.');
       depositData.card_num = this.cards[this.deposit_card_num].card_number;
+      depositData.end_date = this.deposit.data.end_date
+        .split('-')
+        .reverse()
+        .join('.');
 
       this.processes.create_deposit.active = true;
       this.$store

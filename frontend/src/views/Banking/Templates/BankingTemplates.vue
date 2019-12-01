@@ -230,13 +230,17 @@
                         color="primary"
                         @click="addTemplate"
                         :disabled="processes.creating_template.good"
+                        :loading="processes.creating_template.active"
                       >
                         Submit
                       </v-btn>
                       <v-btn
                         text
                         @click="formStep = 3"
-                        :disabled="processes.creating_template.good"
+                        :disabled="
+                          processes.creating_template.good ||
+                            processes.creating_template.active
+                        "
                         >Back</v-btn
                       >
                     </v-card-actions>

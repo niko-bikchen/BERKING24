@@ -33,6 +33,7 @@ export default new Vuex.Store({
       info: {},
       authorized: false,
       webtoken: '',
+      refresh_token: '',
     },
   },
   mutations: {
@@ -82,7 +83,13 @@ export default new Vuex.Store({
     },
     SET_USER(state, userInfo) {
       state.user.info.email = userInfo.email;
+      state.user.webtoken = userInfo.webtoken;
+      state.user.refresh_token = userInfo.refresh_token;
       state.user.authorized = true;
+    },
+    UPDATE_USER_TOKENS(state, tokens) {
+      state.user.webtoken = tokens.webtoken;
+      state.user.refresh_token = tokens.refresh_token;
     },
     PERFORM_TRANSACTION(state, transaction) {
       state.user.transactions.push(transaction);
@@ -121,6 +128,7 @@ export default new Vuex.Store({
             '/api/user_deposits',
             JSON.stringify({
               email: context.getters.getUserData.email,
+              webtoken: context.getters.getWebtoken,
             }),
             {
               headers: {
@@ -137,11 +145,7 @@ export default new Vuex.Store({
             const userDeposits = [];
 
             if (response.data.data !== 'null' && response.data.data !== null) {
-              Object.keys(response.data.data).forEach(keyOuter => {
-                Object.keys(response.data.data[keyOuter]).forEach(keyInner => {
-                  userDeposits.push(response.data.data[keyOuter][keyInner]);
-                });
-              });
+              userDeposits.push(response.data.data);
             }
 
             context.commit('SET_DEPOSITS', userDeposits);
@@ -171,6 +175,7 @@ export default new Vuex.Store({
             '/api/user_templates',
             JSON.stringify({
               email: context.getters.getUserData.email,
+              webtoken: context.getters.getWebtoken,
             }),
             {
               headers: {
@@ -235,6 +240,7 @@ export default new Vuex.Store({
             '/api/user_transactions',
             JSON.stringify({
               email: context.getters.getUserData.email,
+              webtoken: context.getters.getWebtoken,
             }),
             {
               headers: {
@@ -294,6 +300,7 @@ export default new Vuex.Store({
             '/api/user_cards',
             JSON.stringify({
               email: context.getters.getUserData.email,
+              webtoken: context.getters.getWebtoken,
             }),
             {
               headers: {
@@ -330,9 +337,6 @@ export default new Vuex.Store({
           });
       });
     },
-    restoreAuth(context, status) {
-      context.commit('SET_IS_AUTHORIZED', status);
-    },
     addCard(context, payload) {
       context.commit('SET_REQUEST_STATUS', {
         status: REQUEST_STATUSES().active,
@@ -346,6 +350,7 @@ export default new Vuex.Store({
             JSON.stringify({
               email: context.getters.getUserData.email,
               card_name: payload,
+              webtoken: context.getters.getWebtoken,
             }),
             {
               headers: {
@@ -378,6 +383,9 @@ export default new Vuex.Store({
         status: REQUEST_STATUSES().active,
         details: 'Creating template.',
       });
+
+      // eslint-disable-next-line no-param-reassign
+      payload.webtoken = context.getters.getWebtoken;
 
       return new Promise((resolve, reject) => {
         axios
@@ -413,6 +421,9 @@ export default new Vuex.Store({
         details: 'Performing transaction.',
       });
 
+      // eslint-disable-next-line no-param-reassign
+      payload.webtoken = context.getters.getWebtoken;
+
       return new Promise((resolve, reject) => {
         axios
           .post(payload.target_endpoint, JSON.stringify(payload), {
@@ -447,6 +458,11 @@ export default new Vuex.Store({
         details: 'Creating deposit.',
       });
 
+      // eslint-disable-next-line no-param-reassign
+      payload.webtoken = context.getters.getWebtoken;
+
+      console.log(payload);
+
       return new Promise((resolve, reject) => {
         axios
           .post('/api/make_deposit', JSON.stringify(payload), {
@@ -478,6 +494,8 @@ export default new Vuex.Store({
         status: REQUEST_STATUSES().active,
         details: 'Changing password.',
       });
+
+      console.log(payload);
 
       return new Promise((resolve, reject) => {
         axios
@@ -536,7 +554,7 @@ export default new Vuex.Store({
 
       return new Promise((resolve, reject) => {
         axios
-          .post('/api/registrate', JSON.stringify(newUser), {
+          .post('/api/register', JSON.stringify(newUser), {
             headers: {
               'Content-Type': 'application/json',
             },
@@ -545,6 +563,8 @@ export default new Vuex.Store({
             if (response.data.status === 'success') {
               context.commit('SET_USER', {
                 email: newUser.user_email,
+                webtoken: response.data.webtoken,
+                refresh_token: response.data.refresh_token,
               });
 
               context.commit('SET_REQUEST_STATUS', {
@@ -595,7 +615,11 @@ export default new Vuex.Store({
 
               context.commit('LOGIN');
 
-              context.commit('SET_USER', { email: payload.email });
+              context.commit('SET_USER', {
+                email: payload.email,
+                webtoken: response.data.webtoken,
+                refresh_token: response.data.refresh_token,
+              });
             } else {
               context.commit('SET_REQUEST_STATUS', {
                 status: REQUEST_STATUSES().finished.neg,
@@ -620,6 +644,72 @@ export default new Vuex.Store({
     logout(context) {
       context.commit('LOGOUT');
     },
+    calculateIncome(context, payload) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Calculating income.',
+      });
+
+      console.log(payload);
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/api/preview_before_deposit', JSON.stringify(payload), {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(response => {
+            if (response.data.status === 'success') {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.pos,
+                details: 'Deposit calculated successfuly.',
+              });
+            }
+
+            resolve(response.data.data.end_sum);
+          })
+          .catch(error => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().failed,
+              details: `Failed to calculate the deposit.`,
+              error,
+            });
+
+            reject(context.getters.getRequestStatus);
+          });
+      });
+    },
+    refreshWebtoken(context) {
+      context.commit('SET_REQUEST_STATUS', {
+        status: REQUEST_STATUSES().active,
+        details: 'Refreshing token.',
+      });
+
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/api/refresh_token', {
+            refresh_token: context.getters.getRefreshToken,
+            webtoken: context.getters.getWebtoken,
+          })
+          .then(response => {
+            context.commit('SET_REQUEST_STATUS', {
+              status: REQUEST_STATUSES().active,
+              details: 'Token successfuly refreshed.',
+            });
+
+            context.commit('UPDATE_USER_TOKENS', {
+              webtoken: response.data.webtoken,
+              refresh_token: response.data.refresh_token,
+            });
+
+            resolve('OK');
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
   },
   getters: {
     getCards(state) {
@@ -642,6 +732,12 @@ export default new Vuex.Store({
     },
     getRequestStatus(state) {
       return state.request;
+    },
+    getWebtoken(state) {
+      return state.user.webtoken;
+    },
+    getRefreshToken(state) {
+      return state.user.refresh_token;
     },
   },
 });

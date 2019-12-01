@@ -48,6 +48,7 @@
             <v-text-field
               outlined
               single-line
+              type="number"
               label="Amount of money"
               :rules="inputValid.money.rules"
               v-model="transaction.data.sum"
@@ -79,7 +80,7 @@
                   Receiver card:
                 </span>
                 <span class="subtitle-1">
-                  {{ transaction.data.receiver_card }}
+                  {{ transaction.data.receiver_card | formatCardNum }}
                 </span>
               </p>
               <p class="text--primary">
@@ -129,7 +130,9 @@
               <v-btn
                 text
                 @click="stepNum = 2"
-                :disabled="processes.transaction.good"
+                :disabled="
+                  processes.transaction.good || processes.transaction.active
+                "
                 >Back</v-btn
               >
             </v-card-actions>

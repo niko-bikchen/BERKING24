@@ -260,7 +260,10 @@
                       <v-btn
                         text
                         @click="stepNum = 3"
-                        :disabled="processes.transaction.good"
+                        :disabled="
+                          processes.transaction.good ||
+                            processes.transaction.active
+                        "
                         >Back</v-btn
                       >
                     </v-card-actions>
