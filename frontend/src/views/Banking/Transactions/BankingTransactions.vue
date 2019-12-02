@@ -247,6 +247,13 @@
                           </v-alert>
                         </p>
                       </v-scroll-x-transition>
+                      <v-scroll-x-transition>
+                        <p v-if="processes.transaction.bad">
+                          <v-alert dense outlined type="error">
+                            {{ processes.transaction.details }}
+                          </v-alert>
+                        </p>
+                      </v-scroll-x-transition>
                     </v-card-text>
                     <v-card-actions>
                       <v-btn
@@ -300,6 +307,7 @@
 
 <script>
 import Transaction from './Transaction.vue';
+import REQUEST_STATUSES from '../../../assets/js/vars';
 
 export default {
   components: {
@@ -393,20 +401,28 @@ export default {
         )
         .then(
           requestStatus => {
-            this.processes.transaction.active = false;
-            this.processes.transaction.bad = false;
-            this.processes.transaction.failed = false;
-            this.processes.transaction.good = true;
-            this.processes.transaction.details = requestStatus.details;
+            if (requestStatus.status === REQUEST_STATUSES().finished.pos) {
+              this.processes.transaction.active = false;
+              this.processes.transaction.bad = false;
+              this.processes.transaction.failed = false;
+              this.processes.transaction.good = true;
+              this.processes.transaction.details = requestStatus.details;
 
-            this.transaction.data.receiver_card = '';
-            this.transaction.data.sum = '';
-            this.transaction.data.description = '';
+              this.transaction.data.receiver_card = '';
+              this.transaction.data.sum = '';
+              this.transaction.data.description = '';
 
-            setTimeout(() => {
-              this.showMakeTransactionDialog = false;
+              setTimeout(() => {
+                this.showMakeTransactionDialog = false;
+                this.processes.transaction.good = false;
+              }, 1000);
+            } else {
+              this.processes.transaction.active = false;
+              this.processes.transaction.bad = true;
+              this.processes.transaction.failed = false;
               this.processes.transaction.good = false;
-            }, 1000);
+              this.processes.transaction.details = requestStatus.details;
+            }
           },
           requestStatus => {
             this.processes.transaction.bad = false;

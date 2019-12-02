@@ -7,7 +7,7 @@ import vuetify from './plugins/vuetify';
 
 Vue.config.productionTip = false;
 
-axios.defaults.baseURL = 'http://localhost:34568/';
+axios.defaults.baseURL = `http://${window.location.host}/`;
 
 Vue.directive('test', {
   bind(el, binding) {
@@ -19,6 +19,13 @@ Vue.directive('test', {
 
 Vue.filter('formatCardNum', cardNum => {
   let num = cardNum;
+
+  if (cardNum === undefined) {
+    return '';
+  }
+  if (cardNum === 'Berking TERMINAL') {
+    return cardNum;
+  }
 
   if (Number.isInteger(num)) {
     num = cardNum.toString();
@@ -35,6 +42,13 @@ Vue.filter('formatCardNum', cardNum => {
 
 Vue.filter('formatCardNumWithMask', cardNum => {
   let num = cardNum;
+
+  if (cardNum === undefined) {
+    return '';
+  }
+  if (cardNum === 'Berking TERMINAL') {
+    return cardNum;
+  }
 
   if (Number.isInteger(num)) {
     num = cardNum.toString();

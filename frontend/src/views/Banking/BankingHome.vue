@@ -141,7 +141,7 @@ export default {
     },
     transactions() {
       const transact = this.$store.getters.getTransactions;
-      return transact.slice(0, 2).reverse();
+      return transact.slice(0, 2);
     },
   },
   components: {
@@ -160,24 +160,24 @@ export default {
           comp.processes.fetchCards.active = false;
           comp.processes.fetchCards.failed = false;
           comp.processes.fetchCards.details = requestStatus.details;
+
+          comp.$store.dispatch('fetchTransactions').then(
+            reqStatus => {
+              comp.processes.fetchTransactions.active = false;
+              comp.processes.fetchTransactions.failed = false;
+              comp.processes.fetchTransactions.details = reqStatus.details;
+            },
+            reqStatus => {
+              comp.processes.fetchTransactions.active = false;
+              comp.processes.fetchTransactions.failed = true;
+              comp.processes.fetchTransactions.details = reqStatus.details;
+            }
+          );
         },
         requestStatus => {
           comp.processes.fetchCards.failed = true;
           comp.processes.fetchCards.active = false;
           comp.processes.fetchCards.details = requestStatus.details;
-        }
-      );
-
-      comp.$store.dispatch('fetchTransactions').then(
-        requestStatus => {
-          comp.processes.fetchTransactions.active = false;
-          comp.processes.fetchTransactions.failed = false;
-          comp.processes.fetchTransactions.details = requestStatus.details;
-        },
-        requestStatus => {
-          comp.processes.fetchTransactions.active = false;
-          comp.processes.fetchTransactions.failed = true;
-          comp.processes.fetchTransactions.details = requestStatus.details;
         }
       );
     });

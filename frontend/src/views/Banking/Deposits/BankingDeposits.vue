@@ -173,7 +173,13 @@
                     <span class="font-weight-medium title">
                       Card to bind deposit to:
                     </span>
-                    <span class="subtitle-1">
+                    <span
+                      class="subtitle-1"
+                      v-if="
+                        cards[deposit_card_num] &&
+                          cards[deposit_card_num].card_number
+                      "
+                    >
                       {{ cards[deposit_card_num].card_number | formatCardNum }}
                     </span>
                   </p>

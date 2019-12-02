@@ -386,6 +386,8 @@ export default new Vuex.Store({
 
       // eslint-disable-next-line no-param-reassign
       payload.webtoken = context.getters.getWebtoken;
+      // eslint-disable-next-line no-param-reassign
+      payload.email = context.getters.getUserData.email;
 
       return new Promise((resolve, reject) => {
         axios
@@ -394,13 +396,20 @@ export default new Vuex.Store({
               'Content-Type': 'application/json',
             },
           })
-          .then(() => {
-            context.commit('SET_REQUEST_STATUS', {
-              status: REQUEST_STATUSES().finished.pos,
-              details: 'Template created successfuly.',
-            });
+          .then(response => {
+            if (response.data.status === 'success') {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.pos,
+                details: 'Template created successfuly.',
+              });
 
-            context.commit('ADD_TEMPLATE', payload);
+              context.commit('ADD_TEMPLATE', payload);
+            } else {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.neg,
+                details: 'Receiver card does not exist.',
+              });
+            }
 
             resolve(context.getters.getRequestStatus);
           })
@@ -421,8 +430,12 @@ export default new Vuex.Store({
         details: 'Performing transaction.',
       });
 
+      if (payload.target_endpoint !== '/api/terminal') {
+        // eslint-disable-next-line no-param-reassign
+        payload.webtoken = context.getters.getWebtoken;
+      }
       // eslint-disable-next-line no-param-reassign
-      payload.webtoken = context.getters.getWebtoken;
+      payload.email = context.getters.getUserData.email;
 
       return new Promise((resolve, reject) => {
         axios
@@ -431,13 +444,20 @@ export default new Vuex.Store({
               'Content-Type': 'application/json',
             },
           })
-          .then(() => {
-            context.commit('SET_REQUEST_STATUS', {
-              status: REQUEST_STATUSES().finished.pos,
-              details: 'Transaction performed successfuly.',
-            });
+          .then(response => {
+            if (response.data.status === 'success') {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.pos,
+                details: 'Transaction performed successfuly.',
+              });
 
-            context.commit('PERFORM_TRANSACTION', payload);
+              context.commit('PERFORM_TRANSACTION', payload);
+            } else {
+              context.commit('SET_REQUEST_STATUS', {
+                status: REQUEST_STATUSES().finished.neg,
+                details: response.data.details,
+              });
+            }
 
             resolve(context.getters.getRequestStatus);
           })
@@ -460,6 +480,8 @@ export default new Vuex.Store({
 
       // eslint-disable-next-line no-param-reassign
       payload.webtoken = context.getters.getWebtoken;
+      // eslint-disable-next-line no-param-reassign
+      payload.email = context.getters.getUserData.email;
 
       console.log(payload);
 
@@ -513,6 +535,8 @@ export default new Vuex.Store({
             }
           )
           .then(response => {
+            console.log(response);
+
             if (response.data.status === 'success') {
               context.commit('SET_REQUEST_STATUS', {
                 status: REQUEST_STATUSES().finished.pos,
@@ -691,6 +715,7 @@ export default new Vuex.Store({
           .post('/api/refresh_token', {
             refresh_token: context.getters.getRefreshToken,
             webtoken: context.getters.getWebtoken,
+            email: context.getters.getUserData.email,
           })
           .then(response => {
             context.commit('SET_REQUEST_STATUS', {

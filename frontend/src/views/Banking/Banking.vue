@@ -501,10 +501,22 @@
               </v-card-text>
             </v-card>
           </v-col>
+          <v-col cols="12">
+            <v-img
+              src="https://i.gifer.com/7VE.gif"
+              max-height="500"
+              :contain="true"
+            >
+            </v-img>
+          </v-col>
         </v-row>
       </v-container>
     </v-content>
-    <v-footer app></v-footer>
+    <v-footer app class="footer">
+      <div class="text-center" style="width: 100%">
+        &copy; Berking 2019
+      </div>
+    </v-footer>
   </v-app>
 </template>
 
@@ -718,13 +730,11 @@ export default {
       this.$store.dispatch('logout');
     },
     refreshToken() {
-      if (this.userAuthorized) {
-        setTimeout(() => {
-          this.$store.dispatch('refreshWebtoken').then(() => {
-            this.refreshToken();
-          });
-        }, 80000);
-      }
+      setTimeout(() => {
+        this.$store.dispatch('refreshWebtoken').then(() => {
+          this.refreshToken();
+        });
+      }, 7200000);
     },
   },
   computed: {
@@ -799,6 +809,11 @@ export default {
       );
     },
   },
+  created() {
+    if (this.userAuthorized) {
+      this.refreshToken();
+    }
+  },
 };
 </script>
 
@@ -821,5 +836,14 @@ export default {
       cursor: pointer;
     }
   }
+}
+
+.footer {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.4rem !important;
+  color: $accentColor !important;
+
+  background-color: white !important;
+  border-top: 1px solid $accentColor !important;
 }
 </style>

@@ -1,7 +1,10 @@
 <template>
   <v-card otlined class="user-deposit">
     <v-card-text>
-      <p class="text--primary subtitle-1">
+      <p
+        class="text--primary subtitle-1"
+        v-if="deposit_data && deposit_data.card_num"
+      >
         Card number:
         <span class="font-weight-medium">
           {{ deposit_data.card_num | formatCardNum }}

@@ -30,13 +30,13 @@
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="formStep > 3" step="2"
+                <v-stepper-step :complete="formStep > 2" step="2"
                   >Money and description</v-stepper-step
                 >
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="formStep > 2" step="3"
+                <v-stepper-step :complete="formStep > 3" step="3"
                   >Receiver card</v-stepper-step
                 >
 
@@ -176,7 +176,10 @@
                         </span>
                         <span
                           class="subtitle-1"
-                          v-if="!processes.creating_template.good"
+                          v-if="
+                            cards[sender_card_num] &&
+                              cards[sender_card_num].card_number
+                          "
                         >
                           {{ cards[sender_card_num].card_number }}
                         </span>
@@ -220,6 +223,13 @@
                       <v-scroll-x-transition>
                         <p v-if="processes.creating_template.good">
                           <v-alert dense outlined type="success">
+                            {{ processes.creating_template.details }}
+                          </v-alert>
+                        </p>
+                      </v-scroll-x-transition>
+                      <v-scroll-x-transition>
+                        <p v-if="processes.creating_template.bad">
+                          <v-alert dense outlined type="error">
                             {{ processes.creating_template.details }}
                           </v-alert>
                         </p>
@@ -277,6 +287,7 @@
 
 <script>
 import Template from './Template.vue';
+import REQUEST_STATUSES from '../../../assets/js/vars';
 
 export default {
   components: {
@@ -359,20 +370,28 @@ export default {
         .dispatch('addTemplate', Object.assign({}, this.template.data))
         .then(
           requestStatus => {
-            this.processes.creating_template.active = false;
-            this.processes.creating_template.bad = false;
-            this.processes.creating_template.failed = false;
-            this.processes.creating_template.good = true;
-            this.processes.creating_template.details = requestStatus.details;
+            if (requestStatus.status === REQUEST_STATUSES().finished.pos) {
+              this.processes.creating_template.active = false;
+              this.processes.creating_template.bad = false;
+              this.processes.creating_template.failed = false;
+              this.processes.creating_template.good = true;
+              this.processes.creating_template.details = requestStatus.details;
 
-            this.template.data.receiver_card = '';
-            this.template.data.sum = '';
-            this.template.data.description = '';
+              this.template.data.receiver_card = '';
+              this.template.data.sum = '';
+              this.template.data.description = '';
 
-            setTimeout(() => {
-              this.showCreationDialog = false;
+              setTimeout(() => {
+                this.showCreationDialog = false;
+                this.processes.creating_template.good = false;
+              }, 1000);
+            } else {
+              this.processes.creating_template.active = false;
+              this.processes.creating_template.bad = true;
+              this.processes.creating_template.failed = false;
               this.processes.creating_template.good = false;
-            }, 1000);
+              this.processes.creating_template.details = requestStatus.details;
+            }
           },
           requestStatus => {
             this.processes.creating_template.active = false;
